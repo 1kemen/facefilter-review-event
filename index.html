@@ -35,6 +35,12 @@
             <span id="wizard-progress"></span>
           </div>
           <strong id="wizard-step-label">참여 정보</strong>
+          <div class="wizard-progress-labels" id="wizard-progress-labels" aria-hidden="true">
+            <span data-step-label="register">정보</span>
+            <span data-step-label="review">리뷰</span>
+            <span data-step-label="draw">뽑기</span>
+            <span data-step-label="final">확인</span>
+          </div>
         </div>
 
         <div class="selected-customer" id="selected-customer" hidden>
@@ -403,5 +409,6 @@
   <script src="supabase-config.js"></script>
   <script src="supabase/supabase-client.js"></script>
   <script src="app.js"></script>
+  <script src="ff-enhance.js"></script>
 </body>
 </html>
