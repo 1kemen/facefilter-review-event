@@ -2806,11 +2806,36 @@ body[data-app-mode="staff"] .detail-panel {
 
 /* ---------- 페이지 전환 모션 (토스식 슬라이드) ---------- */
 .wizard-page.is-active {
-  animation: ffSlideIn 0.38s var(--ff-ease);
+  animation: ffSlideIn 0.42s var(--ff-ease);
 }
 @keyframes ffSlideIn {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(18px); }
+  60%  { opacity: 1; }
   to   { opacity: 1; transform: translateY(0); }
+}
+/* 카드/버튼이 화면 진입 시 미세하게 따라 올라오는 stagger 느낌 */
+.wizard-page.is-active .review-focus-card,
+.wizard-page.is-active .draw-focus-card,
+.wizard-page.is-active .final-card {
+  animation: ffRiseSoft 0.5s var(--ff-ease);
+}
+@keyframes ffRiseSoft {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 진행바 채움도 같은 리듬으로 */
+.wizard-progress-track span {
+  transition: width 0.42s var(--ff-ease);
+}
+/* 접근성: 모션 최소화 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .wizard-page.is-active,
+  .wizard-page.is-active .review-focus-card,
+  .wizard-page.is-active .draw-focus-card,
+  .wizard-page.is-active .final-card,
+  .drop-choice.is-selected {
+    animation: none;
+  }
 }
 
 /* ---------- 입력 필드 ---------- */
@@ -3239,4 +3264,59 @@ input.ff-slot-input {
   place-items: center;
   color: #fff;
   font-size: 0.7rem;
+}
+
+
+/* =====================================================================
+   STEP 02 버튼 토글 — 완료 버튼이 나타나면(리뷰 열어봄) 작성하기 숨김
+   app.js가 photo-review-done의 hidden을 풀면 CSS가 자동 반응 (무수정)
+   ===================================================================== */
+.review-focus-card:has(#photo-review-done:not([hidden])) .action-row {
+  display: none;
+}
+.review-focus-card #photo-review-done {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 13px;
+  background: var(--ff-ink);
+  color: #fff;
+  font-weight: 700;
+  margin-top: 4px;
+}
+/* 완료 버튼 등장 시 부드럽게 */
+.review-focus-card #photo-review-done:not([hidden]) {
+  animation: ffSlideIn 0.38s var(--ff-ease);
+}
+/* 리뷰 열어본 후 안내문 톤 */
+.review-focus-card .micro-status {
+  color: var(--ff-gold);
+  font-weight: 600;
+}
+
+
+/* =====================================================================
+   페필이 선택 시 bounce 모션 (표정 이미지는 추후 교체)
+   .drop-choice.is-selected 는 app.js가 제어 (무수정)
+   ===================================================================== */
+@keyframes ffPepBounce {
+  0%   { transform: translateY(-6px) scale(1); }
+  30%  { transform: translateY(-14px) scale(1.05); }
+  55%  { transform: translateY(-4px) scale(0.98); }
+  75%  { transform: translateY(-9px) scale(1.02); }
+  100% { transform: translateY(-6px) scale(1); }
+}
+.drop-choice.is-selected {
+  animation: ffPepBounce 0.6s var(--ff-ease);
+}
+/* 선택된 페필이 이미지가 살짝 또렷하게 */
+.drop-choice.is-selected span {
+  filter: saturate(1.08) contrast(1.03);
+  transition: filter 0.25s ease;
+}
+/* 호버 시 미세하게 떠오름 (PC) */
+@media (hover: hover) {
+  .drop-choice:not(.is-selected):hover {
+    transform: translateY(-3px);
+    border-color: var(--ff-deep);
+  }
 }
