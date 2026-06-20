@@ -596,16 +596,35 @@ textarea {
 .wizard-progress {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 9px;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
+/* 4칸 세그먼트 바 — app.js가 채워주는 width%를 mask로 받아
+   4개 칸이 차례로 채워지는 것처럼 보이게 한다.
+   칸 사이 간격은 hard-edge gradient로 표현. */
 .wizard-progress-track {
+  position: relative;
   height: 4px;
-  overflow: hidden;
   border-radius: 999px;
-  background: #e7e8e4;
+  overflow: visible;
+  background:
+    linear-gradient(90deg, var(--line) 0 0) ,
+    #e7e8e4;
+  /* 4칸 구분: 25% 지점마다 배경색 틈을 만든다 */
+  -webkit-mask:
+    linear-gradient(90deg,
+      #000 0 calc(25% - 3px), transparent calc(25% - 3px) 25%,
+      #000 25% calc(50% - 3px), transparent calc(50% - 3px) 50%,
+      #000 50% calc(75% - 3px), transparent calc(75% - 3px) 75%,
+      #000 75% 100%);
+  mask:
+    linear-gradient(90deg,
+      #000 0 calc(25% - 3px), transparent calc(25% - 3px) 25%,
+      #000 25% calc(50% - 3px), transparent calc(50% - 3px) 50%,
+      #000 50% calc(75% - 3px), transparent calc(75% - 3px) 75%,
+      #000 75% 100%);
 }
 
 .wizard-progress-track span {
@@ -613,15 +632,39 @@ textarea {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #969a94, #252525);
-  transition: width 0.24s ease;
+  background: var(--ink);
+  transition: width 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.wizard-progress strong {
-  color: #3c3c3a;
-  font-size: 0.86rem;
+/* app.js가 갱신하는 단일 단계명 라벨은 시각적으로 숨긴다
+   (스크린리더 접근성용으로 DOM엔 유지) */
+.wizard-progress > strong {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* HTML에 추가하는 고정 4단계 라벨 줄 */
+.wizard-progress-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 1px;
+}
+
+.wizard-progress-labels span {
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--silver);
+  text-align: center;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+}
+
+.wizard-progress-labels span:first-child { text-align: left; }
+.wizard-progress-labels span:last-child { text-align: right; }
 
 .wizard-shell #wizard-step-label {
   position: absolute;
@@ -2679,3 +2722,310 @@ body[data-app-mode="staff"] .detail-panel {
     font-size: 1.38rem;
   }
 }
+
+
+/* =====================================================================
+   FACE FILTER 리뷰이벤트 — 디자인 전면 개편 오버라이드
+   (기존 규칙은 보존, 이 블록이 시각만 덮어쓴다. app.js·구조 무수정)
+   브랜드 톤: 무채색 · 덜어냄 · 페필이 · 토스식 인터랙션
+   ===================================================================== */
+
+:root {
+  --ff-ink: #1a1a1a;
+  --ff-muted: #8a8d88;
+  --ff-silver: #a9aba6;
+  --ff-line: #e7e8e4;
+  --ff-soft: #f5f6f3;
+  --ff-base: #fbfcfa;
+  --ff-water: #cdd6d9;
+  --ff-deep: #7c8b90;
+  --ff-gold: #9a8357;
+  --ff-radius: 14px;
+  --ff-radius-lg: 22px;
+  --ff-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---------- 고객 패널 전체 베이스 ---------- */
+#customer-panel .flow-panel.wizard-shell {
+  border: 0.5px solid var(--ff-line);
+  border-radius: var(--ff-radius-lg);
+  background: var(--ff-base);
+  box-shadow: 0 20px 54px rgba(20, 22, 20, 0.07);
+  padding: clamp(18px, 4vw, 26px);
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+#customer-panel .panel-heading h2 {
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* ---------- 세그먼트 진행바 (위에서 정의한 것과 연동) ---------- */
+.wizard-progress-track {
+  background: #e7e8e4;
+}
+.wizard-progress-labels span.is-current {
+  color: var(--ff-ink);
+  font-weight: 700;
+}
+
+/* ---------- STEP 공통 워크플로 카드 ---------- */
+.wizard-page .workflow-step {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  gap: 0;
+}
+.wizard-page .step-number {
+  display: none; /* 세그먼트 바가 단계를 대신 표시하므로 큰 숫자는 제거 */
+}
+.wizard-shell .workflow-step h3 {
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* STEP 라벨(eyebrow) — 각 페이지 상단에 STEP 0X 느낌 부여 */
+.wizard-page[data-wizard-step] .workflow-step h3::before,
+.wizard-page[data-wizard-step] form .wizard-copy h3::before {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--ff-silver);
+  margin-bottom: 6px;
+  line-height: 1;
+}
+.wizard-page[data-wizard-step="register"] .wizard-copy h3::before { content: "STEP 01 · 참여 정보"; }
+.wizard-page[data-wizard-step="review"] h3::before { content: "STEP 02"; }
+.wizard-page[data-wizard-step="draw"] h3::before { content: "STEP 03"; }
+.wizard-page[data-wizard-step="final"] h3::before { content: "STEP 04"; }
+
+/* ---------- 페이지 전환 모션 (토스식 슬라이드) ---------- */
+.wizard-page.is-active {
+  animation: ffSlideIn 0.38s var(--ff-ease);
+}
+@keyframes ffSlideIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 입력 필드 ---------- */
+#customer-panel input[type="text"],
+#customer-panel input[type="tel"],
+#customer-panel input[type="search"] {
+  min-height: 46px;
+  border: 1.5px solid var(--ff-line);
+  border-radius: 11px;
+  background: #fff;
+  font-size: 0.95rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+#customer-panel input:focus {
+  border-color: var(--ff-ink);
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+}
+#customer-panel label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ff-muted);
+  gap: 6px;
+}
+#registration-form .field-grid {
+  grid-template-columns: 1fr;
+}
+.flow-chips span {
+  background: var(--ff-soft);
+  border: 0;
+  border-radius: 10px;
+  color: var(--ff-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* 체크박스 행 */
+#customer-panel .checkbox-row {
+  font-size: 0.82rem;
+  color: var(--ff-muted);
+}
+
+/* ---------- 주요 버튼 ---------- */
+#customer-panel .primary-action,
+#customer-panel .draw-button {
+  min-height: 50px;
+  border-radius: 13px;
+  background: var(--ff-ink);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px rgba(26, 26, 26, 0.16);
+}
+#customer-panel .primary-action:hover,
+#customer-panel .draw-button:not(:disabled):hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+#customer-panel .secondary-action {
+  min-height: 46px;
+  border: 1.5px solid var(--ff-line);
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 600;
+}
+
+/* ---------- STEP 02 포토리뷰 ---------- */
+.review-focus-card {
+  border: 0.5px solid var(--ff-line);
+  border-radius: var(--ff-radius);
+  background: var(--ff-soft);
+  padding: 16px;
+}
+.review-naver-badge {
+  background: #03c75a;
+  color: #fff;
+  border-radius: 11px;
+  font-weight: 800;
+}
+.review-focus-card #open-review:not(:disabled) {
+  background: var(--ff-ink);
+  color: #fff;
+  border: 0;
+}
+
+/* ---------- STEP 03 페필이 뽑기 ---------- */
+.draw-focus-card {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.draw-head h3 { font-size: 1.18rem; font-weight: 800; }
+.mini-game {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px 10px;
+  border: 1px dashed var(--ff-deep);
+  border-radius: 16px;
+  background: linear-gradient(160deg, #fff, var(--ff-soft));
+}
+/* 5개를 3+2로: 4,5번째를 가운데 정렬 */
+.mini-game .drop-choice:nth-child(4) { grid-column: 1 / 2; justify-self: end; margin-right: -6px; }
+.mini-game .drop-choice:nth-child(5) { grid-column: 3 / 4; justify-self: start; margin-left: -6px; }
+
+.drop-choice {
+  border: 0.5px solid var(--ff-line);
+  border-radius: 16px;
+  background: #fff;
+  aspect-ratio: 1 / 1;
+  gap: 2px;
+  padding: 8px;
+  transition: transform 0.3s var(--ff-ease), box-shadow 0.3s ease, border-color 0.2s ease;
+}
+.drop-choice::after { display: none; } /* 기존 물방울 그림자 타원 제거 */
+
+/* 페필이 이미지로 교체 */
+.drop-choice span,
+.mini-game-complete span {
+  width: 82%;
+  height: 82%;
+  border-radius: 0;
+  transform: none;
+  background: url("pepili.png") center/contain no-repeat;
+  box-shadow: none;
+}
+/* 선택 시: 떠오르고 강조 + (표정은 이미지 교체로 표현) */
+.drop-choice.is-selected {
+  border-color: var(--ff-ink);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(124, 139, 144, 0.34);
+  background: #fff;
+}
+.drop-choice.is-selected span {
+  /* 선택 강조는 떠오름·테두리·체크로 표현 (표정 이미지는 추후 교체) */
+  filter: saturate(1.05);
+}
+.drop-choice em {
+  font-size: 0.62rem;
+  color: var(--ff-silver);
+  font-weight: 700;
+}
+.drop-choice.is-selected em { color: var(--ff-gold); }
+
+/* 선택 체크 배지 */
+.drop-choice.is-selected::before {
+  content: "✓";
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 18px; height: 18px;
+  background: var(--ff-ink);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+/* 확률 패널 접기 느낌 — 차분하게 */
+.draw-focus-card .compact-odds {
+  background: var(--ff-soft);
+  border-radius: 11px;
+}
+
+/* ---------- 카카오 배너 (기존 유지하되 톤 정리) ---------- */
+.kakao-banner {
+  background: #fee500;
+  border: 0;
+  border-radius: 14px;
+}
+.kakao-bubble {
+  background: #3c1e1e;
+  color: #fee500;
+}
+
+/* ---------- 모달 다이얼로그 ---------- */
+.benefit-dialog {
+  border-radius: var(--ff-radius-lg);
+  border: 0.5px solid var(--ff-line);
+}
+.benefit-dialog-copy span {
+  color: var(--ff-silver);
+  letter-spacing: 0.18em;
+  font-weight: 700;
+}
+
+/* ---------- 도움말 버튼 ---------- */
+.customer-help-button {
+  color: var(--ff-silver);
+  font-size: 0.78rem;
+}
+
+/* =====================================================================
+   관리자 — 라이트 톤 정리
+   ===================================================================== */
+.stat-card {
+  border: 0.5px solid var(--ff-line);
+  border-radius: var(--ff-radius);
+  background: #fff;
+}
+.stat-card strong { font-weight: 700; }
+.participant-table th {
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--ff-muted);
+  font-weight: 700;
+}
+.participant-table tbody tr.is-selected td {
+  background: var(--ff-soft);
+}
+.admin-toolbar input,
+.admin-toolbar select {
+  border-radius: 9px;
+  border: 0.5px solid var(--ff-line);
+}
+
+/* =====================================================================
+   다크 브랜드 히어로 잔재 정리 (고객 화면은 라이트 유지)
+   ===================================================================== */
