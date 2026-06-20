@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>페이스필터 천호점 리뷰 이벤트 직원 가이드</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    :root {
+      color-scheme: light;
+      --ink: #202120;
+      --ink-2: #3c403d;
+      --muted: #757b76;
+      --quiet: #a1a7a2;
+      --line: #dfe2dc;
+      --paper: #ffffff;
+      --ground: #f3f4f1;
+      --panel: #f8f9f6;
+      --black: #232323;
+      --green: #315b49;
+      --green-soft: #e8f0eb;
+      --blue: #385a78;
+      --blue-soft: #e7eef5;
+      --amber: #96723b;
+      --amber-soft: #fbf0da;
+      --rose: #a95650;
+      --rose-soft: #f8e5e0;
+      --kakao: #fee638;
+      --shadow: 0 24px 70px rgba(30, 32, 30, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #e9ebe7;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(49, 91, 73, 0.1), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(56, 90, 120, 0.08), transparent 30%),
+        #e9ebe7;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .deck {
+      display: grid;
+      gap: 26px;
+      padding: 30px 0;
+    }
+
+    .page {
+      position: relative;
+      overflow: hidden;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 14mm;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(248,249,246,0.86) 100%),
+        radial-gradient(ellipse at 78% 7%, rgba(49,91,73,0.08), transparent 38%);
+      pointer-events: none;
+    }
+
+    .page::after {
+      content: "";
+      position: absolute;
+      right: -36mm;
+      bottom: -43mm;
+      width: 132mm;
+      height: 76mm;
+      border: 1px solid rgba(32, 33, 32, 0.08);
+      border-top-color: transparent;
+      border-radius: 50%;
+      transform: rotate(-5deg);
+      pointer-events: none;
+    }
+
+    .page > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--black);
+    }
+
+    .brand {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink-2);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 58mm;
+      gap: 14mm;
+      align-items: start;
+      margin-top: 17mm;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    h1 {
+      margin-top: 12px;
+      font-size: 38px;
+      line-height: 1.08;
+      font-weight: 900;
+    }
+
+    .lead {
+      max-width: 122mm;
+      margin-top: 14px;
+      color: var(--ink-2);
+      font-size: 15px;
+      line-height: 1.72;
+    }
+
+    .key-message {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .key-card {
+      min-height: 84px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .key-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .key-card span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .icon {
+      display: inline-grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--black);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .icon.green {
+      background: var(--green);
+    }
+
+    .icon.blue {
+      background: var(--blue);
+    }
+
+    .icon.amber {
+      background: var(--amber);
+    }
+
+    .icon.rose {
+      background: var(--rose);
+    }
+
+    .qr-panel {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .qr-box {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .qr-box img {
+      width: 84%;
+      height: 84%;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .qr-panel h3 {
+      margin-top: 13px;
+      font-size: 17px;
+    }
+
+    .qr-panel p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .link-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .link-card {
+      padding: 10px 11px;
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .link-card strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+
+    .link-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 9.4px;
+      word-break: break-all;
+    }
+
+    .section {
+      margin-top: 13mm;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 22px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      max-width: 74mm;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .flow-card {
+      position: relative;
+      min-height: 128px;
+      padding: 14px 13px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+    }
+
+    .flow-card:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      right: -9px;
+      width: 16px;
+      height: 16px;
+      border-top: 1px solid #c9cec7;
+      border-right: 1px solid #c9cec7;
+      background: #fff;
+      transform: rotate(45deg);
+    }
+
+    .step-num {
+      display: inline-grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      background: var(--black);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .flow-card h3,
+    .check-card h3,
+    .status-card h3,
+    .case-card h3,
+    .field-card h3 {
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .flow-card p,
+    .check-card p,
+    .status-card p,
+    .case-card p,
+    .field-card p,
+    .note-card p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+    .check-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .check-head {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 11px;
+      align-items: start;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eceee9;
+    }
+
+    .check-num {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 9px;
+      align-items: center;
+      min-height: 32px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .check-row b {
+      font-size: 10.5px;
+      font-weight: 900;
+    }
+
+    .check-row span {
+      color: var(--ink-2);
+      font-size: 10.8px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 9px;
+    }
+
+    .status-card {
+      min-height: 136px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .muted {
+      background: #edf0eb;
+      color: #555b56;
+    }
+
+    .green-soft {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .blue-soft {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .amber-soft {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .rose-soft {
+      background: var(--rose-soft);
+      color: var(--rose);
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .note-card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .note-card.good {
+      border-color: #c9dccf;
+      background: linear-gradient(180deg, #fff 0%, var(--green-soft) 100%);
+    }
+
+    .note-card.warn {
+      border-color: #edcec6;
+      background: linear-gradient(180deg, #fff 0%, var(--rose-soft) 100%);
+    }
+
+    .note-title {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      margin-bottom: 13px;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-list li {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      color: var(--ink-2);
+      font-size: 11.5px;
+    }
+
+    .mark {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--black);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .kakao {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 15px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid #ebd42b;
+      border-radius: 22px;
+      background: var(--kakao);
+    }
+
+    .talk {
+      display: grid;
+      position: relative;
+      width: 72px;
+      height: 58px;
+      place-items: center;
+      border-radius: 16px;
+      background: #231f20;
+      color: var(--kakao);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .talk::after {
+      content: "";
+      position: absolute;
+      left: 17px;
+      bottom: -8px;
+      border-top: 12px solid #231f20;
+      border-right: 13px solid transparent;
+    }
+
+    .kakao strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.17;
+      font-weight: 900;
+    }
+
+    .kakao span {
+      display: block;
+      margin-top: 6px;
+      color: #514707;
+      font-size: 12px;
+    }
+
+    .kakao-pill {
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.25fr;
+      gap: 10px;
+    }
+
+    .field-card {
+      min-height: 148px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .field-card .badge {
+      margin-bottom: 12px;
+    }
+
+    .example {
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 14px;
+      background: var(--panel);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .case-card {
+      min-height: 132px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .case-card h3 {
+      margin-top: 12px;
+    }
+
+    .script {
+      padding: 18px;
+      border-radius: 22px;
+      background: var(--black);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .script small {
+      display: block;
+      margin-top: 10px;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 10px;
+    }
+
+    .footer {
+      position: absolute;
+      right: 14mm;
+      bottom: 10mm;
+      left: 14mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      color: var(--quiet);
+      font-size: 9.5px;
+    }
+
+    @media print {
+      html,
+      body {
+        background: #fff;
+      }
+
+      .deck {
+        display: block;
+        padding: 0;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        box-shadow: none;
+        break-after: page;
+      }
+
+      .page:last-child {
+        break-after: auto;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .deck {
+        padding: 0;
+      }
+
+      .page {
+        width: 100%;
+        min-height: auto;
+        padding: 24px;
+      }
+
+      .hero,
+      .key-message,
+      .flow,
+      .check-grid,
+      .status-grid,
+      .matrix,
+      .input-grid,
+      .case-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-card::after {
+        display: none;
+      }
+
+      .section-head {
+        display: grid;
+      }
+
+      .section-head p {
+        text-align: left;
+      }
+
+      .footer {
+        position: static;
+        margin-top: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="page">
+      <header class="topbar">
+        <p class="brand">FACE FILTER CHEONHO · REVIEW EVENT</p>
+        <span class="label">직원 현장용</span>
+      </header>
+
+      <div class="hero">
+        <div>
+          <span class="eyebrow">내부 공유용 가이드</span>
+          <h1>리뷰 이벤트<br>직원 사용 가이드</h1>
+          <p class="lead">고객은 QR로 직접 진행하고, 직원은 리뷰 화면과 이벤트 결과 화면을 확인한 뒤 현장 기록과 지급완료만 처리합니다.</p>
+
+          <div class="key-message">
+            <article class="key-card">
+              <span class="icon green">QR</span>
+              <strong>고객은 QR로 시작</strong>
+              <span>동일 QR이어도 고객별 세션 생성</span>
+            </article>
+            <article class="key-card">
+              <span class="icon blue">2</span>
+              <strong>직원은 화면 2개 확인</strong>
+              <span>네이버 리뷰 + 이벤트 결과</span>
+            </article>
+            <article class="key-card">
+              <span class="icon">끝</span>
+              <strong>지급완료가 마지막</strong>
+              <span>실제 지급 후에만 클릭</span>
+            </article>
+          </div>
+        </div>
+
+        <aside class="qr-panel">
+          <div class="qr-box">
+            <img src="facefilter-cheonho-customer-qr.png" alt="고객용 리뷰 이벤트 QR">
+          </div>
+          <h3>고객용 QR</h3>
+          <p>배너에 넣는 QR입니다. 고객 휴대폰으로 진행합니다.</p>
+          <div class="link-list">
+            <div class="link-card">
+              <strong>직원 페이지</strong>
+              <span>https://project-q5ykg.vercel.app/?mode=staff</span>
+            </div>
+            <div class="link-card">
+              <strong>관리자 페이지</strong>
+              <span>https://project-q5ykg.vercel.app/?mode=admin</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>기본 진행 흐름</h2>
+          <p>고객 진행 우선. 직원 개입은 마지막 확인과 예외 처리만 진행합니다.</p>
+        </div>
+        <div class="flow">
+          <article class="flow-card">
+            <span class="step-num">1</span>
+            <h3>QR 안내</h3>
+            <p>고객이 이름, 휴대폰 뒤 4자리, 네이버 ID/닉네임을 입력합니다.</p>
+          </article>
+          <article class="flow-card">
+            <span class="step-num">2</span>
+            <h3>리뷰 작성</h3>
+            <p>네이버 리뷰 작성 후 이벤트 화면으로 돌아오도록 안내합니다.</p>
+          </article>
+          <article class="flow-card">
+            <span class="step-num">3</span>
+            <h3>상품뽑기</h3>
+            <p>고객이 직접 물방울을 선택합니다. 결과는 고정됩니다.</p>
+          </article>
+          <article class="flow-card">
+            <span class="step-num">4</span>
+            <h3>추가혜택</h3>
+            <p>카톡 채널 버튼을 누르면 애프터케어 시트팩이 추가됩니다.</p>
+          </article>
+          <article class="flow-card">
+            <span class="step-num">5</span>
+            <h3>직원 확인</h3>
+            <p>리뷰 화면과 결과 화면 확인 후 현장 기록을 남깁니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>직원이 꼭 볼 화면</h2>
+          <p>결과 화면만 보고 지급하지 않습니다.</p>
+        </div>
+        <div class="check-grid">
+          <article class="check-card">
+            <div class="check-head">
+              <span class="check-num">1</span>
+              <div>
+                <h3>네이버 포토리뷰 화면</h3>
+                <p>실제 리뷰 작성 여부 확인</p>
+              </div>
+            </div>
+            <div class="check-list">
+              <div class="check-row"><b>확인</b><span>사진 리뷰 작성 화면</span></div>
+              <div class="check-row"><b>주의</b><span>결과 화면만 보고 지급하지 않음</span></div>
+            </div>
+          </article>
+          <article class="check-card">
+            <div class="check-head">
+              <span class="check-num">2</span>
+              <div>
+                <h3>이벤트 결과 화면</h3>
+                <p>상품명, 확인코드, 추가혜택 확인</p>
+              </div>
+            </div>
+            <div class="check-list">
+              <div class="check-row"><b>확인</b><span>당첨상품 + 확인코드</span></div>
+              <div class="check-row"><b>추가</b><span>카톡 혜택 적용 여부</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>FACE FILTER CHEONHO</span>
+        <span>1 / 4 · 고객 흐름</span>
+      </footer>
+    </section>
+
+    <section class="page">
+      <header class="topbar">
+        <p class="brand">FACE FILTER CHEONHO · STAFF CHECK</p>
+        <span class="label">상태별 대응</span>
+      </header>
+
+      <section class="section" style="margin-top: 18mm;">
+        <div class="section-head">
+          <h2>상태 배지별 행동판</h2>
+          <p>직원 페이지 표에서 상태를 보고 바로 다음 행동을 선택합니다.</p>
+        </div>
+        <div class="status-grid">
+          <article class="status-card">
+            <span class="badge muted">등록</span>
+            <h3>리뷰 시작 전</h3>
+            <p>리뷰 작성 버튼부터 안내합니다.</p>
+          </article>
+          <article class="status-card">
+            <span class="badge rose-soft">리뷰 작성/복귀 전</span>
+            <h3>화면 복귀 필요</h3>
+            <p>QR 재진입 후 같은 정보 입력을 안내합니다.</p>
+          </article>
+          <article class="status-card">
+            <span class="badge blue-soft">뽑기 가능</span>
+            <h3>일반 뽑기 우선</h3>
+            <p>대신뽑기보다 일반 뽑기 버튼을 먼저 사용합니다.</p>
+          </article>
+          <article class="status-card">
+            <span class="badge amber-soft">직원 확인 대기</span>
+            <h3>지급 전 확인</h3>
+            <p>리뷰 화면과 결과 화면을 함께 확인합니다.</p>
+          </article>
+          <article class="status-card">
+            <span class="badge green-soft">지급완료</span>
+            <h3>처리 종료</h3>
+            <p>고객 세션이 종료되어 추가 진행하지 않습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="matrix">
+          <article class="note-card good">
+            <div class="note-title">
+              <span class="icon green">확인</span>
+              <h2>지급완료 전 체크</h2>
+            </div>
+            <ul class="task-list">
+              <li><span class="mark">1</span><span>네이버 포토리뷰 작성 화면 확인</span></li>
+              <li><span class="mark">2</span><span>결과 화면의 상품명과 확인코드 확인</span></li>
+              <li><span class="mark">3</span><span>카톡 추가혜택 적용 여부 확인</span></li>
+              <li><span class="mark">4</span><span>담당자, 차트번호, 지급 메모 저장</span></li>
+              <li><span class="mark">5</span><span>실제 상품 지급 후 지급완료 클릭</span></li>
+            </ul>
+          </article>
+          <article class="note-card warn">
+            <div class="note-title">
+              <span class="icon rose">예외</span>
+              <h2>대신뽑기 기준</h2>
+            </div>
+            <ul class="task-list">
+              <li><span class="mark">1</span><span>직원이 리뷰 작성 화면을 직접 확인한 경우만 사용</span></li>
+              <li><span class="mark">2</span><span>고객 휴대폰에서 화면 복귀가 계속 안 될 때 사용</span></li>
+              <li><span class="mark">3</span><span>일반 뽑기 버튼이 보이면 일반 뽑기 우선</span></li>
+              <li><span class="mark">4</span><span>지급 메모에 사유를 짧게 남김</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>카톡 채널 추가 혜택</h2>
+          <p>고객이 이벤트 화면에서 버튼을 누른 기록 기준으로 집계합니다.</p>
+        </div>
+        <div class="kakao">
+          <div class="talk">TALK</div>
+          <div>
+            <strong>카톡 채널 추가하면<br>애프터케어 시트팩 1매</strong>
+            <span>배너 클릭 또는 이미 채널 추가했어요 버튼을 누르면 추가혜택으로 표시됩니다.</span>
+          </div>
+          <div class="kakao-pill">추가혜택 적용</div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>FACE FILTER CHEONHO</span>
+        <span>2 / 4 · 상태 대응</span>
+      </footer>
+    </section>
+
+    <section class="page">
+      <header class="topbar">
+        <p class="brand">FACE FILTER CHEONHO · ON-SITE RECORD</p>
+        <span class="label">현장 기록</span>
+      </header>
+
+      <section class="section" style="margin-top: 18mm;">
+        <div class="section-head">
+          <h2>직원 페이지 필수 입력</h2>
+          <p>지급완료 전 현장 기록에 남겨야 하는 항목입니다.</p>
+        </div>
+        <div class="input-grid">
+          <article class="field-card">
+            <span class="badge blue-soft">담당자</span>
+            <h3>실제 처리 직원</h3>
+            <p>지급 또는 최종 확인을 처리한 직원 이름을 입력합니다.</p>
+            <div class="example">예: 홍길동</div>
+          </article>
+          <article class="field-card">
+            <span class="badge blue-soft">차트번호</span>
+            <h3>원내 고객 차트번호</h3>
+            <p>고객 차트와 지급 내역을 연결하기 위한 필수 정보입니다.</p>
+            <div class="example">예: 6321</div>
+          </article>
+          <article class="field-card">
+            <span class="badge amber-soft">지급 메모</span>
+            <h3>특이사항 노티</h3>
+            <p>화면 복귀 실패, 대신뽑기, 카톡 확인, 별도 안내가 있으면 짧게 남깁니다.</p>
+            <div class="example">예: 리뷰 확인. 복귀 실패로 대신뽑기.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>PC 앞이 아닐 때</h2>
+          <p>고객 앞에서 1차 안내 후 PC에서 확인 처리합니다.</p>
+        </div>
+        <div class="case-grid">
+          <article class="case-card">
+            <span class="badge blue-soft">고객 앞</span>
+            <h3>먼저 이어가기 안내</h3>
+            <p>QR을 다시 찍고 같은 이름, 같은 번호, 같은 네이버 ID/닉네임을 입력하게 안내합니다.</p>
+          </article>
+          <article class="case-card">
+            <span class="badge amber-soft">PC 복귀</span>
+            <h3>고객 검색</h3>
+            <p>직원 페이지에서 이름, 휴대폰 뒤 4자리, 네이버 닉네임으로 검색 후 고객을 선택합니다.</p>
+          </article>
+          <article class="case-card">
+            <span class="badge green-soft">해결 후 복귀</span>
+            <h3>확인 후 지급</h3>
+            <p>진행 위치 확인 후 필요 시 대신뽑기, 메모, 차트번호 저장 후 고객에게 돌아갑니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>FACE FILTER CHEONHO</span>
+        <span>3 / 4 · 현장 기록</span>
+      </footer>
+    </section>
+
+    <section class="page">
+      <header class="topbar">
+        <p class="brand">FACE FILTER CHEONHO · TROUBLE SUPPORT</p>
+        <span class="label">문제 대응</span>
+      </header>
+
+      <section class="section" style="margin-top: 18mm;">
+        <div class="section-head">
+          <h2>고객이 막혔을 때</h2>
+          <p>긴 설명보다 바로 이 순서로 처리합니다.</p>
+        </div>
+        <div class="case-grid">
+          <article class="case-card">
+            <span class="badge rose-soft">화면을 못 찾음</span>
+            <h3>QR 다시 찍기</h3>
+            <p>같은 이름, 같은 번호, 같은 네이버 ID/닉네임을 입력하면 이어집니다.</p>
+          </article>
+          <article class="case-card">
+            <span class="badge amber-soft">이미 참여자</span>
+            <h3>입력값 3개 확인</h3>
+            <p>이름, 휴대폰 뒤 4자리, 네이버 ID/닉네임이 모두 같아야 합니다.</p>
+          </article>
+          <article class="case-card">
+            <span class="badge blue-soft">뽑기가 안 됨</span>
+            <h3>리뷰 화면 확인</h3>
+            <p>리뷰 작성 화면 확인 후 필요할 때만 대신뽑기와 메모를 사용합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>PC 확인이 필요한 상황</h2>
+          <p>고객 앞에서 오래 붙잡지 말고 정보를 받고 PC에서 확인합니다.</p>
+        </div>
+        <div class="matrix">
+          <article class="note-card">
+            <h2>고객 앞에서 받을 정보</h2>
+            <p>성함, 휴대폰 뒤 4자리, 네이버 ID 또는 닉네임. 가능하면 결과 화면 확인코드나 당첨상품도 함께 확인합니다.</p>
+          </article>
+          <article class="note-card">
+            <h2>PC에서 확인할 것</h2>
+            <p>직원 페이지에서 고객을 검색하고 진행 위치, 뽑기 가능 여부, 지급완료 여부, 메모 필요 여부를 확인합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>고객 안내 멘트</h2>
+          <p>고객에게 짧고 동일하게 안내합니다.</p>
+        </div>
+        <div class="script">
+          QR 찍고 성함, 휴대폰 뒤 4자리, 네이버 닉네임을 입력해 주세요.<br>
+          리뷰 작성 후 이벤트 화면으로 돌아오시면 상품뽑기가 진행됩니다.<br>
+          마지막에 리뷰 화면과 결과 화면을 함께 보여주시면 상품 지급 도와드릴게요.
+          <small>화면을 잃어버렸을 때: QR을 다시 찍고 같은 정보를 입력하면 이어서 진행됩니다.</small>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>FACE FILTER CHEONHO</span>
+        <span>4 / 4 · 문제 대응</span>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>

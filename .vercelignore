@@ -1,0 +1,10 @@
+.tools
+.tools/**
+.vercel
+.vercel/**
+.gitignore
+facefilter-review-qr.png
+README.md
+SUPABASE_SETUP.md
+VERCEL_DEPLOY.md
+supabase/*.sql

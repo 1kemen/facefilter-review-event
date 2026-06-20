@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>피부과 리뷰이벤트 MVP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">FACE FILTER</p>
+      <h1>천호점 리뷰 이벤트</h1>
+    </div>
+    <nav class="tabs" aria-label="화면 전환">
+      <button class="tab is-active" data-tab="customer" type="button">고객</button>
+      <button class="tab" data-tab="admin" type="button" id="admin-tab-label">관리자</button>
+      <button class="tab" data-tab="audit" type="button" data-owner-only>감사로그</button>
+      <button class="tab" data-tab="prizes" type="button" data-owner-only>상품설정</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="tab-panel is-active" id="customer-panel" data-panel="customer">
+      <section class="panel flow-panel wizard-shell" aria-live="polite">
+        <div class="panel-heading">
+          <div>
+            <h2>리뷰 이벤트</h2>
+          </div>
+          <span class="status-pill" id="selected-status" hidden>미선택</span>
+        </div>
+
+        <div class="wizard-progress" aria-label="진행 단계">
+          <div class="wizard-progress-track">
+            <span id="wizard-progress"></span>
+          </div>
+          <strong id="wizard-step-label">참여 정보</strong>
+        </div>
+
+        <div class="selected-customer" id="selected-customer" hidden>
+          참여 고객을 등록하거나 관리자 화면에서 고객을 선택하세요.
+        </div>
+
+        <div class="wizard-pages">
+          <section class="wizard-page is-active" data-wizard-step="register">
+            <div class="workflow-step">
+              <div class="step-number">1</div>
+              <form id="registration-form" autocomplete="off">
+                <div class="wizard-copy">
+                  <h3>참여 정보</h3>
+                  <p class="wizard-subcopy">리뷰 확인에 필요한 정보만 간단히 입력해 주세요.</p>
+                  <div class="flow-chips" aria-label="진행 순서">
+                    <span>리뷰 작성</span>
+                    <span>상품뽑기</span>
+                    <span>직원 확인</span>
+                  </div>
+                </div>
+
+                <label>
+                  이름
+                  <input id="customer-name" name="customerName" type="text" placeholder="예: 김민지" required>
+                </label>
+                <div class="field-grid">
+                  <label>
+                    휴대폰 뒤 4자리
+                    <input id="phone-last4" name="phoneLast4" type="tel" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="1234" required>
+                  </label>
+                  <label>
+                    네이버 리뷰 닉네임
+                    <input id="naver-id" name="naverId" type="text" autocomplete="off" placeholder="예: 리뷰에 보이는 닉네임" required>
+                  </label>
+                </div>
+                <p class="field-help field-grid-help">리뷰 화면에 보이는 닉네임을 입력해 주세요. 닉네임을 모르면 네이버 ID를 입력해 주세요.</p>
+                <input id="visit-date" name="visitDate" type="hidden">
+                <input id="chart-no" name="chartNo" type="hidden">
+                <label class="checkbox-row">
+                  <input id="consent" name="consent" type="checkbox" required>
+                  <span>이벤트 정보 저장에 동의합니다.</span>
+                </label>
+                <button class="primary-action" type="submit">참여 시작</button>
+                <p class="form-message" id="registration-message" role="status"></p>
+              </form>
+            </div>
+          </section>
+
+          <section class="wizard-page" data-wizard-step="review">
+            <article class="workflow-step review-workflow" id="review-step">
+              <div class="step-number">2</div>
+              <div class="review-focus-card">
+                <div class="review-brand-row">
+                  <span class="review-naver-badge" aria-hidden="true">N</span>
+                  <div>
+                    <h3>포토리뷰</h3>
+                    <span>네이버 사진 리뷰 작성</span>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button class="secondary-action" id="open-review" type="button" disabled>네이버 리뷰 작성하기</button>
+                </div>
+                <p class="helper-copy compact micro-status" id="review-open-status"></p>
+                <button class="primary-action review-done-action" id="photo-review-done" type="button" hidden>작성 완료</button>
+              </div>
+            </article>
+          </section>
+
+          <section class="wizard-page" data-wizard-step="draw">
+            <article class="workflow-step draw-workflow" id="draw-step">
+              <div class="step-number">3</div>
+              <div class="draw-focus-card">
+                <div class="draw-head">
+                  <h3>상품뽑기</h3>
+                  <span>물방울 1개 선택</span>
+                </div>
+                <div class="mini-game" id="mini-game" aria-label="물방울 미니게임"></div>
+                <button class="draw-button" id="run-draw" type="button" disabled>물방울 선택</button>
+                <div class="draw-result" id="draw-result" hidden></div>
+                <section class="odds-panel compact-odds" id="customer-prize-odds" aria-label="오늘의 상품 확률"></section>
+              </div>
+            </article>
+          </section>
+
+          <section class="wizard-page" data-wizard-step="final">
+            <article class="workflow-step">
+              <div class="step-number">4</div>
+              <div>
+                <h3>결과 확인</h3>
+                <div class="final-summary" id="final-summary"></div>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <button class="customer-help-button" id="open-customer-help" type="button">진행이 안 되나요?</button>
+      </section>
+
+      <div class="benefit-modal" id="customer-help-modal" hidden>
+        <div class="benefit-dialog help-dialog" role="dialog" aria-modal="true" aria-labelledby="customer-help-title">
+          <button class="modal-close" id="close-customer-help" type="button" aria-label="닫기">×</button>
+          <div class="benefit-dialog-copy">
+            <span>도움말</span>
+            <h3 id="customer-help-title">진행이 안 될 때</h3>
+          </div>
+          <div class="help-list">
+            <article>
+              <span aria-hidden="true">01</span>
+              <strong>이벤트 화면을 못 찾겠어요</strong>
+              <p>QR을 다시 찍고 같은 정보를 입력하면 기존 진행 화면으로 이어집니다.</p>
+            </article>
+            <article>
+              <span aria-hidden="true">02</span>
+              <strong>상품뽑기가 안 보여요</strong>
+              <p>네이버 리뷰 작성 후 이벤트 화면으로 돌아와 작성 완료를 눌러주세요.</p>
+            </article>
+            <article>
+              <span aria-hidden="true">03</span>
+              <strong>이미 참여했다고 나와요</strong>
+              <p>이름, 휴대폰 뒤 4자리, 리뷰 닉네임을 처음과 똑같이 입력해 주세요.</p>
+            </article>
+          </div>
+          <div class="help-footnote">계속 안 되면 직원에게 화면을 보여주세요.</div>
+          <button class="primary-action benefit-action" id="customer-help-primary" type="button">확인했어요</button>
+        </div>
+      </div>
+
+      <div class="benefit-modal" id="review-exit-modal" hidden>
+        <div class="benefit-dialog review-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="review-exit-title">
+          <button class="modal-close" id="close-review-exit" type="button" aria-label="닫기">×</button>
+          <div class="benefit-dialog-copy">
+            <span>REVIEW</span>
+            <h3 id="review-exit-title">리뷰 작성 후<br>이벤트 화면으로 돌아오기</h3>
+          </div>
+          <div class="review-route-map" aria-label="리뷰 작성 진행 순서">
+            <article class="route-card">
+              <span class="route-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"></path>
+                  <path d="M9 18h6"></path>
+                  <path d="M9 6h6"></path>
+                  <path d="M9 10h6"></path>
+                </svg>
+              </span>
+              <b>이벤트 화면</b>
+              <span>닫지 말고 유지</span>
+            </article>
+            <i class="route-arrow" aria-hidden="true">→</i>
+            <article class="route-card">
+              <span class="route-icon naver-icon" aria-hidden="true">N</span>
+              <b>네이버 리뷰</b>
+              <span>포토리뷰 작성</span>
+            </article>
+            <i class="route-arrow" aria-hidden="true">→</i>
+            <article class="route-card">
+              <span class="route-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M20 12v8H4v-8"></path>
+                  <path d="M2 7h20v5H2Z"></path>
+                  <path d="M12 22V7"></path>
+                  <path d="M12 7H7.5A2.5 2.5 0 1 1 10 4.5c0 1.7-2 2.5-2 2.5"></path>
+                  <path d="M12 7h4.5A2.5 2.5 0 1 0 14 4.5c0 1.7 2 2.5 2 2.5"></path>
+                </svg>
+              </span>
+              <b>상품뽑기</b>
+              <span>이벤트 화면에서 진행</span>
+            </article>
+          </div>
+          <div class="review-safe-note">
+            <strong>화면을 못 찾으면?</strong>
+            <span>QR을 다시 찍고 같은 정보를 입력하면 이어서 진행됩니다.</span>
+          </div>
+          <button class="primary-action benefit-action" id="confirm-review-exit" type="button">네이버 리뷰 작성하기</button>
+        </div>
+      </div>
+
+      <div class="benefit-modal" id="kakao-benefit-modal" hidden>
+        <div class="benefit-dialog kakao-dialog" role="dialog" aria-modal="true" aria-labelledby="kakao-benefit-title">
+          <button class="modal-close" id="close-kakao-benefit" type="button" aria-label="닫기">×</button>
+          <div class="benefit-dialog-copy">
+            <span>오늘의 추가 혜택</span>
+            <h3 id="kakao-benefit-title">카톡 채널 추가하고<br>애프터케어 시트팩 1매</h3>
+          </div>
+          <button class="kakao-banner" id="kakao-banner" type="button" aria-label="카카오톡 채널 추가하고 혜택 적용">
+            <div class="kakao-bubble" aria-hidden="true">TALK</div>
+            <div>
+              <span>FACE FILTER 천호점</span>
+              <strong>채널 추가하고 혜택 적용</strong>
+              <p><span>기존 추가 고객도 혜택 적용</span><span>주의사항·케어 안내 받기</span></p>
+            </div>
+          </button>
+          <button class="secondary-action existing-kakao-action" id="already-kakao" type="button">이미 채널 추가했어요</button>
+          <p class="helper-copy compact benefit-status" id="kakao-benefit-status"></p>
+          <button class="text-action" id="skip-kakao-benefit" type="button">괜찮아요</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="admin-panel" data-panel="admin">
+      <section class="panel admin-auth-card" id="admin-auth-card">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker" id="admin-login-kicker">Admin Login</p>
+            <h2 id="admin-login-title">관리자 로그인</h2>
+          </div>
+          <span class="status-pill muted" id="admin-auth-status">로그인 필요</span>
+        </div>
+        <form class="admin-login-form" id="admin-login-form" autocomplete="on">
+          <label>
+            이메일
+            <input id="admin-email" name="email" type="email" autocomplete="username" placeholder="hayashisan229@gmail.com" required>
+          </label>
+          <label>
+            비밀번호
+            <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="primary-action" type="submit">로그인</button>
+        </form>
+        <div class="row-actions admin-session-actions" id="admin-session-actions" hidden>
+          <button class="secondary-action" id="refresh-admin-data" type="button">새로고침</button>
+          <button class="small-action" id="admin-logout" type="button">로그아웃</button>
+        </div>
+        <p class="form-message" id="admin-auth-message" role="status"></p>
+      </section>
+
+      <div class="stats-grid" id="stats-grid" data-admin-protected></div>
+      <section class="panel maintenance-card" id="maintenance-card" data-admin-protected data-owner-only></section>
+      <div class="admin-toolbar" data-admin-protected>
+        <label class="search-field">
+          검색
+          <input id="search-input" type="search" placeholder="고객명, 확인코드, 휴대폰 뒤 4자리, 리뷰 닉네임">
+        </label>
+        <label>
+          상태
+          <select id="status-filter">
+            <option value="all">전체</option>
+            <option value="registered">등록</option>
+            <option value="selfConfirmed">리뷰 완료</option>
+            <option value="drawn">상품 당첨</option>
+            <option value="gifted">증정 완료</option>
+            <option value="flagged">확인 필요</option>
+          </select>
+        </label>
+        <button class="secondary-action" id="export-csv" type="button">CSV 내보내기</button>
+      </div>
+      <div class="admin-layout" data-admin-protected>
+        <section class="panel table-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker" id="admin-panel-kicker">Admin</p>
+              <h2 id="admin-panel-title">참여자 관리</h2>
+            </div>
+          </div>
+          <div class="table-wrap participant-table-wrap">
+            <table class="participant-table">
+              <thead>
+                <tr>
+                  <th>고객</th>
+                  <th>상태</th>
+                  <th>리뷰</th>
+                  <th>상품</th>
+                  <th>액션</th>
+                </tr>
+              </thead>
+              <tbody id="participant-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail-panel" id="detail-panel">
+          <div class="empty-detail">참여자를 선택하면 상세 정보가 표시됩니다.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="audit-panel" data-panel="audit" data-owner-only>
+      <section class="panel" data-admin-protected>
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Audit</p>
+            <h2>감사 로그와 어뷰징 방어</h2>
+          </div>
+          <span class="status-pill" id="audit-health">검증 전</span>
+        </div>
+        <div class="guardrail-grid" id="guardrail-grid"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>시간</th>
+                <th>액션</th>
+                <th>대상</th>
+                <th>상세</th>
+                <th>해시</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="prizes-panel" data-panel="prizes" data-owner-only>
+      <section class="panel" data-admin-protected>
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Prize</p>
+            <h2>상품 구성과 확률</h2>
+          </div>
+          <button class="secondary-action" id="reset-demo" type="button">데모 초기화</button>
+        </div>
+        <p class="helper-copy">재고가 0개인 상품은 뽑기 후보에서 자동 제외됩니다. 고객에게는 상품명과 공개 확률만 표시됩니다.</p>
+        <form class="settings-form" id="channel-form" autocomplete="off">
+          <label>
+            카카오톡 채널 링크
+            <input id="kakao-channel-url" name="kakaoChannelUrl" type="url" placeholder="https://pf.kakao.com/_...">
+          </label>
+          <button class="secondary-action" type="submit">링크 저장</button>
+        </form>
+        <form class="prize-form" id="prize-form" autocomplete="off">
+          <label>
+            상품명
+            <input id="new-prize-name" name="prizeName" type="text" placeholder="예: 수분 진정 관리" required>
+          </label>
+          <label class="prize-description-field">
+            상품 설명
+            <input id="new-prize-description" name="prizeDescription" type="text" placeholder="예: 수분/진정 중심의 기본 관리">
+          </label>
+          <label>
+            재고
+            <input id="new-prize-stock" name="prizeStock" type="number" min="1" step="1" value="1" required>
+          </label>
+          <label>
+            확률 가중치
+            <input id="new-prize-weight" name="prizeWeight" type="number" min="1" step="1" value="10" required>
+          </label>
+          <button class="primary-action" type="submit">상품 추가</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>상품명</th>
+                <th>상품 설명</th>
+                <th>운영 재고</th>
+                <th>지급/당첨</th>
+                <th>가중치</th>
+                <th>공개확률</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="prize-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <template id="stat-template">
+    <article class="stat-card">
+      <p></p>
+      <strong></strong>
+    </article>
+  </template>
+
+  <script src="supabase-config.js"></script>
+  <script src="supabase/supabase-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
