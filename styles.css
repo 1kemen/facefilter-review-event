@@ -608,32 +608,37 @@ textarea {
   position: relative;
   height: 4px;
   border-radius: 999px;
-  overflow: visible;
-  background:
-    linear-gradient(90deg, var(--line) 0 0) ,
-    #e7e8e4;
-  /* 4칸 구분: 25% 지점마다 배경색 틈을 만든다 */
-  -webkit-mask:
-    linear-gradient(90deg,
-      #000 0 calc(25% - 3px), transparent calc(25% - 3px) 25%,
-      #000 25% calc(50% - 3px), transparent calc(50% - 3px) 50%,
-      #000 50% calc(75% - 3px), transparent calc(75% - 3px) 75%,
-      #000 75% 100%);
-  mask:
-    linear-gradient(90deg,
-      #000 0 calc(25% - 3px), transparent calc(25% - 3px) 25%,
-      #000 25% calc(50% - 3px), transparent calc(50% - 3px) 50%,
-      #000 50% calc(75% - 3px), transparent calc(75% - 3px) 75%,
-      #000 75% 100%);
+  overflow: hidden;
+  background: #e7e8e4;
 }
 
+/* 4칸 구분선: 트랙 위에 배경색 틈을 덮어 칸을 나눈다 */
+.wizard-progress-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg,
+      transparent 0 calc(25% - 3px), var(--ff-base, #fbfcfa) calc(25% - 3px) 25%,
+      transparent 25% calc(50% - 3px), var(--ff-base, #fbfcfa) calc(50% - 3px) 50%,
+      transparent 50% calc(75% - 3px), var(--ff-base, #fbfcfa) calc(75% - 3px) 75%,
+      transparent 75% 100%);
+  z-index: 2;
+}
+
+.wizard-progress-track {
+  position: relative;
+}
 .wizard-progress-track span {
   display: block;
   width: 0;
   height: 100%;
-  border-radius: inherit;
+  border-radius: 0;
   background: var(--ink);
-  transition: width 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  transition: width 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* app.js가 갱신하는 단일 단계명 라벨은 시각적으로 숨긴다
@@ -3319,4 +3324,75 @@ input.ff-slot-input {
     transform: translateY(-3px);
     border-color: var(--ff-deep);
   }
+}
+
+
+/* =====================================================================
+   디테일 보정 — 글씨 가독성 (배경과 톤 비슷한 문제 해결)
+   ===================================================================== */
+/* 진행바 라벨: 비활성도 좀 더 또렷하게 */
+.wizard-progress-labels span {
+  color: var(--ff-muted);
+  font-weight: 600;
+}
+.wizard-progress-labels span.is-current {
+  color: var(--ff-ink);
+  font-weight: 800;
+}
+/* 슬롯 eyebrow / 카운터 또렷하게 */
+.ff-slot-eyebrow {
+  color: var(--ff-muted);
+  font-weight: 800;
+}
+.ff-slot-count {
+  color: var(--ff-muted);
+  font-weight: 600;
+}
+/* 칩 라벨/값 대비 강화 */
+.ff-chip-label {
+  color: var(--ff-muted);
+  font-weight: 600;
+}
+.ff-chip-edit {
+  color: var(--ff-deep);
+}
+/* 힌트 문구 — 너무 연하지 않게 */
+.ff-slot-hint {
+  color: var(--ff-muted);
+}
+/* STEP 라벨 eyebrow 또렷하게 */
+.wizard-page[data-wizard-step] .workflow-step h3::before,
+.wizard-page[data-wizard-step] form .wizard-copy h3::before {
+  color: var(--ff-muted);
+  font-weight: 800;
+}
+/* 인트로 ①②③ 라벨 */
+.ff-intro-step span {
+  color: var(--ff-muted);
+  font-weight: 600;
+}
+.ff-intro-sub {
+  color: var(--ff-muted);
+}
+/* 도움말 버튼도 약간 또렷 */
+.customer-help-button {
+  color: var(--ff-muted);
+}
+
+
+/* 슬롯 제출 실패 메시지 (app.js 에러를 슬롯에 노출) */
+.ff-slot-message {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  background: var(--ff-soft);
+  color: var(--ff-muted);
+}
+.ff-slot-message.is-danger {
+  background: #faf0ef;
+  border: 0.5px solid rgba(155, 74, 66, 0.25);
+  color: #9b4a42;
+  font-weight: 500;
 }

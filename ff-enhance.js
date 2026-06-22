@@ -224,6 +224,36 @@
       state.idx = 0;
       renderSlot(true);
     });
+
+    // app.js가 #registration-message에 띄우는 에러를 슬롯 화면에도 노출
+    // (이름이 이니셜 같거나 검증 실패 시 사용자가 이유를 알 수 있게)
+    var msgEl = form.querySelector("#registration-message");
+    if (msgEl) {
+      var slotMsg = document.createElement("p");
+      slotMsg.className = "ff-slot-message";
+      slotMsg.style.display = "none";
+      slotWrap.appendChild(slotMsg);
+      var msgObserver = new MutationObserver(function () {
+        var text = (msgEl.textContent || "").trim();
+        // app.js는 setMessage에서 inline color로 톤을 표현(danger=빨강, pending=골드, 기타=accent)
+        var rgb = window.getComputedStyle(msgEl).color.replace(/\s/g, "");
+        // --danger 계열(붉은색): R이 크고 G/B가 작은 색을 danger로 간주
+        var m = rgb.match(/rgba?\((\d+),(\d+),(\d+)/);
+        var isDanger = false;
+        if (m) {
+          var r = +m[1], g = +m[2], bl = +m[3];
+          isDanger = (r > 120 && g < 110 && bl < 110);
+        }
+        if (text && slotWrap.style.display !== "none") {
+          slotMsg.textContent = text;
+          slotMsg.className = "ff-slot-message" + (isDanger ? " is-danger" : "");
+          slotMsg.style.display = "block";
+        } else {
+          slotMsg.style.display = "none";
+        }
+      });
+      msgObserver.observe(msgEl, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["style"] });
+    }
   }
 
   function init() {
