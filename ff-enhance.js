@@ -259,6 +259,155 @@
     }
   }
 
+  /* ---------- 3. 등급별 결과 화면 이펙트 ---------- */
+  // 상품명 → 등급 매핑 (부분 일치). 매핑에 없으면 'low'로 안전 처리.
+  function prizeTier(name) {
+    var n = (name || "").replace(/\s/g, "");
+    if (/피코|페이스핏/.test(n)) return "high";
+    if (/베이직스킨케어|스킨케어/.test(n)) return "mid";
+    return "low"; // 염증주사, 마스크팩, 기타
+  }
+
+  function clearEffectLayer() {
+    var old = document.getElementById("ff-fx-layer");
+    if (old) old.parentNode.removeChild(old);
+  }
+
+  function runConfetti(canvas) {
+    var ctx = canvas.getContext("2d");
+    var W = canvas.width, H = canvas.height;
+    var colors = ["#9a8357", "#c9b896", "#d8c79f", "#e7e8e4", "#ffffff", "#a9aba6"];
+    var parts = [];
+    for (var i = 0; i < 56; i++) {
+      parts.push({ x: W / 2 + (Math.random() - 0.5) * 90, y: H * 0.32,
+        vx: (Math.random() - 0.5) * 6, vy: -Math.random() * 9 - 3, g: 0.28,
+        s: Math.random() * 5 + 3, c: colors[~~(Math.random() * colors.length)],
+        r: Math.random() * 3, vr: (Math.random() - 0.5) * 0.3, life: 0 });
+    }
+    var frame = 0;
+    function tick() {
+      ctx.clearRect(0, 0, W, H); frame++; var alive = false;
+      parts.forEach(function (p) {
+        p.life++; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        var op = Math.max(0, 1 - p.life / 95); if (op > 0) alive = true;
+        ctx.save(); ctx.globalAlpha = op; ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore();
+      });
+      if (alive && frame < 130) requestAnimationFrame(tick); else ctx.clearRect(0, 0, W, H);
+    }
+    tick();
+  }
+
+  function runSparkle(canvas) {
+    var ctx = canvas.getContext("2d");
+    var W = canvas.width, H = canvas.height;
+    var stars = [];
+    for (var i = 0; i < 13; i++) {
+      stars.push({ x: W * 0.28 + Math.random() * W * 0.44, y: H * 0.18 + Math.random() * H * 0.3,
+        s: Math.random() * 2.5 + 1, sp: 0.08 + Math.random() * 0.06, delay: Math.random() * 30 });
+    }
+    var frame = 0;
+    function tick() {
+      ctx.clearRect(0, 0, W, H); frame++;
+      stars.forEach(function (st) {
+        if (frame < st.delay) return;
+        var tw = (Math.sin((frame - st.delay) * st.sp) + 1) / 2;
+        ctx.save(); ctx.globalAlpha = tw * 0.9; ctx.fillStyle = "#c9b896";
+        ctx.translate(st.x, st.y); var r = st.s * (0.6 + tw * 0.6);
+        ctx.beginPath();
+        for (var k = 0; k < 4; k++) {
+          var a = k * Math.PI / 2;
+          ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+          ctx.lineTo(Math.cos(a + Math.PI / 4) * r * 0.32, Math.sin(a + Math.PI / 4) * r * 0.32);
+        }
+        ctx.closePath(); ctx.fill(); ctx.restore();
+      });
+      if (frame < 160) requestAnimationFrame(tick); else ctx.clearRect(0, 0, W, H);
+    }
+    tick();
+  }
+
+  function reorderResult(summary, card) {
+    // A안: 축하존(상품 카드)을 맨 위로, 직원 확인용(staff-checklist)을 아래로
+    if (card.getAttribute("data-ff-reordered") === "1") return;
+    var staff = summary.querySelector(".staff-checklist");
+    var sessionDone = summary.querySelector(".session-complete");
+    if (sessionDone) {
+      if (sessionDone.nextSibling !== card) summary.insertBefore(card, sessionDone.nextSibling);
+    } else {
+      if (summary.firstChild !== card) summary.insertBefore(card, summary.firstChild);
+    }
+    if (staff && staff !== card.nextSibling) {
+      summary.insertBefore(staff, card.nextSibling);
+    }
+    card.setAttribute("data-ff-reordered", "1");
+  }
+
+  function applyResultEffect() {
+    var summary = document.getElementById("final-summary");
+    if (!summary) return;
+    var card = summary.querySelector(".final-result-card");
+    if (!card) { clearEffectLayer(); return; }
+    reorderResult(summary, card);
+    var nameEl = card.querySelector("strong");
+    if (!nameEl) return;
+    var prizeName = nameEl.textContent || "";
+    var tier = prizeTier(prizeName);
+
+    // 이미 같은 등급으로 처리했으면 중복 실행 방지
+    if (card.getAttribute("data-ff-tier") === tier && document.getElementById("ff-fx-layer")) return;
+    card.setAttribute("data-ff-tier", tier);
+    summary.setAttribute("data-ff-tier", tier);
+    clearEffectLayer();
+
+    // 등급 클래스 부여 (CSS가 글로우/크기/배지 처리)
+    summary.classList.remove("ff-tier-high", "ff-tier-mid", "ff-tier-low");
+    summary.classList.add("ff-tier-" + tier);
+
+    // 배지 문구 삽입 (상/중만, 카드 위에)
+    var badgeText = tier === "high" ? "\u2726 특별 상품 당첨!" : tier === "mid" ? "당첨!" : "선물이 준비됐어요";
+    var head = card.querySelector(".final-prize-head");
+
+    // 페필이 축하존: 결과 카드 최상단에 페필이 + 배지 삽입
+    var pep = card.querySelector(".ff-result-pep");
+    if (!pep) {
+      pep = document.createElement("div");
+      pep.className = "ff-result-pep";
+      pep.innerHTML = '<div class="ff-result-pep-img"></div>';
+      card.insertBefore(pep, card.firstChild);
+    }
+
+    var existingBadge = card.querySelector(".ff-prize-badge");
+    if (!existingBadge) {
+      var badge = document.createElement("div");
+      badge.className = "ff-prize-badge";
+      badge.textContent = badgeText;
+      // 배지는 페필이 다음, 헤더 앞에
+      if (head) card.insertBefore(badge, head);
+      else card.insertBefore(badge, pep.nextSibling);
+    } else {
+      existingBadge.textContent = badgeText;
+    }
+
+    // 컨페티/스파클 캔버스 (상/중)
+    if (tier === "high" || tier === "mid") {
+      var layer = document.createElement("div");
+      layer.id = "ff-fx-layer";
+      layer.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden;";
+      var rect = summary.getBoundingClientRect();
+      var cv = document.createElement("canvas");
+      cv.width = Math.max(300, Math.round(rect.width));
+      cv.height = Math.max(300, Math.round(rect.height));
+      cv.style.cssText = "width:100%;height:100%;";
+      layer.appendChild(cv);
+      // summary가 static이면 relative로
+      if (getComputedStyle(summary).position === "static") summary.style.position = "relative";
+      summary.appendChild(layer);
+      if (tier === "high") { runConfetti(cv); runSparkle(cv); }
+      else runSparkle(cv);
+    }
+  }
+
   function init() {
     syncProgressLabels();
     setupSlotForm();
@@ -268,6 +417,21 @@
       pages.forEach(function (page) {
         observer.observe(page, { attributes: true, attributeFilter: ["class", "hidden"] });
       });
+    }
+    // 결과 화면 감시 → 등급 이펙트
+    var summary = document.getElementById("final-summary");
+    if (summary) {
+      var fxObserver = new MutationObserver(function () {
+        if (window.__ffApplying) return; // 자기 변경 중엔 무시 (무한루프 방지)
+        window.__ffApplying = true;
+        try { applyResultEffect(); } finally {
+          // 다음 틱에 플래그 해제 (자기 DOM 변경이 콜백 큐에 쌓인 것 흘려보냄)
+          setTimeout(function () { window.__ffApplying = false; }, 0);
+        }
+      });
+      fxObserver.observe(summary, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+      window.__ffApplying = true;
+      try { applyResultEffect(); } finally { setTimeout(function () { window.__ffApplying = false; }, 0); }
     }
   }
 
