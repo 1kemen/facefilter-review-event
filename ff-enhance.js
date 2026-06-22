@@ -405,6 +405,35 @@
     }
   }
 
+  /* ---------- 4. 확률표 접기 (기본 접힘, 헤딩 클릭 시 펼침) ---------- */
+  function setupOddsFold() {
+    var odds = document.getElementById("customer-prize-odds");
+    if (!odds) return;
+    // app.js가 다시 그릴 수 있으므로 매번 상태 확인
+    var heading = odds.querySelector(".odds-heading");
+    var list = odds.querySelector(".odds-list");
+    if (!heading || !list) return;
+    if (heading.dataset.ffFold === "1") return;
+    heading.dataset.ffFold = "1";
+
+    // 헤딩에 토글 화살표 추가
+    if (!heading.querySelector(".ff-odds-toggle")) {
+      var toggle = document.createElement("span");
+      toggle.className = "ff-odds-toggle";
+      toggle.textContent = "확률 보기 ▾";
+      heading.appendChild(toggle);
+    }
+    // 기본 접힘
+    odds.classList.add("ff-odds-collapsed");
+    heading.style.cursor = "pointer";
+    heading.setAttribute("role", "button");
+    heading.addEventListener("click", function () {
+      var collapsed = odds.classList.toggle("ff-odds-collapsed");
+      var t = heading.querySelector(".ff-odds-toggle");
+      if (t) t.textContent = collapsed ? "확률 보기 ▾" : "접기 ▴";
+    });
+  }
+
   function init() {
     syncProgressLabels();
     setupSlotForm();
@@ -419,16 +448,23 @@
     var summary = document.getElementById("final-summary");
     if (summary) {
       var fxObserver = new MutationObserver(function () {
-        if (window.__ffApplying) return; // 자기 변경 중엔 무시 (무한루프 방지)
+        if (window.__ffApplying) return;
         window.__ffApplying = true;
         try { applyResultEffect(); } finally {
-          // 다음 틱에 플래그 해제 (자기 DOM 변경이 콜백 큐에 쌓인 것 흘려보냄)
           setTimeout(function () { window.__ffApplying = false; }, 0);
         }
       });
       fxObserver.observe(summary, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
       window.__ffApplying = true;
       try { applyResultEffect(); } finally { setTimeout(function () { window.__ffApplying = false; }, 0); }
+    }
+
+    // 확률표 접기 (app.js가 다시 그릴 수 있으므로 감시)
+    var oddsEl = document.getElementById("customer-prize-odds");
+    if (oddsEl) {
+      setupOddsFold();
+      var oddsObserver = new MutationObserver(function () { setupOddsFold(); });
+      oddsObserver.observe(oddsEl, { childList: true });
     }
   }
 
