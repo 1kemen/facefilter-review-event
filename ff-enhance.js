@@ -132,6 +132,7 @@
       renderChips();
       countEl.textContent = (state.idx + 1) + " / " + slots.length;
       var slot = slots[state.idx];
+      var currentIndex = state.idx;
       stashInputs();
       activeEl.innerHTML = "";
 
@@ -174,12 +175,14 @@
           hintp.className = "ff-slot-hint";
           hintp.textContent = "4자리를 입력하면 자동으로 넘어가요";
           card.appendChild(hintp);
-          slot.el.addEventListener("input", function () {
+          slot.el.oninput = function () {
             err.style.display = "none";
             if (/^[0-9]{4}$/.test((slot.el.value || "").trim())) {
-              setTimeout(function () { if (commit(slot)) advance(); }, 180);
+              setTimeout(function () {
+                if (state.idx === currentIndex && commit(slot)) advance();
+              }, 180);
             }
-          });
+          };
         } else {
           var nextBtn = document.createElement("button");
           nextBtn.type = "button";
@@ -187,22 +190,22 @@
           nextBtn.textContent = (state.idx === slots.length - 1) ? "다음 단계로" : "확인";
           nextBtn.disabled = !(slot.el.value || "").trim();
           card.appendChild(nextBtn);
-          slot.el.addEventListener("input", function () {
+          slot.el.oninput = function () {
             err.style.display = "none";
             nextBtn.disabled = !(slot.el.value || "").trim();
-          });
+          };
           nextBtn.addEventListener("click", function () {
             if (commit(slot)) advance();
             else { err.style.display = "block"; err.textContent = "입력해 주세요."; }
           });
         }
-        slot.el.addEventListener("keydown", function (e) {
+        slot.el.onkeydown = function (e) {
           if (e.key === "Enter") {
             e.preventDefault();
-            if (commit(slot)) advance();
+            if (state.idx === currentIndex && commit(slot)) advance();
             else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
           }
-        });
+        };
       }
 
       activeEl.appendChild(card);
