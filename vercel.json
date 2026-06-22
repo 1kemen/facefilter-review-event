@@ -2,7 +2,7 @@
   "version": 2,
   "framework": null,
   "installCommand": "",
-  "buildCommand": "mkdir -p public/supabase && cp index.html styles.css app.js supabase-config.js pepili.png ff-enhance.js public/ && cp supabase/supabase-client.js public/supabase/",
+  "buildCommand": "mkdir -p public/supabase && cp index.html styles.css app.js supabase-config.js public/ && cp supabase/supabase-client.js public/supabase/ && (cp pepili.png public/ 2>/dev/null || true) && (cp pepili-smile.png public/ 2>/dev/null || true) && (cp ff-enhance.js public/ 2>/dev/null || true)",
   "outputDirectory": "public",
   "cleanUrls": true,
   "trailingSlash": false,

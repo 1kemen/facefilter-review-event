@@ -169,6 +169,24 @@
         card.appendChild(holder);
         card.appendChild(err);
 
+        // 이번 슬롯 렌더에 대한 진행 가드 (자동/엔터/버튼 중복 advance 방지)
+        var advanced = false;
+        function tryAdvance() {
+          if (advanced) return;
+          if (commit(slot)) { advanced = true; advance(); }
+          else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
+        }
+
+        // 기존 리스너 제거를 위해 input을 깨끗한 복제본으로 교체
+        // (요소를 재사용하면 이전 슬롯의 리스너가 누적되어 오작동)
+        var prevValue = slot.el.value;
+        var prevChecked = slot.el.checked;
+        var fresh = slot.el.cloneNode(true);
+        fresh.value = prevValue; // 타이핑한 값은 프로퍼티라 별도 복사
+        fresh.checked = prevChecked;
+        slot.el.parentNode.replaceChild(fresh, slot.el);
+        slot.el = fresh; // 슬롯 참조 갱신 (FormData는 name 속성으로 읽으므로 유지됨)
+
         if (slot.type === "tel") {
           var hintp = document.createElement("div");
           hintp.className = "ff-slot-hint";
@@ -177,7 +195,7 @@
           slot.el.addEventListener("input", function () {
             err.style.display = "none";
             if (/^[0-9]{4}$/.test((slot.el.value || "").trim())) {
-              setTimeout(function () { if (commit(slot)) advance(); }, 180);
+              setTimeout(tryAdvance, 200);
             }
           });
         } else {
@@ -191,17 +209,10 @@
             err.style.display = "none";
             nextBtn.disabled = !(slot.el.value || "").trim();
           });
-          nextBtn.addEventListener("click", function () {
-            if (commit(slot)) advance();
-            else { err.style.display = "block"; err.textContent = "입력해 주세요."; }
-          });
+          nextBtn.addEventListener("click", tryAdvance);
         }
         slot.el.addEventListener("keydown", function (e) {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            if (commit(slot)) advance();
-            else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
-          }
+          if (e.key === "Enter") { e.preventDefault(); tryAdvance(); }
         });
       }
 
