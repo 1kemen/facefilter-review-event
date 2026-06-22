@@ -1,13 +1,74 @@
--- DEPRECATED / DO NOT RUN.
--- This old patch allowed customer self draw after the Naver review link was opened
--- for a short wait. That behavior was removed after field incidents.
--- Use patch-tighten-customer-review-draw-gates.sql instead.
+-- Tighten customer-side review and draw gates.
+--
+-- Run this in Supabase SQL editor after the base schema if the project was
+-- created before this patch. It prevents two risky edge cases:
+-- 1) review completion RPC before the Naver review link was opened
+-- 2) customer draw RPC without a selected waterdrop
 
 begin;
 
-do $$
+create or replace function public.ff_set_photo_review_self_confirmed(
+  p_session_id uuid,
+  p_participant_id uuid,
+  p_done boolean
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_participant public.review_event_participants%rowtype;
+  v_has_draw boolean;
 begin
-  raise exception 'DEPRECATED PATCH: do not run patch-auto-draw-after-review-open.sql. Use patch-tighten-customer-review-draw-gates.sql instead.';
+  select * into v_participant
+  from public.review_event_participants
+  where id = p_participant_id
+    and session_id = p_session_id
+  for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'code', 'not_found');
+  end if;
+
+  if v_participant.gift_status = 'done' then
+    return jsonb_build_object('ok', false, 'code', 'session_closed');
+  end if;
+
+  if p_done and v_participant.review_opened_at is null then
+    return jsonb_build_object('ok', false, 'code', 'review_link_required');
+  end if;
+
+  select exists (
+    select 1
+    from public.review_event_draws
+    where participant_id = p_participant_id
+  ) into v_has_draw;
+
+  if v_has_draw and p_done = false then
+    return jsonb_build_object('ok', false, 'code', 'draw_already_fixed');
+  end if;
+
+  update public.review_event_participants
+  set review_status = case when p_done then 'self_confirmed' else 'none' end,
+      review_evidence = case
+        when p_done then jsonb_build_object('source', 'customer_self_confirmed', 'submittedAt', now())
+        else null
+      end
+  where id = p_participant_id
+    and session_id = p_session_id;
+
+  perform public.ff_write_audit(
+    'customer',
+    case when p_done then 'photo_review_self_confirmed' else 'photo_review_unchecked' end,
+    'review_event_participants',
+    p_participant_id,
+    p_session_id,
+    p_participant_id,
+    '{}'::jsonb
+  );
+
+  return jsonb_build_object('ok', true, 'payload', public.ff_participant_payload(p_participant_id));
 end;
 $$;
 
@@ -30,7 +91,6 @@ declare
   v_ticket double precision;
   v_confirm_code text;
   v_draw public.review_event_draws%rowtype;
-  v_review_wait interval := interval '10 seconds';
 begin
   if coalesce(p_draw_type, 'primary') <> 'primary' then
     return jsonb_build_object('ok', false, 'code', 'extra_draw_removed');
@@ -38,6 +98,10 @@ begin
 
   if p_drop_choice is not null and (p_drop_choice < 1 or p_drop_choice > 5) then
     return jsonb_build_object('ok', false, 'code', 'invalid_drop_choice');
+  end if;
+
+  if p_drop_choice is null and not public.ff_is_staff() then
+    return jsonb_build_object('ok', false, 'code', 'invalid_drop_choice_required');
   end if;
 
   select status into v_session_status
@@ -65,42 +129,7 @@ begin
   end if;
 
   if v_participant.review_status not in ('self_confirmed', 'approved') then
-    if v_participant.review_opened_at is null then
-      return jsonb_build_object('ok', false, 'code', 'review_required');
-    end if;
-
-    if v_participant.review_opened_at > now() - v_review_wait then
-      return jsonb_build_object(
-        'ok', false,
-        'code', 'review_wait_required',
-        'waitSeconds', greatest(1, ceil(extract(epoch from (v_participant.review_opened_at + v_review_wait - now())))::integer)
-      );
-    end if;
-
-    update public.review_event_participants
-    set
-      review_status = 'self_confirmed',
-      review_evidence = jsonb_build_object(
-        'mode', 'auto_after_review_open',
-        'reviewOpenedAt', v_participant.review_opened_at,
-        'autoConfirmedAt', now(),
-        'note', 'Review draw gate opened after review link wait.'
-      )
-    where id = p_participant_id
-    returning * into v_participant;
-
-    perform public.ff_write_audit(
-      'customer',
-      'photo_review_auto_confirmed',
-      'review_event_participants',
-      p_participant_id,
-      p_session_id,
-      p_participant_id,
-      jsonb_build_object(
-        'reviewOpenedAt', v_participant.review_opened_at,
-        'waitSeconds', extract(epoch from v_review_wait)::integer
-      )
-    );
+    return jsonb_build_object('ok', false, 'code', 'review_required');
   end if;
 
   if exists (
@@ -193,7 +222,8 @@ begin
       'prizeId', v_prize.id,
       'prizeName', v_prize.name,
       'confirmCode', v_confirm_code,
-      'dropChoice', p_drop_choice
+      'dropChoice', p_drop_choice,
+      'reviewGate', 'explicit_review_link_and_done'
     )
   );
 
@@ -206,6 +236,8 @@ begin
 end;
 $$;
 
+revoke execute on function public.ff_run_draw(uuid, uuid, integer, text) from public;
 grant execute on function public.ff_run_draw(uuid, uuid, integer, text) to anon, authenticated;
+grant execute on function public.ff_set_photo_review_self_confirmed(uuid, uuid, boolean) to anon, authenticated;
 
 commit;

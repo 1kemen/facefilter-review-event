@@ -861,6 +861,7 @@ function getRemoteErrorMessage(code) {
   const messages = {
     invalid_session: "세션이 만료되었습니다.",
     session_closed: "이미 완료된 참여입니다.",
+    review_link_required: "네이버 리뷰 작성하기를 먼저 눌러주세요.",
     review_required: "네이버 리뷰 작성하기 버튼을 먼저 눌러주세요.",
     review_wait_required: "잠시 후 상품뽑기가 열립니다.",
     already_drawn: "이미 뽑기 결과가 확정되었습니다.",
