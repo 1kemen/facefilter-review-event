@@ -3456,3 +3456,123 @@ input.ff-slot-input {
   color: #9b4a42;
   border: 0.5px solid rgba(155, 74, 66, 0.2);
 }
+
+
+/* =====================================================================
+   등급별 결과 화면 이펙트 (ff-enhance.js가 #final-summary에 클래스 부여)
+   상품명 → 등급 자동 판정. 화면엔 등급 표기 안 함(이펙트로만 차등).
+   ===================================================================== */
+#final-summary { position: relative; }
+
+/* 당첨 배지 (상/중/하 문구) */
+.ff-prize-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin: 2px 0 6px;
+}
+.ff-tier-high .ff-prize-badge { color: var(--ff-gold); font-size: 0.82rem; }
+.ff-tier-mid .ff-prize-badge { color: var(--ff-deep); }
+.ff-tier-low .ff-prize-badge { color: var(--ff-muted); }
+
+/* 상급: 골드 글로우 배경 + 카드 강조 + 상품명 크게 */
+.ff-tier-high .final-result-card {
+  background: radial-gradient(circle at 50% 0%, #faf6ec, #ffffff 70%);
+  border-color: var(--ff-goldlt, #c9b896);
+  box-shadow: 0 10px 30px rgba(154, 131, 87, 0.16);
+}
+.ff-tier-high .final-result-card > strong {
+  font-size: 1.5rem;
+  color: var(--ff-ink);
+}
+/* 상급 결과 카드 등장 시 살짝 떠오름 */
+.ff-tier-high .final-result-card {
+  animation: ffRiseSoft 0.55s var(--ff-ease);
+}
+
+/* 중급: 차분한 강조 */
+.ff-tier-mid .final-result-card > strong {
+  font-size: 1.3rem;
+}
+
+/* 하급: 기본 (깔끔) */
+.ff-tier-low .final-result-card > strong {
+  font-size: 1.22rem;
+}
+
+/* 접근성: 모션 최소화 시 캔버스 이펙트 숨김 */
+@media (prefers-reduced-motion: reduce) {
+  #ff-fx-layer { display: none; }
+  .ff-tier-high .final-result-card { animation: none; }
+}
+
+
+/* =====================================================================
+   결과 화면 페필이 축하존 + 컴팩트화 (길어짐 해결)
+   ===================================================================== */
+/* 페필이 축하존 — 카드 최상단 중앙 */
+.ff-result-pep {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.ff-result-pep-img {
+  width: 76px;
+  height: 88px;
+  background: url("pepili.png") center/contain no-repeat;
+}
+/* 등급별 페필이 크기 차등 */
+.ff-tier-high .ff-result-pep-img { width: 104px; height: 120px; }
+.ff-tier-mid .ff-result-pep-img { width: 84px; height: 97px; }
+.ff-tier-low .ff-result-pep-img { width: 72px; height: 83px; }
+
+/* 페필이 등장 모션 */
+.ff-result-pep-img {
+  animation: ffPepRise 0.6s var(--ff-ease);
+}
+@keyframes ffPepRise {
+  0% { opacity: 0; transform: translateY(14px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 배지/상품명 중앙 정렬 (축하 느낌) */
+.final-result-card .ff-prize-badge {
+  text-align: center;
+}
+.final-result-card > strong {
+  text-align: center;
+  display: block;
+}
+.final-result-card .final-prize-head {
+  justify-content: center;
+}
+/* 확인코드는 헤더에서 작게 (중앙 정렬 방해 안 하게) */
+.final-result-card .final-prize-head .section-kicker {
+  display: none; /* "당첨 상품" 레이블은 배지가 대신함 → 중복 제거로 컴팩트 */
+}
+.final-result-card > small {
+  text-align: center;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* 직원 확인용 상세(dl)는 컴팩트하게 — 길어짐 해결 */
+.final-result-card dl {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--ff-line);
+  font-size: 0.82rem;
+  gap: 4px;
+}
+.final-result-card dl div {
+  padding: 3px 0;
+}
+
+/* 직원 확인용 체크리스트도 살짝 컴팩트 */
+.staff-checklist {
+  padding: 12px 14px;
+}
+.staff-checklist strong {
+  font-size: 0.92rem;
+}
