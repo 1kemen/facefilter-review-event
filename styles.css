@@ -1237,22 +1237,6 @@ textarea {
   background: #f1f6f3;
 }
 
-@media (prefers-color-scheme: dark) {
-  .wizard-shell .inline-check {
-    border-color: #30322f;
-    background: #fff;
-  }
-
-  .wizard-shell .inline-check span {
-    color: #202120;
-  }
-
-  .wizard-shell .inline-check input {
-    border-color: #202120;
-    background: #fff !important;
-  }
-}
-
 .wizard-shell #review-open-status {
   display: block;
   min-height: 0;
