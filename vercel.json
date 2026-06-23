@@ -2,7 +2,7 @@
   "version": 2,
   "framework": null,
   "installCommand": "",
-  "buildCommand": "mkdir -p public/supabase && cp index.html styles.css app.js supabase-config.js pepili.png ff-enhance.js public/ && cp supabase/supabase-client.js public/supabase/",
+  "buildCommand": "sh build.sh",
   "outputDirectory": "public",
   "cleanUrls": true,
   "trailingSlash": false,

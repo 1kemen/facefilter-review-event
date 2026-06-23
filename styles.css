@@ -2958,6 +2958,7 @@ body[data-app-mode="staff"] .detail-panel {
   background: #fff;
 }
 .drop-choice.is-selected span {
+  background-image: url("pepili-smile.png");
   filter: saturate(1.05);
 }
 /* 번호는 좌상단 작은 배지로 (페필이 공간 확보) */
@@ -3503,7 +3504,7 @@ input.ff-slot-input {
 .ff-result-pep-img {
   width: 76px;
   height: 88px;
-  background: url("pepili.png") center/contain no-repeat;
+  background: url("pepili-smile.png") center/contain no-repeat;
 }
 /* 등급별 페필이 크기 차등 */
 .ff-tier-high .ff-result-pep-img { width: 104px; height: 120px; }
@@ -3559,4 +3560,33 @@ input.ff-slot-input {
 }
 .staff-checklist strong {
   font-size: 0.92rem;
+}
+
+
+/* =====================================================================
+   확률표 접기 (ff-enhance.js가 토글)
+   ===================================================================== */
+#customer-prize-odds .odds-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ff-odds-toggle {
+  font-size: 0.72rem;
+  color: var(--ff-deep);
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* 접힘 상태: 리스트 숨김 */
+#customer-prize-odds.ff-odds-collapsed .odds-list {
+  display: none;
+}
+/* 펼칠 때 부드럽게 */
+#customer-prize-odds .odds-list {
+  animation: ffFadeIn 0.3s var(--ff-ease);
+}
+@keyframes ffFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
