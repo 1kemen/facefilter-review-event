@@ -614,16 +614,25 @@ security definer
 set search_path = public
 as $$
 declare
+  v_participant public.review_event_participants%rowtype;
   v_has_draw boolean;
 begin
-  if exists (
-    select 1
-    from public.review_event_participants
-    where id = p_participant_id
-      and session_id = p_session_id
-      and gift_status = 'done'
-  ) then
+  select * into v_participant
+  from public.review_event_participants
+  where id = p_participant_id
+    and session_id = p_session_id
+  for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'code', 'not_found');
+  end if;
+
+  if v_participant.gift_status = 'done' then
     return jsonb_build_object('ok', false, 'code', 'session_closed');
+  end if;
+
+  if p_done and v_participant.review_opened_at is null then
+    return jsonb_build_object('ok', false, 'code', 'review_link_required');
   end if;
 
   select exists (
@@ -644,10 +653,6 @@ begin
       end
   where id = p_participant_id
     and session_id = p_session_id;
-
-  if not found then
-    return jsonb_build_object('ok', false, 'code', 'not_found');
-  end if;
 
   perform public.ff_write_audit(
     'customer',
@@ -758,6 +763,10 @@ begin
 
   if p_drop_choice is not null and (p_drop_choice < 1 or p_drop_choice > 5) then
     return jsonb_build_object('ok', false, 'code', 'invalid_drop_choice');
+  end if;
+
+  if p_drop_choice is null and not public.ff_is_staff() then
+    return jsonb_build_object('ok', false, 'code', 'invalid_drop_choice_required');
   end if;
 
   select status into v_session_status

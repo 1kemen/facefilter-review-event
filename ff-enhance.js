@@ -132,6 +132,7 @@
       renderChips();
       countEl.textContent = (state.idx + 1) + " / " + slots.length;
       var slot = slots[state.idx];
+      var currentIndex = state.idx;
       stashInputs();
       activeEl.innerHTML = "";
 
@@ -172,7 +173,11 @@
         // 이번 슬롯 렌더에 대한 진행 가드 (자동/엔터/버튼 중복 advance 방지)
         var advanced = false;
         function tryAdvance() {
-          if (advanced) return;
+          if (advanced || state.idx !== currentIndex) return;
+          if (slot.type === "tel") {
+            var onlyDigits = (slot.el.value || "").replace(/\D/g, "").slice(0, 4);
+            if (slot.el.value !== onlyDigits) slot.el.value = onlyDigits;
+          }
           if (commit(slot)) { advanced = true; advance(); }
           else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
         }
@@ -192,12 +197,14 @@
           hintp.className = "ff-slot-hint";
           hintp.textContent = "4자리를 입력하면 자동으로 넘어가요";
           card.appendChild(hintp);
-          slot.el.addEventListener("input", function () {
+          slot.el.oninput = function () {
             err.style.display = "none";
+            var onlyDigits = (slot.el.value || "").replace(/\D/g, "").slice(0, 4);
+            if (slot.el.value !== onlyDigits) slot.el.value = onlyDigits;
             if (/^[0-9]{4}$/.test((slot.el.value || "").trim())) {
               setTimeout(tryAdvance, 200);
             }
-          });
+          };
         } else {
           var nextBtn = document.createElement("button");
           nextBtn.type = "button";
@@ -205,15 +212,15 @@
           nextBtn.textContent = (state.idx === slots.length - 1) ? "다음 단계로" : "확인";
           nextBtn.disabled = !(slot.el.value || "").trim();
           card.appendChild(nextBtn);
-          slot.el.addEventListener("input", function () {
+          slot.el.oninput = function () {
             err.style.display = "none";
             nextBtn.disabled = !(slot.el.value || "").trim();
-          });
+          };
           nextBtn.addEventListener("click", tryAdvance);
         }
-        slot.el.addEventListener("keydown", function (e) {
+        slot.el.onkeydown = function (e) {
           if (e.key === "Enter") { e.preventDefault(); tryAdvance(); }
-        });
+        };
       }
 
       activeEl.appendChild(card);
