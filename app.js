@@ -5,6 +5,7 @@ const DRAW_COOLDOWN_MS = 1600;
 const REVIEW_DRAW_WAIT_MS = 10000;
 const NAVER_COOLDOWN_DAYS = 28;
 const DRAW_CHOICES = 5;
+const CUSTOMER_SESSION_MAX_AGE_MS = 18 * 60 * 60 * 1000;
 const DATA_RETENTION_LIMITS = {
   participantDays: 90,
   sessionDays: 30,
@@ -435,13 +436,34 @@ function saveSessionState() {
 
 function prepareCustomerSessionForEntry() {
   if (isBackofficeMode()) return;
-  if (sessionState.closedAt) resetCustomerSessionState();
+  if (sessionState.closedAt || isCustomerSessionStateExpired(sessionState)) resetCustomerSessionState();
 }
 
 function resetCustomerSessionState() {
   sessionState = createSessionState();
   selectedParticipantId = null;
   saveSessionState();
+}
+
+function isCustomerSessionStateExpired(session = sessionState, now = Date.now()) {
+  return isTimestampOutsideToday(session?.createdAt, now) || isTimestampOlderThan(session?.createdAt, CUSTOMER_SESSION_MAX_AGE_MS, now);
+}
+
+function isRemoteCustomerSessionExpired(remoteSession, now = Date.now()) {
+  const createdAt = remoteSession?.created_at || remoteSession?.createdAt;
+  return isTimestampOutsideToday(createdAt, now) || isTimestampOlderThan(createdAt, CUSTOMER_SESSION_MAX_AGE_MS, now);
+}
+
+function isTimestampOlderThan(value, maxAgeMs, now = Date.now()) {
+  const timestamp = Date.parse(value || "");
+  if (!Number.isFinite(timestamp)) return false;
+  return now - timestamp > maxAgeMs;
+}
+
+function isTimestampOutsideToday(value, now = Date.now()) {
+  const date = new Date(value || "");
+  if (!Number.isFinite(date.getTime())) return false;
+  return formatDateKey(date) !== formatDateKey(new Date(now));
 }
 
 function setCustomerStep(stepKey) {
@@ -493,7 +515,7 @@ async function initializeRemoteBackend() {
       sessionId: sessionState.supabaseSessionId,
       participantId: selectedParticipantId || null
     });
-    if (remote.session?.status === "closed" || isStaleRemoteSessionResult(remote)) {
+    if (remote.session?.status === "closed" || isRemoteCustomerSessionExpired(remote.session) || isStaleRemoteSessionResult(remote)) {
       resetCustomerSessionState();
       await ensureRemoteSession({ forceNew: true });
       supabaseReady = true;
@@ -737,7 +759,7 @@ async function ensureRemoteSession(options = {}) {
 }
 
 function isStaleRemoteSessionResult(result) {
-  return ["invalid_session", "session_closed", "session_not_found"].includes(result?.code);
+  return ["invalid_session", "session_closed", "session_not_found", "participant_not_in_session"].includes(result?.code);
 }
 
 function applyRemoteResult(result, preferredStep = null) {
