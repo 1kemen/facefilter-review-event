@@ -691,12 +691,12 @@ begin
 
   perform public.ff_write_audit(
     'customer',
-    'kakao_bonus_verified',
+    'kakao_channel_confirmed',
     'review_event_participants',
     p_participant_id,
     p_session_id,
     p_participant_id,
-    jsonb_build_object('benefit', 'sheet_mask_1')
+    jsonb_build_object('source', 'customer_channel_action')
   );
 
   return jsonb_build_object('ok', true, 'payload', public.ff_participant_payload(p_participant_id));

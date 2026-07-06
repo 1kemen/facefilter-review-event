@@ -52,7 +52,7 @@ const guardrails = [
   ["당일 중복 차단", "같은 날 동일 리뷰 닉네임/ID 또는 같은 휴대폰/기기 조합은 기존 참여 내역으로 연결합니다."],
   ["결과 고정", "뽑기 결과가 확정되면 새로고침, 뒤로가기, 버튼 연타에도 같은 결과만 유지됩니다."],
   ["재고 기반 확률", "재고가 0개인 상품은 후보에서 제외하고 당첨 즉시 재고를 차감합니다."],
-  ["카톡 채널 혜택", "카카오톡 채널 추가는 선택사항이며 완료 고객에게 애프터케어 시트팩 1매를 추가 증정합니다."],
+  ["카톡 채널 안내", "카카오톡 채널 추가는 선택사항이며 공지사항과 케어 안내를 받을 수 있습니다."],
   ["직원 최종 확인", "고객은 결과 화면과 실제 리뷰 화면을 함께 보여주고, 직원이 확인 후 지급완료 처리합니다."],
   ["의심 플래그", "동일 이름/전화 또는 같은 기기 반복 참여는 자동으로 확인 필요 표시가 붙습니다."],
   ["감사 로그", "등록, 리뷰 링크 열기, 뽑기, 지급완료는 해시 체인 로그로 남겨 운영 중 변경 흔적을 확인합니다."]
@@ -1388,7 +1388,7 @@ async function verifyKakaoChannel() {
   if (!participant) return;
   if (isSessionClosed(participant)) return;
   if (participant.kakaoVerified) {
-    toast("이미 카카오톡 채널 추가 혜택이 확인되었습니다.");
+    toast("이미 카카오톡 채널 추가가 확인되었습니다.");
     return;
   }
   if (!hasKakaoChannelOpened(participant)) {
@@ -1415,7 +1415,7 @@ async function applyKakaoBenefit(participant, { closeModal = true } = {}) {
       const result = await window.FaceFilterSupabase.setKakaoVerified(getRemoteParticipantRequest(participant));
       if (!result.ok) {
         participant.kakaoVerified = false;
-        toast("카카오톡 채널 혜택을 저장하지 못했습니다.");
+        toast("카카오톡 채널 추가 상태를 저장하지 못했습니다.");
         renderAll();
         return false;
       }
@@ -1428,14 +1428,14 @@ async function applyKakaoBenefit(participant, { closeModal = true } = {}) {
       return false;
     }
   } else {
-    addAudit("kakao_bonus_verified", participant.id, { benefit: "애프터케어 시트팩 1매 추가증정" });
+    addAudit("kakao_channel_confirmed", participant.id, { source: "customer_channel_action" });
   }
 
   setCustomerStep("final");
   saveState();
   if (closeModal) closeKakaoBenefitModal();
   renderAll();
-  toast("애프터케어 시트팩 혜택 적용");
+  toast("카카오톡 채널 추가 완료");
   return true;
 }
 
@@ -2073,12 +2073,12 @@ function renderCustomerFlow() {
   if (dom.verifyKakao) {
     dom.verifyKakao.hidden = true;
     dom.verifyKakao.disabled = true;
-    dom.verifyKakao.textContent = participant?.kakaoVerified ? "혜택 적용 완료" : "애프터케어 시트팩 받기";
+    dom.verifyKakao.textContent = participant?.kakaoVerified ? "채널 추가 완료" : "카카오톡 채널 추가";
     dom.verifyKakao.classList.toggle("is-confirmed", Boolean(participant?.kakaoVerified));
   }
   dom.kakaoBanner.classList.toggle("is-confirmed", Boolean(participant?.kakaoVerified));
   dom.kakaoBenefitStatus.textContent = participant?.kakaoVerified
-    ? "애프터케어 시트팩 1매 추가"
+    ? "카카오톡 채널 추가 완료"
     : "";
   const selectedDropChoice = getValidDropChoice(participant?.drawIntent);
   dom.runDraw.disabled = !hasParticipant || sessionClosed || !canDraw(participant).ok || !selectedDropChoice || drawInProgress;
@@ -2221,12 +2221,12 @@ function renderFinalSummary(participant) {
       <dl>
         <div><dt>고객</dt><dd>${escapeHtml(participant.customerName)}</dd></div>
         <div><dt>리뷰</dt><dd>${escapeHtml(participant.naverId)}</dd></div>
-        <div><dt>추가혜택</dt><dd>${participant.kakaoVerified ? "애프터케어 시트팩 1매" : "미신청"}</dd></div>
+        <div><dt>카톡채널</dt><dd>${participant.kakaoVerified ? "추가 완료" : "미추가"}</dd></div>
       </dl>
     </div>
     ${!sessionClosed && !participant.kakaoVerified ? `
       <button class="secondary-action final-benefit-action" type="button" data-final-action="kakao-benefit">
-        카톡 채널 추가하고 애프터케어 시트팩 받기
+        카카오톡 채널 추가하기
       </button>
     ` : ""}
   `;
@@ -2304,7 +2304,7 @@ function renderDrawResultCard(participant, drawRecord, label) {
       <dl>
         <div><dt>리뷰</dt><dd>${escapeHtml(participant.naverId)}</dd></div>
         <div><dt>물방울</dt><dd>${escapeHtml(drawRecord.dropChoice ? `${drawRecord.dropChoice}번` : "랜덤")}</dd></div>
-        <div><dt>추가혜택</dt><dd>${participant.kakaoVerified ? "애프터케어 시트팩 1매" : "없음"}</dd></div>
+        <div><dt>카톡채널</dt><dd>${participant.kakaoVerified ? "추가 완료" : "미추가"}</dd></div>
         <div><dt>지급</dt><dd>${participant.giftStatus === "done" ? "완료" : "직원 확인 전"}</dd></div>
       </dl>
     </div>
@@ -2380,7 +2380,7 @@ function renderStats() {
   const stats = [
     ["전체 참여", state.participants.length],
     ["리뷰 링크 열림", state.participants.filter((p) => p.reviewOpenedAt).length],
-    ["채널 추가 혜택", state.participants.filter((p) => p.kakaoVerified).length],
+    ["카톡 채널 추가", state.participants.filter((p) => p.kakaoVerified).length],
     ["직원 확인 대기", state.participants.filter((p) => p.draw && p.giftStatus !== "done").length],
     ["증정 완료", state.participants.filter((p) => p.giftStatus === "done").length]
   ];
@@ -2618,7 +2618,7 @@ function renderDetailPanel() {
         <span class="detail-progress-line">진행 위치: ${renderProgressHint(stopInsight)}</span>
         <span>직원 대응: ${escapeHtml(stopInsight.action)}</span>
         <span>포토리뷰: ${getReviewLabel(participant.reviewStatus)}</span>
-        <span>카톡 채널 추가혜택: ${participant.kakaoVerified ? "애프터케어 시트팩 1매 추가증정" : "미신청"}</span>
+        <span>카톡 채널 추가: ${participant.kakaoVerified ? "완료" : "미추가"}</span>
         <span>당첨상품: ${escapeHtml(participant.draw?.prizeName || "-")}</span>
         <span>결과 확인코드: ${escapeHtml(participant.draw?.confirmCode || "-")}</span>
       </div>
@@ -2897,7 +2897,7 @@ function resetDemoData() {
 
 function exportCsv() {
   const rows = [
-    ["고객명", "확인코드", "고객 차트번호", "휴대폰뒤4자리", "리뷰닉네임/ID", "포토리뷰", "진행 위치", "채널추가혜택", "최종상품", "결과코드", "증정상태", "담당자", "지급메모", "플래그", "등록일시"],
+    ["고객명", "확인코드", "고객 차트번호", "휴대폰뒤4자리", "리뷰닉네임/ID", "포토리뷰", "진행 위치", "카톡채널추가", "최종상품", "결과코드", "증정상태", "담당자", "지급메모", "플래그", "등록일시"],
     ...state.participants.map((participant) => [
       participant.customerName,
       participant.chartNo,
@@ -2906,7 +2906,7 @@ function exportCsv() {
       participant.naverId || "",
       getReviewLabel(participant.reviewStatus),
       getParticipantStopInsight(participant).label,
-      participant.kakaoVerified ? "애프터케어 시트팩 1매" : "",
+      participant.kakaoVerified ? "완료" : "",
       participant.draw?.prizeName || "",
       participant.draw?.confirmCode || "",
       participant.giftStatus === "done" ? "증정완료" : participant.draw ? "직원확인대기" : "",
@@ -2950,13 +2950,13 @@ function getParticipantStatus(participant) {
     return { label: "직원 확인 대기", tone: "pending", key: "staff-wait", icon: "userCheck" };
   }
   if (isReviewComplete(participant) && participant.kakaoVerified) {
-    return { label: "뽑기 가능 + 애프터케어 시트팩", tone: "", key: "draw-ready-plus", icon: "gift" };
+    return { label: "뽑기 가능 + 카톡 채널", tone: "", key: "draw-ready-plus", icon: "chat" };
   }
   if (isReviewComplete(participant)) {
     return { label: "리뷰 완료", tone: "", key: "review-complete", icon: "check" };
   }
   if (participant.kakaoVerified) {
-    return { label: "애프터케어 시트팩 혜택", tone: "", key: "kakao-benefit", icon: "chat" };
+    return { label: "카톡 채널 추가", tone: "", key: "kakao-benefit", icon: "chat" };
   }
   return { label: "등록", tone: "muted", key: "registered", icon: "dot" };
 }
@@ -3045,7 +3045,7 @@ function createChartMemo(participant) {
     `휴대폰 뒤 4자리: ${participant.phoneLast4}`,
     `리뷰 닉네임/ID: ${participant.naverId}`,
     `포토리뷰: ${getReviewLabel(participant.reviewStatus)}`,
-    `카카오톡 채널 추가혜택: ${participant.kakaoVerified ? "애프터케어 시트팩 1매 추가증정" : "미신청"}`,
+    `카카오톡 채널 추가: ${participant.kakaoVerified ? "완료" : "미추가"}`,
     `당첨상품: ${participant.draw?.prizeName || "미진행"}`,
     `결과코드: ${participant.draw?.confirmCode || "-"}`,
     `담당자: ${getParticipantStaffName(participant) || "-"}`,
