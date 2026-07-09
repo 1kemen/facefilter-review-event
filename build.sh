@@ -10,3 +10,4 @@ for f in pepili.png pepili-smile.png ff-enhance.js; do
   [ -f "$f" ] && cp "$f" public/ || true
 done
 echo "build complete"
+ 
