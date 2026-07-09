@@ -3939,3 +3939,202 @@ input.ff-slot-input {
   border-radius: var(--ff-r-card);
   background: var(--ff-soft);
 }
+
+/* =====================================================================
+   UI v3 · PASS 3 — 결과 경험 (서스펜스 리빌 + 티켓 카드 + 요약 박스 정비)
+   1) 결과 첫 노출 시 1.25초 "두구두구" 홀드 → 상승 등장 (ff-enhance 연동)
+   2) 결과 카드 티켓화: 펀치홀 + 절취선 — 스크린샷 찍고 싶은 형태
+   3) 고객/리뷰/추가혜택 박스: 패딩·정렬·행간 정비 (딱 붙음 해소)
+   ===================================================================== */
+
+/* ---------- 3-1. 요약 박스 정비 ---------- */
+#customer-panel .result-card dl {
+  gap: 8px;
+  margin: 14px 0 0;
+}
+#customer-panel .final-result-card dl {
+  grid-template-columns: 1fr;           /* 모바일: 세로 스택 */
+}
+@media (min-width: 560px) {
+  #customer-panel .final-result-card dl { grid-template-columns: repeat(3, 1fr); }
+}
+#customer-panel .result-card dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--ff-line);
+  border-radius: 12px;
+  background: #fff;
+  min-width: 0;
+}
+#customer-panel .result-card dt {
+  font-size: var(--ff-fs-caption);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ff-faint);
+  margin: 0;
+}
+#customer-panel .result-card dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: var(--ff-ls-body);
+  color: var(--ff-ink);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- 3-2. 결과 카드 티켓화 ---------- */
+#customer-panel .final-result-card {
+  position: relative;
+  border: 1px solid var(--ff-line);
+  border-radius: var(--ff-r-card);
+  background: #fff;
+  padding: 22px 20px 20px;
+  box-shadow: var(--ff-shadow-card);
+}
+/* 절취선: 상품 정보와 요약 박스 사이 */
+#customer-panel .final-result-card dl {
+  position: relative;
+  border-top: 1.5px dashed #d8d9d3;
+  padding-top: 16px;
+}
+/* 펀치홀: 절취선 양끝 (부모 soft 배경색 원) */
+#customer-panel .final-result-card dl::before,
+#customer-panel .final-result-card dl::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ff-base);
+  border: 1px solid var(--ff-line);
+}
+#customer-panel .final-result-card dl::before { left: -30px; }
+#customer-panel .final-result-card dl::after { right: -30px; }
+#customer-panel .final-result-card { overflow: hidden; } /* 펀치홀 반원만 노출 */
+
+/* 확인코드: 티켓 시리얼 느낌 */
+#customer-panel .final-prize-head span {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-size: var(--ff-fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--ff-gold);
+  border: 1px solid #e4d9c2;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #fbf8f1;
+}
+
+/* ---------- 3-3. 서스펜스 리빌 ---------- */
+/* 홀드 중: 콘텐츠 숨김 */
+#final-summary.ff-revealing > * {
+  opacity: 0;
+}
+#final-summary.ff-revealing {
+  position: relative;
+  min-height: 320px;
+}
+/* 두구두구 오버레이: 페필이 펄스 + 문구 */
+#final-summary.ff-revealing::before {
+  content: "";
+  position: absolute;
+  inset: 24px 0 auto;
+  margin: 0 auto;
+  width: 120px;
+  height: 120px;
+  background: url("pepili.png") center/contain no-repeat;
+  animation: ffDrumroll 0.5s ease-in-out infinite alternate;
+}
+#final-summary.ff-revealing::after {
+  content: "두구두구···";
+  position: absolute;
+  top: 168px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ff-muted);
+  animation: ffBlink 1s ease-in-out infinite;
+}
+@keyframes ffDrumroll {
+  from { transform: scale(0.96) rotate(-2.5deg); }
+  to   { transform: scale(1.05) rotate(2.5deg); }
+}
+@keyframes ffBlink {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+/* 공개: 상승 등장 (요소별 시차) */
+#final-summary.ff-revealed > * {
+  animation: ffRevealRise 0.55s var(--ff-ease) both;
+}
+#final-summary.ff-revealed > *:nth-child(2) { animation-delay: 0.1s; }
+#final-summary.ff-revealed > *:nth-child(3) { animation-delay: 0.2s; }
+#final-summary.ff-revealed > *:nth-child(4) { animation-delay: 0.28s; }
+@keyframes ffRevealRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce) {
+  #final-summary.ff-revealing::before,
+  #final-summary.ff-revealing::after,
+  #final-summary.ff-revealed > * { animation: none !important; }
+  #final-summary.ff-revealing > * { opacity: 1; }
+}
+
+/* =====================================================================
+   UI v3 · PASS 3.1 — 페필이 원본 유지 + 타일(메달리온) 프레임
+   원칙: 이미지는 불투명 원본 그대로. 배경 조화는 CSS 프레임으로 해결.
+   이미지에 구워진 배경(#FCFCFC)과 동일한 타일색 → 경계가 사라지고,
+   타일 테두리가 "의도된 프레임"으로 읽힘. 다크모드에서도 밝은 타일 유지.
+   ===================================================================== */
+
+:root { --ff-pep-tile: #fcfcfc; }  /* 페필이 이미지 배경과 동일 */
+
+/* 인트로 히어로 페필이 */
+.ff-intro-pep {
+  background-color: var(--ff-pep-tile);
+  border: 1px solid var(--ff-line);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(20, 22, 20, 0.04);
+}
+
+/* 뽑기 카드: 이미지 배경색과 카드색 일치 */
+#customer-panel .drop-choice {
+  background: var(--ff-pep-tile);
+}
+
+/* 결과 축하존 페필이 */
+.ff-result-pep-img {
+  background-color: var(--ff-pep-tile) !important;
+  border: 1px solid var(--ff-line);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* 두구두구 오버레이도 메달리온으로 */
+#final-summary.ff-revealing::before {
+  background-color: var(--ff-pep-tile);
+  border: 1px solid var(--ff-line);
+  border-radius: 50%;
+}
+
+/* 메달리온 정방형 보정 + 이미지 여백 */
+.ff-intro-pep { background-size: 86%; background-position: center; }
+.ff-result-pep-img {
+  background-size: 84% !important;
+  background-position: center !important;
+}
+.ff-tier-high .ff-result-pep-img { width: 120px; height: 120px; }
+.ff-tier-mid .ff-result-pep-img { width: 98px; height: 98px; }
+.ff-tier-low .ff-result-pep-img { width: 86px; height: 86px; }
+#final-summary.ff-revealing::before { background-size: 84%; background-position: center; }
