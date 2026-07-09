@@ -4138,3 +4138,40 @@ input.ff-slot-input {
 .ff-tier-mid .ff-result-pep-img { width: 98px; height: 98px; }
 .ff-tier-low .ff-result-pep-img { width: 86px; height: 86px; }
 #final-summary.ff-revealing::before { background-size: 84%; background-position: center; }
+
+/* =====================================================================
+   UI v3 · PASS 3.2 — 결과 스택 광학 정렬
+   실측상 좌우 경계는 완전 일치(28/362). "미세하게 어긋난 느낌"의 원인은
+   표면색·그림자·라운드가 카드마다 달라 생기는 착시 → 스택 내 통일로 제거.
+   ===================================================================== */
+
+/* 스택 리듬: 카드 간 간격 균일화 */
+#final-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#final-summary > * { margin: 0; }
+
+/* 직원확인 카드: 결과 카드와 같은 표면·높이감으로 통일 */
+#customer-panel .staff-checklist {
+  background: #fff;
+  border: 1px solid var(--ff-line);
+  border-radius: var(--ff-r-card);
+  box-shadow: var(--ff-shadow-card);
+  padding: 18px 20px;
+}
+
+/* 스택 내 풀너비 버튼: 카드와 같은 라운드로 (컨트롤 기본 14px의 예외) */
+#customer-panel .final-benefit-action {
+  border-radius: var(--ff-r-card);
+  background: #fff;
+  box-shadow: var(--ff-shadow-card);
+}
+
+/* 직원확인 칩: 흰 카드 위에서 soft 표면으로 반전 (계층 유지) */
+#customer-panel .staff-check-chips span {
+  background: var(--ff-soft);
+  border: 1px solid var(--ff-line);
+  border-radius: 12px;
+}
