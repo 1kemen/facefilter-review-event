@@ -2958,6 +2958,7 @@ body[data-app-mode="staff"] .detail-panel {
   background: #fff;
 }
 .drop-choice.is-selected span {
+  background-image: url("pepili-smile.png");
   filter: saturate(1.05);
 }
 /* 번호는 좌상단 작은 배지로 (페필이 공간 확보) */
@@ -3503,7 +3504,7 @@ input.ff-slot-input {
 .ff-result-pep-img {
   width: 76px;
   height: 88px;
-  background: url("pepili.png") center/contain no-repeat;
+  background: url("pepili-smile.png") center/contain no-repeat;
 }
 /* 등급별 페필이 크기 차등 */
 .ff-tier-high .ff-result-pep-img { width: 104px; height: 120px; }
@@ -3560,3 +3561,221 @@ input.ff-slot-input {
 .staff-checklist strong {
   font-size: 0.92rem;
 }
+
+
+/* =====================================================================
+   확률표 접기 (ff-enhance.js가 토글)
+   ===================================================================== */
+#customer-prize-odds .odds-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ff-odds-toggle {
+  font-size: 0.72rem;
+  color: var(--ff-deep);
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* 접힘 상태: 리스트 숨김 */
+#customer-prize-odds.ff-odds-collapsed .odds-list {
+  display: none;
+}
+/* 펼칠 때 부드럽게 */
+#customer-prize-odds .odds-list {
+  animation: ffFadeIn 0.3s var(--ff-ease);
+}
+@keyframes ffFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================================
+   UI v3 · PASS 1 — 타이포그래피 & 텍스트 컬러 시스템 정비
+   목표: 토스급 조판 완성도
+   원칙:
+     1) 5단 타입 스케일로 통제 (display 21 / title 18 / body 15 / sub 13 / caption 12)
+     2) 국문 제목 네거티브 자간(-0.02em), 본문 행간 1.6대
+     3) 보조 텍스트 AA 대비 확보 (muted 재조정)
+     4) keep-all 국문 줄바꿈 + text-wrap 최신 조판
+     5) 입력창 16px 이상 (iOS 자동 줌 방지)
+     6) 숫자는 tabular-nums (확률표·전화번호 정렬)
+   범위: 고객 화면(#customer-panel, .ff-*)만. 관리자 화면 무영향.
+   ===================================================================== */
+
+:root {
+  /* v3 타입 스케일 토큰 */
+  --ff-fs-display: 21px; --ff-lh-display: 1.32; --ff-ls-display: -0.02em;
+  --ff-fs-title: 18px;   --ff-lh-title: 1.4;    --ff-ls-title: -0.015em;
+  --ff-fs-body: 15px;    --ff-lh-body: 1.62;    --ff-ls-body: -0.01em;
+  --ff-fs-sub: 13px;     --ff-lh-sub: 1.55;
+  --ff-fs-caption: 12px; --ff-lh-caption: 1.45;
+  /* 텍스트 컬러 위계 재조정 */
+  --ff-muted: #676b66;   /* 본문급 보조 텍스트 — AA 대비 확보 */
+  --ff-faint: #9a9d97;   /* 캡션·메타 전용 (본문에 사용 금지) */
+}
+
+/* ---------- 렌더링 & 국문 조판 기본기 ---------- */
+#customer-panel {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+#customer-panel p,
+#customer-panel li,
+#customer-panel dd,
+#customer-panel label,
+#customer-panel .helper-copy,
+#customer-panel .wizard-subcopy,
+.ff-intro-sub, .ff-slot-hint, .ff-checklist {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+#customer-panel h2,
+#customer-panel h3,
+.ff-intro-title, .ff-slot-q {
+  word-break: keep-all;
+  text-wrap: balance;
+}
+
+/* ---------- 디스플레이 (패널 타이틀·인트로 타이틀) ---------- */
+#customer-panel .panel-heading h2 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: var(--ff-ls-display);
+}
+.ff-intro-title {
+  font-size: var(--ff-fs-display);
+  font-weight: 700;
+  line-height: var(--ff-lh-display);
+  letter-spacing: var(--ff-ls-display);
+}
+
+/* ---------- 타이틀 (STEP 제목·슬롯 질문) ---------- */
+#customer-panel .workflow-step h3 {
+  font-size: var(--ff-fs-title);
+  font-weight: 700;
+  line-height: var(--ff-lh-title);
+  letter-spacing: var(--ff-ls-title);
+}
+.ff-slot-q {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: var(--ff-ls-title);
+}
+
+/* ---------- 본문 (설명 문단) ---------- */
+.ff-intro-sub,
+#customer-panel .wizard-subcopy {
+  font-size: 14px;
+  line-height: var(--ff-lh-body);
+  letter-spacing: var(--ff-ls-body);
+  color: var(--ff-muted);
+}
+.ff-intro-sub { font-size: var(--ff-fs-body); }
+
+/* ---------- 서브 (도움말·안내·체크리스트) ---------- */
+#customer-panel .helper-copy,
+#customer-panel .field-help,
+#customer-panel .form-message,
+.ff-slot-hint, .ff-slot-message {
+  font-size: var(--ff-fs-sub);
+  line-height: var(--ff-lh-sub);
+  letter-spacing: var(--ff-ls-body);
+}
+.ff-checklist {
+  font-size: 13.5px;
+  line-height: 1.6;
+  letter-spacing: var(--ff-ls-body);
+}
+
+/* ---------- 캡션 (칩·진행바 라벨·폼 라벨) ---------- */
+#customer-panel .flow-chips span {
+  font-size: var(--ff-fs-caption);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ff-faint);
+}
+.wizard-progress-labels span {
+  font-size: var(--ff-fs-caption);
+  letter-spacing: 0;
+}
+#wizard-step-label {
+  font-size: var(--ff-fs-sub);
+  font-weight: 700;
+  letter-spacing: var(--ff-ls-body);
+}
+#customer-panel form > label,
+#customer-panel .field-grid label {
+  font-size: var(--ff-fs-sub);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+#customer-panel .checkbox-row span {
+  font-size: var(--ff-fs-sub);
+  line-height: var(--ff-lh-sub);
+  font-weight: 400;
+}
+
+/* 대문자 아이브로우만 양수 자간 허용 (라틴 캡스 전용 규칙) */
+.eyebrow, .ff-slot-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- 입력 필드: iOS 자동 줌 방지 + 숫자 정렬 ---------- */
+#customer-panel input[type="text"],
+#customer-panel input[type="tel"],
+.ff-slot-input {
+  font-size: 16px !important;
+  letter-spacing: var(--ff-ls-body);
+}
+#customer-panel input[type="tel"],
+.ff-slot-input[inputmode="numeric"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ---------- 버튼: CTA 존재감 회복 ---------- */
+#customer-panel .primary-action,
+#customer-panel .secondary-action,
+#customer-panel .draw-button,
+.ff-intro-start, .ff-slot-next {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: var(--ff-ls-body);
+}
+#customer-panel .secondary-action {
+  font-weight: 600;
+}
+
+/* ---------- 숫자 콘텐츠: 확률표·결과 요약 ---------- */
+#customer-panel .odds-panel,
+#customer-panel .final-summary dl,
+.ff-chip-val {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+#customer-panel .odds-panel {
+  font-size: var(--ff-fs-caption);
+  line-height: var(--ff-lh-caption);
+}
+#customer-panel .final-summary dt {
+  font-size: var(--ff-fs-caption);
+  font-weight: 600;
+  color: var(--ff-faint);
+  letter-spacing: 0;
+}
+#customer-panel .final-summary dd {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: var(--ff-ls-body);
+}
+
+/* ---------- 최소 가독 하한선: 12px 미만 텍스트 구제 ---------- */
+#customer-panel .micro-status { font-size: var(--ff-fs-caption); }

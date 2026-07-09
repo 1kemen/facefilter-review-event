@@ -170,6 +170,28 @@
         card.appendChild(holder);
         card.appendChild(err);
 
+        // 이번 슬롯 렌더에 대한 진행 가드 (자동/엔터/버튼 중복 advance 방지)
+        var advanced = false;
+        function tryAdvance() {
+          if (advanced || state.idx !== currentIndex) return;
+          if (slot.type === "tel") {
+            var onlyDigits = (slot.el.value || "").replace(/\D/g, "").slice(0, 4);
+            if (slot.el.value !== onlyDigits) slot.el.value = onlyDigits;
+          }
+          if (commit(slot)) { advanced = true; advance(); }
+          else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
+        }
+
+        // 기존 리스너 제거를 위해 input을 깨끗한 복제본으로 교체
+        // (요소를 재사용하면 이전 슬롯의 리스너가 누적되어 오작동)
+        var prevValue = slot.el.value;
+        var prevChecked = slot.el.checked;
+        var fresh = slot.el.cloneNode(true);
+        fresh.value = prevValue; // 타이핑한 값은 프로퍼티라 별도 복사
+        fresh.checked = prevChecked;
+        slot.el.parentNode.replaceChild(fresh, slot.el);
+        slot.el = fresh; // 슬롯 참조 갱신 (FormData는 name 속성으로 읽으므로 유지됨)
+
         if (slot.type === "tel") {
           var hintp = document.createElement("div");
           hintp.className = "ff-slot-hint";
@@ -177,10 +199,10 @@
           card.appendChild(hintp);
           slot.el.oninput = function () {
             err.style.display = "none";
+            var onlyDigits = (slot.el.value || "").replace(/\D/g, "").slice(0, 4);
+            if (slot.el.value !== onlyDigits) slot.el.value = onlyDigits;
             if (/^[0-9]{4}$/.test((slot.el.value || "").trim())) {
-              setTimeout(function () {
-                if (state.idx === currentIndex && commit(slot)) advance();
-              }, 180);
+              setTimeout(tryAdvance, 200);
             }
           };
         } else {
@@ -194,17 +216,10 @@
             err.style.display = "none";
             nextBtn.disabled = !(slot.el.value || "").trim();
           };
-          nextBtn.addEventListener("click", function () {
-            if (commit(slot)) advance();
-            else { err.style.display = "block"; err.textContent = "입력해 주세요."; }
-          });
+          nextBtn.addEventListener("click", tryAdvance);
         }
         slot.el.onkeydown = function (e) {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            if (state.idx === currentIndex && commit(slot)) advance();
-            else { err.style.display = "block"; err.textContent = slot.type === "tel" ? "숫자 4자리로 입력해 주세요." : "입력해 주세요."; }
-          }
+          if (e.key === "Enter") { e.preventDefault(); tryAdvance(); }
         };
       }
 
@@ -408,6 +423,35 @@
     }
   }
 
+  /* ---------- 4. 확률표 접기 (기본 접힘, 헤딩 클릭 시 펼침) ---------- */
+  function setupOddsFold() {
+    var odds = document.getElementById("customer-prize-odds");
+    if (!odds) return;
+    // app.js가 다시 그릴 수 있으므로 매번 상태 확인
+    var heading = odds.querySelector(".odds-heading");
+    var list = odds.querySelector(".odds-list");
+    if (!heading || !list) return;
+    if (heading.dataset.ffFold === "1") return;
+    heading.dataset.ffFold = "1";
+
+    // 헤딩에 토글 화살표 추가
+    if (!heading.querySelector(".ff-odds-toggle")) {
+      var toggle = document.createElement("span");
+      toggle.className = "ff-odds-toggle";
+      toggle.textContent = "확률 보기 ▾";
+      heading.appendChild(toggle);
+    }
+    // 기본 접힘
+    odds.classList.add("ff-odds-collapsed");
+    heading.style.cursor = "pointer";
+    heading.setAttribute("role", "button");
+    heading.addEventListener("click", function () {
+      var collapsed = odds.classList.toggle("ff-odds-collapsed");
+      var t = heading.querySelector(".ff-odds-toggle");
+      if (t) t.textContent = collapsed ? "확률 보기 ▾" : "접기 ▴";
+    });
+  }
+
   function init() {
     syncProgressLabels();
     setupSlotForm();
@@ -422,16 +466,23 @@
     var summary = document.getElementById("final-summary");
     if (summary) {
       var fxObserver = new MutationObserver(function () {
-        if (window.__ffApplying) return; // 자기 변경 중엔 무시 (무한루프 방지)
+        if (window.__ffApplying) return;
         window.__ffApplying = true;
         try { applyResultEffect(); } finally {
-          // 다음 틱에 플래그 해제 (자기 DOM 변경이 콜백 큐에 쌓인 것 흘려보냄)
           setTimeout(function () { window.__ffApplying = false; }, 0);
         }
       });
       fxObserver.observe(summary, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
       window.__ffApplying = true;
       try { applyResultEffect(); } finally { setTimeout(function () { window.__ffApplying = false; }, 0); }
+    }
+
+    // 확률표 접기 (app.js가 다시 그릴 수 있으므로 감시)
+    var oddsEl = document.getElementById("customer-prize-odds");
+    if (oddsEl) {
+      setupOddsFold();
+      var oddsObserver = new MutationObserver(function () { setupOddsFold(); });
+      oddsObserver.observe(oddsEl, { childList: true });
     }
   }
 
