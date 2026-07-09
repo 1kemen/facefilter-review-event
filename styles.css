@@ -4290,3 +4290,244 @@ input.ff-slot-input {
     transform: scale(0.95);
   }
 }
+
+/* =====================================================================
+   UI v3 · PASS 5 — 다크모드 (웜 차콜 + 골드)
+   시스템 설정(prefers-color-scheme) 자동 전환.
+   원칙:
+     1) 토큰 재정의가 기본, 하드코딩 표면만 개별 오버라이드
+     2) 페필이 메달리온·타일은 다크에서도 밝게 유지 (검은 몸 원천 차단)
+     3) 주 CTA는 아이보리 그라데이션 반전 (다크 위 밝은 버튼)
+     4) 골드 #e0cfa5 — 라이트보다 한 톤 밝게 (다크 대비 확보)
+   범위: 고객 화면 검증 완료. 관리자 화면은 토큰만 상속(백로그).
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    /* 원본 토큰 */
+    --bg: #0d0b09;
+    --ink: #f0ebe0;
+    --muted: #9a9084;
+    --line: #35302a;
+    --panel: #1c1813;
+    --panel-soft: #221e18;
+    --accent: #f0ebe0;
+    --accent-soft: #2a251e;
+    --silver: #6b665e;
+    --gold: #e0cfa5;
+    --shadow: 0 26px 80px rgba(0, 0, 0, 0.55);
+    --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.4);
+    /* ff 토큰 */
+    --ff-ink: #f0ebe0;
+    --ff-muted: #a89e90;
+    --ff-faint: #7d7468;
+    --ff-silver: #5d574e;
+    --ff-line: #35302a;
+    --ff-soft: #221e18;
+    --ff-base: #1a1712;
+    --ff-gold: #e0cfa5;
+    --ff-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 12px 32px rgba(0, 0, 0, 0.38);
+    --ff-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.5), 0 16px 36px rgba(0, 0, 0, 0.55);
+    /* 페필이 타일은 다크에서도 밝게 고정 */
+    --ff-pep-tile: #fcfcfc;
+  }
+
+  body {
+    background: radial-gradient(circle at 22% 0%, #17130f 0%, #0a0908 68%);
+  }
+
+  /* ---------- 패널·표면 ---------- */
+  #customer-panel .flow-panel.wizard-shell {
+    background: linear-gradient(180deg, #1c1813 0%, #16120d 100%);
+    border-color: var(--ff-line);
+  }
+  .ff-slot-card,
+  #customer-panel .review-focus-card,
+  #customer-panel .mini-game,
+  .ff-intro-step {
+    background: var(--ff-soft);
+    border-color: var(--ff-line);
+  }
+  /* 결과 스택: 화이트 → 엘리베이티드 다크 */
+  #customer-panel .final-result-card,
+  #customer-panel .staff-checklist,
+  #customer-panel .final-benefit-action,
+  #customer-panel .result-card dl div {
+    background: #241f18;
+    border-color: #3b352d;
+  }
+  #customer-panel .staff-check-chips span {
+    background: #2a251e;
+    border-color: #3b352d;
+  }
+
+  /* ---------- 주 CTA: 아이보리 반전 ---------- */
+  #customer-panel .primary-action,
+  #customer-panel .draw-button,
+  .ff-intro-start, .ff-slot-next {
+    background: linear-gradient(180deg, #f0ebe0 0%, #ddd4c4 100%);
+    color: #17130f;
+    border: 0;
+  }
+  #customer-panel .primary-action:disabled,
+  #customer-panel .draw-button:disabled,
+  .ff-slot-next:disabled {
+    background: #2a251e;
+    color: #6b6157;
+  }
+  #customer-panel .secondary-action {
+    background: transparent;
+    color: var(--ff-ink);
+    border-color: var(--ff-line);
+  }
+
+  /* ---------- 입력 ---------- */
+  #customer-panel input[type="text"],
+  #customer-panel input[type="tel"],
+  .ff-slot-input {
+    background: #16120d;
+    border-color: var(--ff-line);
+    color: var(--ff-ink);
+  }
+  #customer-panel input[type="text"]:focus,
+  #customer-panel input[type="tel"]:focus,
+  .ff-slot-input:focus {
+    border-color: var(--ff-gold);
+    box-shadow: 0 0 0 3px rgba(224, 207, 165, 0.14);
+  }
+  #customer-panel input::placeholder { color: #6b6157; }
+
+  /* ---------- 진행바: 골드 ---------- */
+  .wizard-progress-track { background: #2a251e; }
+  .wizard-progress-track span {
+    background: linear-gradient(90deg, #c9b284 0%, #e0cfa5 100%);
+    box-shadow: 0 0 10px rgba(224, 207, 165, 0.35);
+  }
+  .wizard-progress-labels span.is-current { color: var(--ff-gold); }
+
+  /* ---------- 티켓 디테일 ---------- */
+  #customer-panel .final-result-card dl {
+    border-top-color: #4a4238;
+  }
+  #customer-panel .final-result-card dl::before,
+  #customer-panel .final-result-card dl::after {
+    background: #16120d;           /* 펀치홀: 패널 배경색 */
+    border-color: #3b352d;
+  }
+  #customer-panel .final-prize-head span {
+    color: #ecd9b0;
+    border-color: #4d4433;
+    background: #26211a;
+  }
+
+  /* ---------- 메달리온: 다크 위 밝은 타일 ---------- */
+  .ff-intro-pep,
+  .ff-result-pep-img,
+  #final-summary.ff-revealing::before {
+    border-color: rgba(240, 235, 224, 0.18);
+    box-shadow: 0 0 0 6px rgba(224, 207, 165, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  #customer-panel .drop-choice {
+    border-color: rgba(240, 235, 224, 0.14);
+  }
+  #customer-panel .drop-choice.is-selected {
+    border-color: var(--ff-gold);
+    box-shadow: 0 0 0 3px rgba(224, 207, 165, 0.2), var(--ff-shadow-pop);
+  }
+
+  /* ---------- 탑바·보조 ---------- */
+  .topbar { background: transparent; border-color: var(--ff-line); }
+  .topbar .tabs .tab { color: var(--ff-muted); }
+  .topbar .tabs .tab.is-active { background: #2a251e; color: var(--ff-ink); }
+  #customer-panel .odds-panel.compact-odds { border-color: var(--ff-line); }
+  #final-summary.ff-revealing::after { color: var(--ff-muted); }
+}
+
+/* =====================================================================
+   UI v3 · PASS 5.1 — 골드 정제 (프리미엄 원칙)
+   규칙: 골드는 ①헤어라인 ②소형 텍스트 액센트에만. 글로우·발광 전면 금지.
+   면(fill)은 아이보리/차콜 무채색으로 — 골드 면적이 넓을수록 싸 보인다.
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* 진행바: 발광 골드 → 무광 아이보리 필 + 완주선만 골드 헤어라인 */
+  .wizard-progress-track { background: #262119; height: 3px; }
+  .wizard-progress-track span {
+    background: #e8e0d0;                 /* 무광 아이보리, 그라데이션 제거 */
+    box-shadow: none;                    /* 글로우 제거 */
+  }
+  .wizard-progress-labels span.is-current { color: var(--ff-ink); } /* 골드 라벨 → 잉크 */
+
+  /* 메달리온: 골드 헤일로 제거 → 순수 헤어라인 */
+  .ff-intro-pep,
+  .ff-result-pep-img,
+  #final-summary.ff-revealing::before {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* 선택된 페필이: 골드 글로우 링 → 1.5px 샴페인 헤어라인 */
+  #customer-panel .drop-choice.is-selected {
+    border: 1.5px solid #cbb98f;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  }
+
+  /* 확인코드 캡슐: 배경 틴트 제거 → 헤어라인 + 텍스트만 */
+  #customer-panel .final-prize-head span {
+    background: transparent;
+    border-color: rgba(224, 207, 165, 0.35);
+    color: #d9c9a3;
+  }
+
+  /* 입력 포커스: 골드 링 → 아이보리 링 (골드는 텍스트 전용 원칙) */
+  #customer-panel input[type="text"]:focus,
+  #customer-panel input[type="tel"]:focus,
+  .ff-slot-input:focus {
+    border-color: #e8e0d0;
+    box-shadow: 0 0 0 3px rgba(232, 224, 208, 0.10);
+  }
+}
+
+/* 라이트 모드도 동일 원칙 적용: 골드 면 최소화 */
+#customer-panel .final-prize-head span {
+  background: transparent;
+}
+
+/* =====================================================================
+   UI v3 · PASS 5.2 — 다크모드 하드코딩 표면 수습
+   토큰을 안 쓰고 하드코딩된 라이트 표면들이 다크에서 탈색돼 보이던 문제.
+   대상: 도움말 버튼 / 도움말·혜택 다이얼로그 / 증정완료 박스
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* 진행이 안 되나요? — 신고된 버그 */
+  .customer-help-button {
+    background: transparent;
+    border-color: var(--ff-line);
+    color: var(--ff-muted);
+  }
+  .customer-help-button:hover {
+    background: #221e18;
+    border-color: #464036;
+  }
+
+  /* 다이얼로그 (도움말·혜택·재확인 공용) */
+  .benefit-dialog {
+    background: #221d17;
+    border-color: #3b352d;
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.6);
+  }
+  .help-list article {
+    background: #2a251e;
+    border-color: #3b352d;
+  }
+  .modal-close {
+    color: var(--ff-muted);
+  }
+  .help-footnote { color: var(--ff-faint); }
+
+  /* 증정 완료 박스 */
+  .session-complete {
+    background: #23281f;
+    border-color: #39402f;
+  }
+  .session-complete strong { color: #cfe0c2; }
+  .session-complete span { color: var(--ff-muted); }
+}
