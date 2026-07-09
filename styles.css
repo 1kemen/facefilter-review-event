@@ -4531,3 +4531,81 @@ input.ff-slot-input {
   .session-complete strong { color: #cfe0c2; }
   .session-complete span { color: var(--ff-muted); }
 }
+
+/* =====================================================================
+   UI v3 · PASS 5.3 — 다크모드 잔당 소탕 (하드코딩 표면 2차)
+   신고: STEP01 요약행/동의박스(흰 배경+아이보리 글자), 네이버 리뷰 버튼
+   (아이보리+흰 글자), 직원확인 칩(저대비), 리뷰 안내 모달(라이트 카드)
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* ---------- STEP01 요약 행 (ff-chip) ---------- */
+  .ff-chip {
+    background: #241f18;
+    border-color: #3b352d;
+  }
+  .ff-chip-label { color: var(--ff-faint); }
+  .ff-chip-val { color: var(--ff-ink); }
+  .ff-chip-edit { color: var(--ff-muted); }
+
+  /* ---------- 동의 박스 ---------- */
+  .ff-consent {
+    background: #241f18;
+    border-color: var(--ff-line);
+    color: var(--ff-ink);
+  }
+  .ff-consent.is-on { border-color: #cbb98f; }
+  .ff-consent-box {
+    background: #16120d;
+    border-color: #4a4238;
+  }
+  .wizard-shell .inline-check {
+    background: #241f18;
+    border-color: #3b352d;
+    color: var(--ff-ink);
+  }
+
+  /* ---------- 네이버 리뷰 버튼: 아이보리 위 흰 글자 → 진한 글자 ---------- */
+  .review-focus-card #open-review:not(:disabled) {
+    background: linear-gradient(180deg, #f0ebe0 0%, #ddd4c4 100%);
+    color: #17130f;
+  }
+  .review-focus-card #open-review:disabled {
+    background: #2a251e;
+    border-color: #3b352d;
+    color: #6b6157;
+  }
+
+  /* ---------- 직원확인 칩: 저대비 해소 ---------- */
+  .staff-check-chips span { color: #ddd3c4; }
+  .staff-check-chips b {
+    background: #f0ebe0;
+    color: #17130f;
+  }
+
+  /* ---------- 리뷰 안내 모달: 라이트 카드 → 다크 통일 ---------- */
+  .route-card {
+    background: #2a251e;
+    border-color: #3b352d;
+  }
+  .route-card b { color: var(--ff-ink); }
+  .route-card span:not(.route-icon) { color: var(--ff-muted); }
+  .route-icon {
+    background: #35302a;
+    color: var(--ff-ink);
+  }
+  .route-icon.naver-icon { background: #03c75a; color: #fff; }
+  .route-arrow { color: var(--ff-faint); }
+  .review-safe-note {
+    background: #2b1e1a;
+    border-color: #4a332c;
+  }
+  .review-safe-note strong { color: #d99387; }
+  .review-safe-note span { color: #c0aca4; }
+
+  /* ---------- 위험 액션 (취소류) ---------- */
+  .danger-action {
+    background: #2b1d1a;
+    border-color: #4a332c;
+    color: #d99387;
+  }
+}
