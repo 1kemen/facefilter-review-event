@@ -4175,3 +4175,118 @@ input.ff-slot-input {
   border: 1px solid var(--ff-line);
   border-radius: 12px;
 }
+
+/* =====================================================================
+   UI v3 · PASS 4 — 마이크로인터랙션 (살아있는 앱 층)
+   1) 모든 탭 가능 요소에 press 피드백 (scale + 그림자 수축)
+   2) 인트로 페필이 숨쉬기 idle
+   3) 입력 포커스 트랜지션
+   4) 모바일 폴리시: 탭 하이라이트 제거, 더블탭 줌 방지
+   5) prefers-reduced-motion 전면 존중
+   ===================================================================== */
+
+/* ---------- 모바일 터치 기본기 ---------- */
+#customer-panel button,
+#customer-panel input,
+.ff-intro-start, .ff-slot-next {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ---------- 버튼 press 피드백 ---------- */
+#customer-panel .primary-action,
+#customer-panel .secondary-action,
+#customer-panel .draw-button,
+.ff-intro-start, .ff-slot-next,
+#customer-panel .final-benefit-action {
+  transition: transform 0.12s ease, box-shadow 0.18s ease, background-color 0.18s ease, opacity 0.18s ease;
+  will-change: transform;
+}
+#customer-panel .primary-action:active:not(:disabled),
+#customer-panel .draw-button:active:not(:disabled),
+.ff-intro-start:active, .ff-slot-next:active:not(:disabled) {
+  transform: scale(0.975);
+  box-shadow: 0 1px 4px rgba(20, 22, 20, 0.10);
+}
+#customer-panel .secondary-action:active,
+#customer-panel .final-benefit-action:active {
+  transform: scale(0.975);
+  background: var(--ff-soft);
+}
+
+/* 페필이 카드 press */
+#customer-panel .drop-choice {
+  transition: transform 0.12s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+#customer-panel .drop-choice:active { transform: scale(0.95); }
+
+/* 확률 보기·도움말 등 보조 토글 */
+#customer-panel .odds-toggle:active,
+#customer-panel .helper-toggle:active,
+.topbar .tabs .tab:active { transform: scale(0.96); }
+#customer-panel .odds-toggle,
+#customer-panel .helper-toggle,
+.topbar .tabs .tab { transition: transform 0.12s ease, background-color 0.18s ease; }
+
+/* ---------- 데스크톱 호버 (터치 기기 무영향) ---------- */
+@media (hover: hover) {
+  #customer-panel .primary-action:hover:not(:disabled),
+  #customer-panel .draw-button:hover:not(:disabled),
+  .ff-intro-start:hover, .ff-slot-next:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(20, 22, 20, 0.10), 0 18px 40px rgba(20, 22, 20, 0.16);
+  }
+  #customer-panel .drop-choice:hover:not(.is-selected) {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(20, 22, 20, 0.07);
+  }
+}
+
+/* ---------- 인트로 페필이 숨쉬기 idle ---------- */
+@keyframes ffBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-3px) scale(1.015); }
+}
+.ff-intro-pep {
+  animation: ffBreathe 3.2s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/* ---------- 입력 포커스 ---------- */
+#customer-panel input[type="text"],
+#customer-panel input[type="tel"],
+.ff-slot-input {
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+#customer-panel input[type="text"]:focus,
+#customer-panel input[type="tel"]:focus,
+.ff-slot-input:focus {
+  outline: none;
+  border-color: var(--ff-ink);
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.08);
+}
+
+/* ---------- 진행바: 단계 라벨 전환 부드럽게 ---------- */
+.wizard-progress-labels span { transition: color 0.3s ease, font-weight 0.3s ease; }
+
+/* ---------- 모션 최소화 존중 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ff-intro-pep { animation: none; }
+  #customer-panel .primary-action, #customer-panel .secondary-action,
+  #customer-panel .draw-button, #customer-panel .drop-choice,
+  .ff-intro-start, .ff-slot-next { transition: none; }
+}
+
+/* PASS 4 보정: press가 hover를 이기도록 (특이도 + 후순위) */
+@media (hover: hover) {
+  #customer-panel .primary-action:active:not(:disabled),
+  #customer-panel .draw-button:active:not(:disabled),
+  .ff-intro-start:active:not(:disabled),
+  .ff-slot-next:active:not(:disabled) {
+    transform: scale(0.975);
+    box-shadow: 0 1px 4px rgba(20, 22, 20, 0.10);
+  }
+  #customer-panel .drop-choice:active:not(.is-selected) {
+    transform: scale(0.95);
+  }
+}
