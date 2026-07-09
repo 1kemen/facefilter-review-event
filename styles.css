@@ -4609,3 +4609,51 @@ input.ff-slot-input {
     color: #d99387;
   }
 }
+
+/* =====================================================================
+   UI v3 · PASS 5.4 — 다크 CTA 호버 보정 + 당첨 도파민 마감
+   1) 원본 hover(background:#000)가 다크 아이보리 CTA를 검게 덮던 문제
+   2) 공개 순간 상품명 팝인 + 페필이 바운스 (도파민 마무리 한 스푼)
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* 호버: 검정 → 한 톤 깊은 아이보리 (밝은 버튼은 밝게 유지) */
+  #customer-panel .primary-action:hover:not(:disabled),
+  #customer-panel .draw-button:not(:disabled):hover,
+  .ff-intro-start:hover,
+  .ff-slot-next:hover:not(:disabled),
+  .review-focus-card #open-review:not(:disabled):hover {
+    background: linear-gradient(180deg, #e8e0d0 0%, #d2c7b2 100%);
+    color: #17130f;
+  }
+  /* press도 동일 계열 유지 */
+  #customer-panel .primary-action:active:not(:disabled),
+  #customer-panel .draw-button:active:not(:disabled),
+  .ff-intro-start:active,
+  .ff-slot-next:active:not(:disabled) {
+    background: linear-gradient(180deg, #ddd4c4 0%, #cfc3ac 100%);
+    color: #17130f;
+  }
+}
+
+/* ---------- 당첨 공개 도파민: 상품명 팝인 + 메달리온 바운스 ---------- */
+@keyframes ffPrizePop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+#final-summary.ff-revealed .final-result-card > strong {
+  display: inline-block;
+  animation: ffPrizePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+}
+@keyframes ffMedallionLand {
+  0%   { transform: translateY(-16px) scale(0.9); opacity: 0; }
+  55%  { transform: translateY(3px) scale(1.03); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+#final-summary.ff-revealed .ff-result-pep-img {
+  animation: ffMedallionLand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  #final-summary.ff-revealed .final-result-card > strong,
+  #final-summary.ff-revealed .ff-result-pep-img { animation: none; }
+}
