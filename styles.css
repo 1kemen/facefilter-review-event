@@ -4657,3 +4657,54 @@ input.ff-slot-input {
   #final-summary.ff-revealed .final-result-card > strong,
   #final-summary.ff-revealed .ff-result-pep-img { animation: none; }
 }
+
+/* =====================================================================
+   UI v3 · PASS 6 — 결과 티켓 마감 (푸터·톱라인·캡처 안내·상태 톤)
+   ===================================================================== */
+
+/* 티켓 발급 푸터 */
+.ff-ticket-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ff-line);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ff-faint);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 상 등급 전용: 티켓 상단 샴페인 헤어라인 */
+#final-summary.ff-tier-high .final-result-card {
+  border-top: 2px solid #cbb98f;
+}
+
+/* 캡처 안내 */
+.ff-capture-hint {
+  margin: 2px 4px 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ff-faint);
+}
+
+/* 카톡채널 상태 톤 */
+#customer-panel .result-card dd.ff-dd-quiet {
+  color: var(--ff-faint);
+  font-weight: 500;
+}
+#customer-panel .result-card dd.ff-dd-done { color: var(--ff-gold); }
+#customer-panel .result-card dd.ff-dd-done::before {
+  content: "✓ ";
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ff-ticket-foot { border-top-color: #35302a; }
+  #final-summary.ff-tier-high .final-result-card { border-top-color: #b5a377; }
+  #customer-panel .result-card dd.ff-dd-done { color: #d9c9a3; }
+}
