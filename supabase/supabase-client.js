@@ -179,6 +179,7 @@
       p_staff_name: staffName,
       p_team: team
     }),
+    getGiftUsage: () => rpc("ff_get_gift_usage"),
     runDraw: ({ sessionId, participantId, dropChoice = null, drawType = "primary" }) => rpc("ff_run_draw", {
       p_session_id: sessionId,
       p_participant_id: participantId,

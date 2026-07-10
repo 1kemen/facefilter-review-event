@@ -741,6 +741,7 @@
             btn.textContent = "사용완료 ✓";
             btn.disabled = true;
             btn.classList.add("is-used");
+            if (window.__ffLoadUsage) window.__ffLoadUsage();
           } else if (res && res.code === "already_used") {
             ffOpenUseState = null;
             form.remove();
@@ -793,4 +794,131 @@
       ticking = false;
     });
   }, { passive: true });
+})();
+
+// =====================================================================
+// PASS 10 — 지급/사용 현황 페이지 + 표 사용상태 반영
+// 읽기 경로(ff_get_gift_usage)로 사용처리 상태를 화면에 지속 반영한다.
+// =====================================================================
+(function () {
+  var usageCache = null;   // Map<participantId, item>
+  var loading = false;
+
+  function isInstant(name) { return (name || "").indexOf("마스크팩") !== -1; }
+
+  function fmtTime(iso) {
+    if (!iso) return "-";
+    var d = new Date(iso);
+    if (isNaN(d)) return "-";
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    return (d.getMonth() + 1) + "." + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  async function loadUsage() {
+    if (loading) return usageCache;
+    if (!window.FaceFilterSupabase || !window.FaceFilterSupabase.getGiftUsage) return null;
+    loading = true;
+    try {
+      var res = await window.FaceFilterSupabase.getGiftUsage();
+      if (res && res.ok && Array.isArray(res.items)) {
+        usageCache = new Map(res.items.map(function (it) { return [it.id, it]; }));
+        annotateRows();
+        renderUsagePage();
+      }
+    } catch (e) {
+      console.warn("[ff] 지급/사용 조회 실패:", e && e.message);
+    } finally {
+      loading = false;
+    }
+    return usageCache;
+  }
+  window.__ffLoadUsage = loadUsage; // 사용처리 성공 후 갱신용
+
+  // 표의 각 행에 사용 상태 반영: 사용완료면 버튼 → 상태 칩
+  function annotateRows() {
+    if (!usageCache) return;
+    var table = document.getElementById("participant-table");
+    if (!table) return;
+    table.querySelectorAll("tr[data-participant-row]").forEach(function (row) {
+      var pid = row.getAttribute("data-participant-row");
+      var item = usageCache.get(pid);
+      if (!item || !item.usedAt) return;
+      var actions = row.querySelector(".row-actions");
+      if (!actions) return;
+      var btn = actions.querySelector(".ff-use-gift");
+      if (btn && !btn.classList.contains("is-used")) {
+        btn.textContent = "사용완료 ✓";
+        btn.disabled = true;
+        btn.classList.add("is-used");
+        btn.title = (item.usedTeam || "") + " · " + (item.usedStaff || "") + " · " + fmtTime(item.usedAt);
+      }
+    });
+  }
+
+  // 지급/사용 현황 페이지 렌더
+  function renderUsagePage() {
+    var root = document.getElementById("ff-usage-root");
+    if (!root || !usageCache) return;
+    var items = Array.from(usageCache.values());
+    if (!items.length) {
+      root.innerHTML = '<p class="empty-detail">아직 지급 완료된 참여자가 없습니다.</p>';
+      return;
+    }
+    var used = items.filter(function (i) { return i.usedAt; });
+    var pending = items.filter(function (i) { return !i.usedAt && !isInstant(i.prizeName); });
+
+    // 팀별 요약
+    var teamCount = {};
+    used.forEach(function (i) {
+      var t = i.usedTeam || "(미지정)";
+      teamCount[t] = (teamCount[t] || 0) + 1;
+    });
+    var summary = Object.keys(teamCount).map(function (t) {
+      return '<span class="ff-usage-chip"><b>' + t + "</b>" + teamCount[t] + "건</span>";
+    }).join("");
+
+    function rowsHtml(list, showUsed) {
+      return list.map(function (i) {
+        return "<tr>" +
+          "<td><strong>" + (i.customerName || "-") + "</strong><br><small>" + (i.naverHandle || "") + " · " + (i.phoneLast4 || "") + "</small></td>" +
+          "<td>" + (i.prizeName || "-") + (isInstant(i.prizeName) ? ' <em class="ff-tag-instant">즉시</em>' : "") + "</td>" +
+          "<td>" + (i.giftTeam || "-") + "<br><small>" + fmtTime(i.giftAt) + "</small></td>" +
+          (showUsed
+            ? "<td>" + (i.usedTeam || "-") + " · " + (i.usedStaff || "-") + "<br><small>" + fmtTime(i.usedAt) + "</small></td>"
+            : "") +
+          "</tr>";
+      }).join("");
+    }
+
+    root.innerHTML =
+      '<div class="ff-usage-summary">' +
+        '<span class="ff-usage-chip is-total"><b>사용완료</b>' + used.length + "건</span>" +
+        summary +
+        '<span class="ff-usage-chip is-pending"><b>미사용 시술권</b>' + pending.length + "건</span>" +
+      "</div>" +
+      '<h3 class="ff-usage-h">사용완료 (' + used.length + ")</h3>" +
+      '<div class="table-wrap"><table class="ff-usage-table"><thead><tr>' +
+      "<th>고객</th><th>상품</th><th>지급</th><th>사용</th></tr></thead><tbody>" +
+      rowsHtml(used, true) + "</tbody></table></div>" +
+      '<h3 class="ff-usage-h">미사용 시술권 — 내원 대기 (' + pending.length + ")</h3>" +
+      '<div class="table-wrap"><table class="ff-usage-table"><thead><tr>' +
+      "<th>고객</th><th>상품</th><th>지급</th></tr></thead><tbody>" +
+      rowsHtml(pending, false) + "</tbody></table></div>";
+  }
+
+  // 트리거: 탭 클릭 / 새로고침 버튼 / 표 갱신
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest('[data-tab="usage"]') || t.closest("#ff-usage-refresh")) {
+      loadUsage();
+    }
+  });
+  var tableEl = document.getElementById("participant-table");
+  if (tableEl) {
+    new MutationObserver(function () {
+      if (usageCache) annotateRows();
+      else if (tableEl.querySelector("tr")) loadUsage(); // 최초 데이터 로드 시 1회
+    }).observe(tableEl, { childList: true, subtree: true });
+  }
 })();
