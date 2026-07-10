@@ -5180,3 +5180,17 @@ input.ff-slot-input {
   cursor: not-allowed;
   opacity: 1;
 }
+
+/* =====================================================================
+   UI v3 · PASS 9.3 — 상단 헤더 접힘
+   ===================================================================== */
+.topbar {
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+.topbar.ff-topbar-folded {
+  transform: translateY(-100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar { transition: none; }
+}
