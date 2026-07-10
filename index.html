@@ -19,6 +19,7 @@
       <button class="tab" data-tab="admin" type="button" id="admin-tab-label">관리자</button>
       <button class="tab" data-tab="audit" type="button" data-owner-only>감사로그</button>
       <button class="tab" data-tab="prizes" type="button" data-owner-only>상품설정</button>
+      <button class="tab" data-tab="usage" type="button" id="usage-tab-label">지급/사용</button>
     </nav>
   </header>
 
@@ -396,6 +397,21 @@
             </thead>
             <tbody id="prize-table"></tbody>
           </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="usage-panel" data-panel="usage">
+      <section class="panel usage-board">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Gift Usage</p>
+            <h2>지급/사용 현황</h2>
+          </div>
+          <button class="small-action" id="ff-usage-refresh" type="button">새로고침</button>
+        </div>
+        <div id="ff-usage-root">
+          <p class="empty-detail">관리자 로그인 후 데이터를 불러옵니다.</p>
         </div>
       </section>
     </section>

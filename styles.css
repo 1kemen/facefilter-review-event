@@ -4791,7 +4791,8 @@ input.ff-slot-input {
 @media (prefers-color-scheme: dark) {
   #admin-panel,
   .tab-panel[data-panel="audit"],
-  .tab-panel[data-panel="prizes"] {
+  .tab-panel[data-panel="prizes"],
+  .tab-panel[data-panel="usage"] {
     color-scheme: light;
     /* 원본 라이트 토큰 재고정 */
     --bg: #f4f4f1;
@@ -4824,7 +4825,8 @@ input.ff-slot-input {
      반다크 혼재의 근본 해결. :has 미지원 브라우저는 위 패널 스코프로 폴백 */
   body:has(.tab-panel[data-panel="admin"]:not([hidden])),
   body:has(.tab-panel[data-panel="audit"]:not([hidden])),
-  body:has(.tab-panel[data-panel="prizes"]:not([hidden])) {
+  body:has(.tab-panel[data-panel="prizes"]:not([hidden])),
+  body:has(.tab-panel[data-panel="usage"]:not([hidden])) {
     color-scheme: light;
     --bg: #f4f4f1; --ink: #1a1a1a; --muted: #8a8d88; --line: #e7e8e4;
     --panel: #fbfcfa; --panel-soft: #f5f6f3; --accent: #1f201d; --accent-soft: #eceee9;
@@ -5193,4 +5195,79 @@ input.ff-slot-input {
 }
 @media (prefers-reduced-motion: reduce) {
   .topbar { transition: none; }
+}
+
+/* =====================================================================
+   UI v3 · PASS 10 — 지급/사용 현황 페이지
+   ===================================================================== */
+#usage-panel .usage-board { display: grid; gap: 16px; }
+.ff-usage-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ff-usage-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--ff-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ff-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ff-usage-chip b { color: var(--ff-faint); font-weight: 600; }
+.ff-usage-chip.is-total { background: var(--ff-ink); color: #fff; border-color: var(--ff-ink); }
+.ff-usage-chip.is-total b { color: rgba(255,255,255,0.65); }
+.ff-usage-chip.is-pending { border-color: #e4d9c2; background: #fbf8f1; }
+.ff-usage-chip.is-pending b { color: var(--ff-gold); }
+
+.ff-usage-h {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ff-ink);
+}
+.ff-usage-table { width: 100%; border-collapse: collapse; }
+.ff-usage-table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ff-faint);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ff-line);
+}
+.ff-usage-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f0f1ed;
+  font-size: 13.5px;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+.ff-usage-table small { color: var(--ff-faint); font-size: 12px; }
+.ff-tag-instant {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ff-faint);
+  border: 1px solid var(--ff-line);
+  border-radius: 6px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+/* 관리자 라이트 고정에 usage 패널 포함 */
+@media (prefers-color-scheme: dark) {
+  .tab-panel[data-panel="usage"] {
+    color-scheme: light;
+    color: #1a1a1a;
+  }
+  body:has(.tab-panel[data-panel="usage"].is-active) {
+    background: #f4f4f1;
+  }
 }
