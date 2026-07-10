@@ -769,3 +769,28 @@
     init();
   }
 })();
+
+// =====================================================================
+// PASS 9.3 — 상단 헤더 접힘 (스크롤 다운 시 숨김 / 업 시 복귀)
+// =====================================================================
+(function () {
+  var topbar = document.querySelector(".topbar");
+  if (!topbar) return;
+  var lastY = window.scrollY || 0;
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY || 0;
+      var delta = y - lastY;
+      if (y > 72 && delta > 4) {
+        topbar.classList.add("ff-topbar-folded");   // 내림: 접기
+      } else if (delta < -4 || y <= 72) {
+        topbar.classList.remove("ff-topbar-folded"); // 올림/최상단: 복귀
+      }
+      lastY = y;
+      ticking = false;
+    });
+  }, { passive: true });
+})();
