@@ -170,6 +170,15 @@
       p_session_id: sessionId,
       p_participant_id: participantId
     }),
+    setGiftTeam: ({ participantId, team }) => rpc("ff_set_gift_team", {
+      p_participant_id: participantId,
+      p_team: team
+    }),
+    markGiftUsed: ({ participantId, staffName, team }) => rpc("ff_mark_gift_used", {
+      p_participant_id: participantId,
+      p_staff_name: staffName,
+      p_team: team
+    }),
     runDraw: ({ sessionId, participantId, dropChoice = null, drawType = "primary" }) => rpc("ff_run_draw", {
       p_session_id: sessionId,
       p_participant_id: participantId,
