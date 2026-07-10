@@ -665,6 +665,11 @@
       if (actions.querySelector(".ff-use-form")) return;
       var form = document.createElement("div");
       form.className = "ff-use-form";
+      // 폼 내부의 모든 상호작용(셀렉트·입력 포함)이 행 클릭(참여자 선택)으로
+      // 전파돼 재렌더 → 폼이 닫히는 문제 방지: 컨테이너 레벨에서 전면 차단
+      ["click", "mousedown", "pointerdown", "touchstart", "change", "focusin"].forEach(function (ev) {
+        form.addEventListener(ev, function (e) { e.stopPropagation(); });
+      });
       var opts = FF_TEAMS.map(function (t) {
         return '<option value="' + t + '"' + (t === ffGetTeam() ? " selected" : "") + ">" + t + "</option>";
       }).join("");
