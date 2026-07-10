@@ -5098,3 +5098,60 @@ input.ff-slot-input {
   border-radius: 999px;
   padding: 6px 12px;
 }
+
+/* =====================================================================
+   UI v3 · PASS 9.1 — 상세 패널 스크롤 수정 & 미니폼 안정화
+   1) sticky 패널이 화면보다 길 때 하단 잘림 → 내부 스크롤로 전환
+   2) 팀 셀렉트 폼 요소 높이 정합
+   ===================================================================== */
+#admin-panel .detail-panel {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);   /* 화면 안에 항상 수납 */
+  overflow-y: auto;                  /* 내용이 길면 패널 내부 스크롤 */
+  overscroll-behavior: contain;      /* 패널 스크롤이 페이지로 새지 않게 */
+}
+/* 패널 내부 스크롤바를 조용하게 */
+#admin-panel .detail-panel::-webkit-scrollbar { width: 8px; }
+#admin-panel .detail-panel::-webkit-scrollbar-thumb {
+  background: #d8d9d3;
+  border-radius: 8px;
+}
+#admin-panel .detail-panel::-webkit-scrollbar-track { background: transparent; }
+
+/* 현장 기록 폼: 팀 셀렉트를 입력창과 같은 규격으로 */
+#admin-panel .ff-team-select {
+  height: 46px;
+  width: 100%;
+  margin: 6px 0 0;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* =====================================================================
+   UI v3 · PASS 5.6 — 다크모드 누락 토큰 수습 (모바일 어색함의 뿌리)
+   원본 팔레트 중 다크 재정의에서 빠졌던 컬러 토큰 4종 + 비활성 가독 보정.
+   sage(킥커) · ff-deep(보조 라인/힌트) · danger(경고) · blue(정보)가
+   라이트용 중간톤 그대로 다크에 남아 침침하게 보이던 문제.
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sage: #9caa9e;      /* 킥커·섹션 라벨 — 침침한 #79837d 상향 */
+    --ff-deep: #94a1a5;   /* 보조 딥 톤 */
+    --danger: #d98b80;    /* 경고 — 다크 가독 버전 */
+    --blue: #8fa3ae;      /* 정보 */
+  }
+
+  /* 비활성 버튼 가독 보정: 꺼진 건 알되 글자는 읽히게 (대비 ≥3:1) */
+  #customer-panel .primary-action:disabled,
+  #customer-panel .draw-button:disabled,
+  .ff-slot-next:disabled,
+  .review-focus-card #open-review:disabled {
+    color: #8a7e6f;
+  }
+}
+
+/* PASS 5.6 보강: 다이얼로그 상단 라벨(REVIEW 등) 다크 가독 */
+@media (prefers-color-scheme: dark) {
+  .benefit-dialog-copy > span { color: var(--ff-muted); }
+}
