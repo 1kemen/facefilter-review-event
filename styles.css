@@ -4708,3 +4708,76 @@ input.ff-slot-input {
   #final-summary.ff-tier-high .final-result-card { border-top-color: #b5a377; }
   #customer-panel .result-card dd.ff-dd-done { color: #d9c9a3; }
 }
+
+/* =====================================================================
+   UI v3 · PASS 7 — 관리자 네이버 검수 원클릭 버튼
+   ===================================================================== */
+.ff-naver-audit b {
+  display: inline-grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  margin-right: 4px;
+  border-radius: 4px;
+  background: #03c75a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: -2px;
+}
+.ff-naver-audit.is-copied {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+/* =====================================================================
+   UI v3 · PASS 8 — 지급 팀 드롭다운 & 사용처리 미니폼
+   ===================================================================== */
+.ff-team-select {
+  margin-left: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--ff-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ff-ink);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+}
+.ff-use-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px;
+  border: 1px solid var(--ff-line);
+  border-radius: 10px;
+  background: var(--ff-soft);
+}
+.ff-use-form .ff-use-team,
+.ff-use-form .ff-use-staff {
+  padding: 6px 8px;
+  border: 1px solid var(--ff-line);
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-family: inherit;
+  background: #fff;
+}
+.ff-use-form .ff-use-staff { width: 110px; }
+.ff-use-gift.is-used {
+  color: var(--ff-faint);
+  border-color: transparent;
+  background: transparent;
+}
+@media (prefers-color-scheme: dark) {
+  .ff-team-select,
+  .ff-use-form .ff-use-team,
+  .ff-use-form .ff-use-staff {
+    background: #241f18;
+    border-color: #3b352d;
+    color: var(--ff-ink);
+  }
+  .ff-use-form { background: #1c1813; border-color: #35302a; }
+}
