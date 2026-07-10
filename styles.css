@@ -4781,3 +4781,320 @@ input.ff-slot-input {
   }
   .ff-use-form { background: #1c1813; border-color: #35302a; }
 }
+
+/* =====================================================================
+   UI v3 · PASS 5.5 — 관리자 계열 화면 라이트 고정
+   관리자/감사로그/상품설정은 직원 운영 도구 → 시스템 다크 설정과 무관하게
+   항상 라이트 렌더. (하드코딩 라이트 표면이 많아 반다크 혼재가 발생했음)
+   토큰을 패널 스코프에서 라이트 값으로 재고정 → var 기반 스타일 전부 복원.
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  #admin-panel,
+  .tab-panel[data-panel="audit"],
+  .tab-panel[data-panel="prizes"] {
+    color-scheme: light;
+    /* 원본 라이트 토큰 재고정 */
+    --bg: #f4f4f1;
+    --ink: #1a1a1a;
+    --muted: #8a8d88;
+    --line: #e7e8e4;
+    --panel: #fbfcfa;
+    --panel-soft: #f5f6f3;
+    --accent: #1f201d;
+    --accent-soft: #eceee9;
+    --silver: #b9bcb4;
+    --gold: #9a8357;
+    --shadow: 0 26px 80px rgba(31, 32, 29, 0.12);
+    --shadow-soft: 0 12px 34px rgba(31, 32, 29, 0.09);
+    /* ff 토큰 재고정 */
+    --ff-ink: #1a1a1a;
+    --ff-muted: #676b66;
+    --ff-faint: #9a9d97;
+    --ff-silver: #c8cac3;
+    --ff-line: #e7e8e4;
+    --ff-soft: #f5f6f3;
+    --ff-base: #fbfcfa;
+    --ff-gold: #9a8357;
+    --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
+    --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
+    /* body에서 상속되는 다크 계산색 차단 — 여기서 상속 재시작 */
+    color: var(--ink);
+  }
+  /* 관리자 계열 탭이 열려 있으면 페이지 전체(탑바 포함)를 라이트로 —
+     반다크 혼재의 근본 해결. :has 미지원 브라우저는 위 패널 스코프로 폴백 */
+  body:has(.tab-panel[data-panel="admin"]:not([hidden])),
+  body:has(.tab-panel[data-panel="audit"]:not([hidden])),
+  body:has(.tab-panel[data-panel="prizes"]:not([hidden])) {
+    color-scheme: light;
+    --bg: #f4f4f1; --ink: #1a1a1a; --muted: #8a8d88; --line: #e7e8e4;
+    --panel: #fbfcfa; --panel-soft: #f5f6f3; --accent: #1f201d; --accent-soft: #eceee9;
+    --silver: #b9bcb4; --gold: #9a8357;
+    --shadow: 0 26px 80px rgba(31, 32, 29, 0.12);
+    --shadow-soft: 0 12px 34px rgba(31, 32, 29, 0.09);
+    --ff-ink: #1a1a1a; --ff-muted: #676b66; --ff-faint: #9a9d97; --ff-silver: #c8cac3;
+    --ff-line: #e7e8e4; --ff-soft: #f5f6f3; --ff-base: #fbfcfa; --ff-gold: #9a8357;
+    --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
+    --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
+    background: #f4f4f1;
+    color: var(--ink);
+  }
+  body:has(.tab-panel[data-panel="admin"]:not([hidden])) .topbar,
+  body:has(.tab-panel[data-panel="audit"]:not([hidden])) .topbar,
+  body:has(.tab-panel[data-panel="prizes"]:not([hidden])) .topbar {
+    background: #fbfcfa;
+    border-color: var(--line);
+  }
+  /* 팀 셀렉트·사용처리 폼도 관리자 안에선 라이트 */
+  #admin-panel .ff-team-select,
+  #admin-panel .ff-use-form .ff-use-team,
+  #admin-panel .ff-use-form .ff-use-staff {
+    background: #fff;
+    border-color: var(--ff-line);
+    color: var(--ff-ink);
+  }
+  #admin-panel .ff-use-form { background: var(--ff-soft); border-color: var(--ff-line); }
+}
+
+/* =====================================================================
+   UI v3 · PASS 9 — 관리자 화면 전면 정비 (배치·표·카드·버튼)
+   관리자는 항상 라이트. 고객 화면과 같은 v3 시스템으로 통일:
+   5단 타입 스케일 · 라운드 3단 · 그림자 2단 · 8px 리듬 · tabular 숫자
+   ===================================================================== */
+
+/* ---------- 패널 공통 ---------- */
+#admin-panel .panel,
+#audit-panel .panel,
+#prizes-panel .panel {
+  border: 1px solid var(--ff-line);
+  border-radius: var(--ff-r-card);
+  background: #fbfcfa;
+  box-shadow: var(--ff-shadow-card);
+}
+#admin-panel .section-kicker,
+#audit-panel .section-kicker,
+#prizes-panel .section-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ff-gold);
+}
+#admin-panel .panel-heading h2,
+#audit-panel .panel-heading h2,
+#prizes-panel .panel-heading h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ff-ink);
+}
+
+/* ---------- 통계 카드 ---------- */
+#admin-panel .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+#admin-panel .stat-card {
+  border: 1px solid var(--ff-line);
+  border-radius: var(--ff-r-card);
+  background: #fff;
+  box-shadow: none;
+  padding: 14px 16px;
+  display: grid;
+  gap: 4px;
+}
+#admin-panel .stat-card p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ff-faint);
+  letter-spacing: 0;
+}
+#admin-panel .stat-card strong {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ff-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 데이터 보관 카드 ---------- */
+#admin-panel .maintenance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+#admin-panel .maintenance-item {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--ff-line);
+  border-radius: 12px;
+  background: #fff;
+}
+#admin-panel .maintenance-item span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ff-muted);
+}
+#admin-panel .maintenance-item strong {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ff-ink);
+}
+#admin-panel .maintenance-item em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ff-faint);
+}
+#admin-panel .maintenance-item.is-danger {
+  background: #fdf3f1;
+  border-color: #eccfc8;
+}
+#admin-panel .maintenance-item.is-danger em { color: #9b4a42; }
+#admin-panel .maintenance-copy {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ff-muted);
+}
+
+/* ---------- 툴바 (검색·필터·CSV) ---------- */
+#admin-panel .admin-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#admin-panel .admin-toolbar label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ff-faint);
+  letter-spacing: 0;
+}
+#admin-panel .admin-toolbar .search-field { flex: 1 1 320px; }
+#admin-panel .admin-toolbar input[type="search"],
+#admin-panel .admin-toolbar select {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--ff-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ff-ink);
+  font-size: 14px;
+  font-family: inherit;
+}
+#admin-panel .admin-toolbar input[type="search"]:focus,
+#admin-panel .admin-toolbar select:focus {
+  outline: none;
+  border-color: var(--ff-ink);
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.07);
+}
+#admin-panel .admin-toolbar .secondary-action {
+  height: 46px;
+  min-height: 0;
+  padding: 0 18px;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+/* ---------- 참여자 표 ---------- */
+#admin-panel .participant-table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ff-faint);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ff-line);
+}
+#admin-panel .participant-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #f0f1ed;
+  font-size: 14px;
+  vertical-align: top;
+}
+#admin-panel .participant-table .identity strong {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+#admin-panel .participant-table .identity span {
+  font-size: 12px;
+  color: var(--ff-faint);
+  font-variant-numeric: tabular-nums;
+}
+/* 선택 행: 검정 블록 → 소프트 하이라이트 + 좌측 잉크 바 */
+#admin-panel .participant-table tbody tr.is-selected td {
+  background: var(--ff-soft);
+}
+#admin-panel .participant-table tbody tr.is-selected td:first-child {
+  box-shadow: inset 3px 0 0 var(--ff-ink);
+}
+
+/* 액션: 2열 컴팩트 그리드 유지하되 버튼을 조용하게 */
+#admin-panel .participant-table .row-actions { gap: 6px; }
+#admin-panel .participant-table .small-action {
+  padding: 8px 10px;
+  border: 1px solid var(--ff-line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ff-ink);
+  transition: background-color 0.15s ease, transform 0.12s ease;
+}
+#admin-panel .participant-table .small-action:hover { background: var(--ff-soft); }
+#admin-panel .participant-table .small-action:active { transform: scale(0.97); }
+#admin-panel .participant-table .small-action.danger-action {
+  background: #fdf3f1;
+  border-color: #eccfc8;
+  color: #9b4a42;
+}
+
+/* ---------- 상세(Staff Check) 패널 ---------- */
+#admin-panel .detail-panel {
+  align-self: start;
+  position: sticky;
+  top: 16px;
+}
+#admin-panel .detail-block {
+  border: 1px solid var(--ff-line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px 16px;
+}
+#admin-panel .detail-block h3 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ff-ink);
+  margin: 0 0 8px;
+}
+#admin-panel .detail-meta span {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ff-muted);
+  font-variant-numeric: tabular-nums;
+}
+#admin-panel .empty-detail {
+  font-size: 13.5px;
+  color: var(--ff-faint);
+  text-align: center;
+  padding: 40px 16px;
+}
+
+/* ---------- 상태 필 ---------- */
+#admin-panel .status-pill,
+#audit-panel .status-pill,
+#prizes-panel .status-pill {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+}
