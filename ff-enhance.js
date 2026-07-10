@@ -366,6 +366,34 @@
     reorderResult(summary, card);
     var nameEl = card.querySelector("strong");
     if (!nameEl) return;
+
+    // PASS 6: 티켓 발급 푸터 (1회만)
+    if (!card.querySelector(".ff-ticket-foot")) {
+      var foot = document.createElement("div");
+      foot.className = "ff-ticket-foot";
+      var now = new Date();
+      var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+      foot.innerHTML =
+        "<span>FACE FILTER 천호점</span>" +
+        "<span>발급 " + now.getFullYear() + "." + pad(now.getMonth() + 1) + "." + pad(now.getDate()) +
+        " " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + "</span>";
+      card.appendChild(foot);
+    }
+    // PASS 6: 캡처 안내 (1회만, 카드 바로 아래)
+    if (!summary.querySelector(".ff-capture-hint")) {
+      var hint = document.createElement("p");
+      hint.className = "ff-capture-hint";
+      hint.textContent = "직원 확인 전까지 이 화면을 캡처해 두면 안전해요";
+      if (card.nextSibling) summary.insertBefore(hint, card.nextSibling);
+      else summary.appendChild(hint);
+    }
+    // PASS 6: 카톡채널 상태값 톤 구분 (미추가=조용히 / 추가 완료=골드 체크)
+    card.querySelectorAll("dl dd").forEach(function (dd) {
+      var t = (dd.textContent || "").trim();
+      if (t === "미추가") dd.classList.add("ff-dd-quiet");
+      else if (t.indexOf("추가") !== -1 && t.indexOf("완료") !== -1) dd.classList.add("ff-dd-done");
+    });
+
     var prizeName = nameEl.textContent || "";
     var tier = prizeTier(prizeName);
 
@@ -374,6 +402,21 @@
     card.setAttribute("data-ff-tier", tier);
     summary.setAttribute("data-ff-tier", tier);
     clearEffectLayer();
+
+    // PASS 3: 첫 노출 시 서스펜스 홀드(두구두구) 후 공개.
+    // 홀드 동안 콘텐츠는 CSS(.ff-revealing)로 가려지고, 해제 시 .ff-revealed가 등장 모션 트리거.
+    if (!summary.hasAttribute("data-ff-revealed")) {
+      summary.setAttribute("data-ff-revealed", "1");
+      summary.classList.add("ff-revealing");
+      setTimeout(function () {
+        summary.classList.remove("ff-revealing");
+        summary.classList.add("ff-revealed");
+        applyResultEffect(); // 홀드 해제 후 등급 이펙트(컨페티 등) 재실행
+      }, 1250);
+      summary.classList.remove("ff-tier-high", "ff-tier-mid", "ff-tier-low");
+      summary.classList.add("ff-tier-" + tier);
+      return; // 이펙트는 공개 시점에 실행
+    }
 
     // 등급 클래스 부여 (CSS가 글로우/크기/배지 처리)
     summary.classList.remove("ff-tier-high", "ff-tier-mid", "ff-tier-low");
@@ -483,6 +526,187 @@
       setupOddsFold();
       var oddsObserver = new MutationObserver(function () { setupOddsFold(); });
       oddsObserver.observe(oddsEl, { childList: true });
+    }
+
+    // ── 네이버 검수 원클릭 (관리자 참여자 표) ─────────────────────────
+    // 각 행에 "N 검수" 버튼: 클릭 시 리뷰 닉네임 클립보드 복사 + 플레이스 리뷰 페이지 새 탭
+    var NAVER_REVIEW_URL = "https://m.place.naver.com/hospital/1958856197/review/visitor?reviewSort=recent";
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    function enhanceAdminTable() {
+      var table = document.getElementById("participant-table");
+      if (!table) return;
+      table.querySelectorAll("tr[data-participant-row]").forEach(function (row) {
+        var actions = row.querySelector(".row-actions");
+        if (!actions || actions.querySelector(".ff-naver-audit")) return;
+        var spans = row.querySelectorAll(".identity span");
+        var nick = "";
+        spans.forEach(function (s) {
+          var t = (s.textContent || "").trim();
+          if (t.indexOf("리뷰 ") === 0) nick = t.slice(3).trim();
+        });
+        if (!nick) return;
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "small-action ff-naver-audit";
+        btn.innerHTML = '<b>N</b>검수';
+        btn.title = "닉네임 복사 + 네이버 리뷰 열기";
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          copyText(nick).then(function () {
+            var old = btn.innerHTML;
+            btn.innerHTML = "복사됨 ✓";
+            btn.classList.add("is-copied");
+            setTimeout(function () { btn.innerHTML = old; btn.classList.remove("is-copied"); }, 1400);
+          });
+          window.open(NAVER_REVIEW_URL, "_blank", "noopener");
+        });
+        actions.appendChild(btn);
+      });
+    }
+
+    var adminTable = document.getElementById("participant-table");
+    if (adminTable) {
+      enhanceAdminTable();
+      var adminObserver = new MutationObserver(function () { enhanceAdminTable(); });
+      adminObserver.observe(adminTable, { childList: true, subtree: true });
+    }
+
+    // ── 지급/사용 팀 추적 ──────────────────────────────────────────────
+    var FF_TEAMS = ["코디팀", "어시팀", "피부팀", "간호팀"];
+
+    function ffGetTeam() {
+      var sel = document.getElementById("ff-gift-team");
+      return (sel && sel.value) || localStorage.getItem("ff_gift_team") || "코디팀";
+    }
+
+    // 담당자명 입력 옆 팀 드롭다운 (계정별 마지막 선택 기억)
+    function injectTeamSelect() {
+      var staffInput = document.getElementById("staff-name");
+      if (!staffInput || document.getElementById("ff-gift-team")) return;
+      var sel = document.createElement("select");
+      sel.id = "ff-gift-team";
+      sel.className = "ff-team-select";
+      sel.setAttribute("aria-label", "담당 팀");
+      var saved = localStorage.getItem("ff_gift_team") || "코디팀";
+      FF_TEAMS.forEach(function (t) {
+        var o = document.createElement("option");
+        o.value = t; o.textContent = t;
+        if (t === saved) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", function () {
+        localStorage.setItem("ff_gift_team", sel.value);
+      });
+      staffInput.insertAdjacentElement("afterend", sel);
+    }
+    injectTeamSelect();
+    var bodyObserver = new MutationObserver(function () { injectTeamSelect(); });
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+    // 지급 완료 래퍼: 성공 시 팀 기록 (마스크팩은 서버에서 자동 사용 처리)
+    if (window.FaceFilterSupabase && window.FaceFilterSupabase.completeGift && !window.FaceFilterSupabase.__ffGiftWrapped) {
+      var origCompleteGift = window.FaceFilterSupabase.completeGift.bind(window.FaceFilterSupabase);
+      window.FaceFilterSupabase.completeGift = async function (args) {
+        var result = await origCompleteGift(args);
+        try {
+          await window.FaceFilterSupabase.setGiftTeam({
+            participantId: args.participantId,
+            team: ffGetTeam()
+          });
+        } catch (e) {
+          console.warn("[ff] 지급 팀 기록 실패:", e && e.message);
+        }
+        return result;
+      };
+      window.FaceFilterSupabase.__ffGiftWrapped = true;
+    }
+
+    // 관리자 행: 내원형 상품 [사용처리] 버튼
+    function enhanceUsageButtons() {
+      var table = document.getElementById("participant-table");
+      if (!table) return;
+      table.querySelectorAll("tr[data-participant-row]").forEach(function (row) {
+        var actions = row.querySelector(".row-actions");
+        if (!actions || actions.querySelector(".ff-use-gift")) return;
+        var pid = row.getAttribute("data-participant-row");
+        var rowText = row.textContent || "";
+        if (rowText.indexOf("지급완료") === -1) return;        // 지급된 건만
+        var cells = row.querySelectorAll("td");
+        var prize = cells.length >= 4 ? (cells[3].textContent || "").trim() : "";
+        if (!prize || prize === "-" || prize.indexOf("마스크팩") !== -1) return; // 내원형만
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "small-action ff-use-gift";
+        btn.textContent = "사용처리";
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          openUseForm(actions, btn, pid, prize);
+        });
+        actions.appendChild(btn);
+      });
+    }
+
+    function openUseForm(actions, btn, pid, prize) {
+      if (actions.querySelector(".ff-use-form")) return;
+      var form = document.createElement("div");
+      form.className = "ff-use-form";
+      var opts = FF_TEAMS.map(function (t) {
+        return '<option value="' + t + '"' + (t === ffGetTeam() ? " selected" : "") + ">" + t + "</option>";
+      }).join("");
+      form.innerHTML =
+        '<select class="ff-use-team">' + opts + "</select>" +
+        '<input class="ff-use-staff" type="text" placeholder="처리 담당자" />' +
+        '<button type="button" class="small-action ff-use-ok">확인</button>' +
+        '<button type="button" class="small-action ff-use-cancel">취소</button>';
+      actions.appendChild(form);
+      form.querySelector(".ff-use-cancel").addEventListener("click", function (e) {
+        e.stopPropagation(); form.remove();
+      });
+      form.querySelector(".ff-use-ok").addEventListener("click", async function (e) {
+        e.stopPropagation();
+        var team = form.querySelector(".ff-use-team").value;
+        var staff = (form.querySelector(".ff-use-staff").value || "").trim();
+        if (!staff) { form.querySelector(".ff-use-staff").focus(); return; }
+        try {
+          var res = await window.FaceFilterSupabase.markGiftUsed({ participantId: pid, staffName: staff, team: team });
+          if (res && res.ok) {
+            form.remove();
+            btn.textContent = "사용완료 ✓";
+            btn.disabled = true;
+            btn.classList.add("is-used");
+          } else if (res && res.code === "already_used") {
+            form.remove();
+            btn.textContent = "이미 사용처리됨";
+            btn.disabled = true;
+            btn.classList.add("is-used");
+          } else {
+            alert("사용처리 실패: " + ((res && res.code) || "unknown"));
+          }
+        } catch (err) {
+          alert("사용처리 실패: " + (err && err.message));
+        }
+      });
+    }
+
+    if (adminTable) {
+      enhanceUsageButtons();
+      new MutationObserver(function () { enhanceUsageButtons(); })
+        .observe(adminTable, { childList: true, subtree: true });
     }
   }
 
