@@ -5155,3 +5155,28 @@ input.ff-slot-input {
 @media (prefers-color-scheme: dark) {
   .benefit-dialog-copy > span { color: var(--ff-muted); }
 }
+
+/* =====================================================================
+   UI v3 · PASS 9.2 — 상세 패널 헤딩 고정 & 잠금 필드 스타일
+   1) 내부 스크롤 시 상단 이름(패널 헤딩) 잘림 → 스크롤포트 안에 sticky 고정
+   2) 지급 기록 후 잠긴 팀/차트번호 시각 처리
+   ===================================================================== */
+#admin-panel .detail-panel { padding-top: 0; }
+#admin-panel .detail-panel > .panel-heading {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #fbfcfa;
+  margin: 0 calc(clamp(18px, 3.4vw, 28px) * -1) 14px;
+  padding: 18px clamp(18px, 3.4vw, 28px) 12px;
+  border-bottom: 1px solid var(--ff-line);
+}
+
+/* 잠긴 필드: 회색 표면 + 커서 안내 */
+#admin-panel .ff-team-select:disabled,
+#admin-panel #customer-chart-no:disabled {
+  background: var(--ff-soft);
+  color: var(--ff-muted);
+  cursor: not-allowed;
+  opacity: 1;
+}

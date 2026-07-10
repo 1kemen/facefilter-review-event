@@ -589,6 +589,24 @@
     // ── 지급/사용 팀 추적 ──────────────────────────────────────────────
     var FF_TEAMS = ["코디팀", "어시팀", "피부팀", "간호팀"];
 
+    // 문서 레벨 캡처 가드: "사용처리 폼이 열려 있는 행"에서 폼 바깥을
+    // 클릭(여백·빗맞은 탭 포함)해도 행 select → 탭 전환이 발동하지 않게 차단.
+    // 폼 내부 타깃은 통과시켜 자체 핸들러(확인/취소/입력)가 정상 작동한다.
+    ["click", "mousedown", "pointerdown", "touchstart"].forEach(function (ev) {
+      document.addEventListener(ev, function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest(".ff-use-form")) return;                 // 폼 내부: 통과
+        var row = t.closest("tr[data-participant-row]");
+        if (row && row.querySelector(".ff-use-form")) {
+          e.stopPropagation();                                  // 폼 열린 행의 외부 조작 차단
+        }
+      }, true);
+    });
+
+    // 재렌더 생존: 열려 있던 사용처리 폼 상태를 기억했다가 복원
+    var ffOpenUseState = null; // { pid, team, staff }
+
     function ffGetTeam() {
       var sel = document.getElementById("ff-gift-team");
       return (sel && sel.value) || localStorage.getItem("ff_gift_team") || "코디팀";
@@ -597,22 +615,37 @@
     // 담당자명 입력 옆 팀 드롭다운 (계정별 마지막 선택 기억)
     function injectTeamSelect() {
       var staffInput = document.getElementById("staff-name");
-      if (!staffInput || document.getElementById("ff-gift-team")) return;
-      var sel = document.createElement("select");
-      sel.id = "ff-gift-team";
-      sel.className = "ff-team-select";
-      sel.setAttribute("aria-label", "담당 팀");
-      var saved = localStorage.getItem("ff_gift_team") || "코디팀";
-      FF_TEAMS.forEach(function (t) {
-        var o = document.createElement("option");
-        o.value = t; o.textContent = t;
-        if (t === saved) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.addEventListener("change", function () {
-        localStorage.setItem("ff_gift_team", sel.value);
-      });
-      staffInput.insertAdjacentElement("afterend", sel);
+      if (staffInput && !document.getElementById("ff-gift-team")) {
+        var sel = document.createElement("select");
+        sel.id = "ff-gift-team";
+        sel.className = "ff-team-select";
+        sel.setAttribute("aria-label", "담당 팀");
+        var saved = localStorage.getItem("ff_gift_team") || "코디팀";
+        FF_TEAMS.forEach(function (t) {
+          var o = document.createElement("option");
+          o.value = t; o.textContent = t;
+          if (t === saved) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.addEventListener("change", function () {
+          localStorage.setItem("ff_gift_team", sel.value);
+        });
+        staffInput.insertAdjacentElement("afterend", sel);
+      }
+      // 잠금 동기화: 담당자명이 저장돼 잠기면(disabled) 팀·차트번호도 함께 잠금.
+      // 메모만 수정 가능 상태로 유지.
+      var staff = document.getElementById("staff-name");
+      var team = document.getElementById("ff-gift-team");
+      var chart = document.getElementById("customer-chart-no");
+      var locked = Boolean(staff && staff.disabled);
+      if (team && team.disabled !== locked) {
+        team.disabled = locked;
+        team.title = locked ? "지급 기록 후에는 팀을 수정할 수 없습니다" : "";
+      }
+      if (chart && locked && !chart.disabled) {
+        chart.disabled = true;
+        chart.title = "지급 기록 후에는 차트번호를 수정할 수 없습니다";
+      }
     }
     injectTeamSelect();
     var bodyObserver = new MutationObserver(function () { injectTeamSelect(); });
@@ -658,15 +691,25 @@
           openUseForm(actions, btn, pid, prize);
         });
         actions.appendChild(btn);
+        // 재렌더 복원: 이 행의 폼이 열려 있던 상태였다면 값 포함 재생성
+        if (ffOpenUseState && ffOpenUseState.pid === pid) {
+          openUseForm(actions, btn, pid, prize, ffOpenUseState);
+        }
       });
     }
 
-    function openUseForm(actions, btn, pid, prize) {
+    function openUseForm(actions, btn, pid, prize, restore) {
       if (actions.querySelector(".ff-use-form")) return;
       var form = document.createElement("div");
       form.className = "ff-use-form";
+      // 폼 내부의 모든 상호작용(셀렉트·입력 포함)이 행 클릭(참여자 선택)으로
+      // 전파돼 재렌더 → 폼이 닫히는 문제 방지: 컨테이너 레벨에서 전면 차단
+      ["click", "mousedown", "pointerdown", "touchstart", "change", "focusin"].forEach(function (ev) {
+        form.addEventListener(ev, function (e) { e.stopPropagation(); });
+      });
+      var initTeam = (restore && restore.team) || ffGetTeam();
       var opts = FF_TEAMS.map(function (t) {
-        return '<option value="' + t + '"' + (t === ffGetTeam() ? " selected" : "") + ">" + t + "</option>";
+        return '<option value="' + t + '"' + (t === initTeam ? " selected" : "") + ">" + t + "</option>";
       }).join("");
       form.innerHTML =
         '<select class="ff-use-team">' + opts + "</select>" +
@@ -674,8 +717,16 @@
         '<button type="button" class="small-action ff-use-ok">확인</button>' +
         '<button type="button" class="small-action ff-use-cancel">취소</button>';
       actions.appendChild(form);
+      if (restore && restore.staff) form.querySelector(".ff-use-staff").value = restore.staff;
+      ffOpenUseState = { pid: pid, team: initTeam, staff: (restore && restore.staff) || "" };
+      form.querySelector(".ff-use-team").addEventListener("change", function () {
+        if (ffOpenUseState) ffOpenUseState.team = this.value;
+      });
+      form.querySelector(".ff-use-staff").addEventListener("input", function () {
+        if (ffOpenUseState) ffOpenUseState.staff = this.value;
+      });
       form.querySelector(".ff-use-cancel").addEventListener("click", function (e) {
-        e.stopPropagation(); form.remove();
+        e.stopPropagation(); ffOpenUseState = null; form.remove();
       });
       form.querySelector(".ff-use-ok").addEventListener("click", async function (e) {
         e.stopPropagation();
@@ -685,11 +736,13 @@
         try {
           var res = await window.FaceFilterSupabase.markGiftUsed({ participantId: pid, staffName: staff, team: team });
           if (res && res.ok) {
+            ffOpenUseState = null;
             form.remove();
             btn.textContent = "사용완료 ✓";
             btn.disabled = true;
             btn.classList.add("is-used");
           } else if (res && res.code === "already_used") {
+            ffOpenUseState = null;
             form.remove();
             btn.textContent = "이미 사용처리됨";
             btn.disabled = true;
