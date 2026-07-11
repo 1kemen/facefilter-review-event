@@ -607,9 +607,38 @@
     // 재렌더 생존: 열려 있던 사용처리 폼 상태를 기억했다가 복원
     var ffOpenUseState = null; // { pid, team, staff }
 
+    // 계정 기반 팀 자동 감지: 프로필 표시명 → 로그인 이메일 → 저장값 순
+    function ffDetectTeam() {
+      var KW = [
+        ["코디", "코디팀"], ["codi", "코디팀"], ["coordi", "코디팀"],
+        ["어시", "어시팀"], ["assi", "어시팀"],
+        ["간호", "간호팀"], ["nurse", "간호팀"], ["ganho", "간호팀"], ["khanhou", "간호팀"],
+        ["피부", "피부팀"], ["skin", "피부팀"], ["pibu", "피부팀"], ["pb1", "피부팀"]
+      ];
+      function match(s) {
+        if (!s) return null;
+        s = String(s).toLowerCase();
+        for (var i = 0; i < KW.length; i++) {
+          if (s.indexOf(KW[i][0]) !== -1) return KW[i][1];
+        }
+        return null;
+      }
+      try {
+        var st = JSON.parse(localStorage.getItem("skinReviewEventMvp.v8") || "{}");
+        var byName = match(st && st.staffProfile && st.staffProfile.display_name);
+        if (byName) return byName;
+      } catch (e) {}
+      try {
+        var au = JSON.parse(localStorage.getItem("skinReviewEventMvp.adminAuth.v1") || "{}");
+        var byEmail = match(au && au.email);
+        if (byEmail) return byEmail;
+      } catch (e) {}
+      return null;
+    }
+
     function ffGetTeam() {
       var sel = document.getElementById("ff-gift-team");
-      return (sel && sel.value) || localStorage.getItem("ff_gift_team") || "코디팀";
+      return (sel && sel.value) || ffDetectTeam() || localStorage.getItem("ff_gift_team") || "코디팀";
     }
 
     // 담당자명 입력 옆 팀 드롭다운 (계정별 마지막 선택 기억)
@@ -620,13 +649,19 @@
         sel.id = "ff-gift-team";
         sel.className = "ff-team-select";
         sel.setAttribute("aria-label", "담당 팀");
-        var saved = localStorage.getItem("ff_gift_team") || "코디팀";
+        var auto = ffDetectTeam();
+        var saved = auto || localStorage.getItem("ff_gift_team") || "코디팀";
         FF_TEAMS.forEach(function (t) {
           var o = document.createElement("option");
-          o.value = t; o.textContent = t;
+          o.value = t; o.textContent = t + (auto === t ? " (자동)" : "");
           if (t === saved) o.selected = true;
           sel.appendChild(o);
         });
+        if (auto) {
+          localStorage.setItem("ff_gift_team", auto);
+          sel.classList.add("is-auto");
+          sel.title = "계정(" + auto + ") 기준 자동 선택됨 — 필요 시 변경 가능";
+        }
         sel.addEventListener("change", function () {
           localStorage.setItem("ff_gift_team", sel.value);
         });

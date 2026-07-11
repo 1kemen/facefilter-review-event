@@ -5342,3 +5342,9 @@ input.ff-slot-input {
 }
 .ff-usage-act { min-width: 110px; }
 .ff-usage-act .ff-use-form { margin-top: 6px; }
+
+/* PASS 11.1 — 팀 자동 감지 표시 */
+#admin-panel .ff-team-select.is-auto {
+  border-color: #d9cba9;
+  background-image: linear-gradient(0deg, #fdfaf3, #fdfaf3);
+}
