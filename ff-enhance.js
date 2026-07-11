@@ -678,7 +678,9 @@
         if (!actions || actions.querySelector(".ff-use-gift")) return;
         var pid = row.getAttribute("data-participant-row");
         var rowText = row.textContent || "";
-        if (rowText.indexOf("지급완료") === -1) return;        // 지급된 건만
+        var lc = row.getAttribute("data-ff-lifecycle");
+        // 지급된 건만 — 수명주기 배지로 라벨이 치환된 뒤에도 인식되도록 속성 병행 확인
+        if (rowText.indexOf("지급완료") === -1 && lc !== "사용대기" && lc !== "사용완료") return;
         var cells = row.querySelectorAll("td");
         var prize = cells.length >= 4 ? (cells[3].textContent || "").trim() : "";
         if (!prize || prize === "-" || prize.indexOf("마스크팩") !== -1) return; // 내원형만
@@ -822,8 +824,10 @@
       var res = await window.FaceFilterSupabase.getGiftUsage();
       if (res && res.ok && Array.isArray(res.items)) {
         usageCache = new Map(res.items.map(function (it) { return [it.id, it]; }));
+        window.__ffUsageCache = usageCache;
         annotateRows();
         renderUsagePage();
+        if (window.__ffApplyLifecycle) window.__ffApplyLifecycle();
       }
     } catch (e) {
       console.warn("[ff] 지급/사용 조회 실패:", e && e.message);
@@ -901,9 +905,60 @@
       "<th>고객</th><th>상품</th><th>지급</th><th>사용</th></tr></thead><tbody>" +
       rowsHtml(used, true) + "</tbody></table></div>" +
       '<h3 class="ff-usage-h">미사용 시술권 — 내원 대기 (' + pending.length + ")</h3>" +
-      '<div class="table-wrap"><table class="ff-usage-table"><thead><tr>' +
-      "<th>고객</th><th>상품</th><th>지급</th></tr></thead><tbody>" +
-      rowsHtml(pending, false) + "</tbody></table></div>";
+      '<input type="search" class="ff-usage-search" id="ff-usage-search" placeholder="고객명 · 휴대폰 뒤 4자리 · 닉네임으로 검색" />' +
+      '<div class="table-wrap"><table class="ff-usage-table" id="ff-pending-table"><thead><tr>' +
+      "<th>고객</th><th>상품</th><th>지급</th><th></th></tr></thead><tbody>" +
+      pending.map(function (i) {
+        return '<tr data-ff-usage-row="' + i.id + '" data-ff-search="' +
+          ((i.customerName || "") + " " + (i.phoneLast4 || "") + " " + (i.naverHandle || "")).toLowerCase() + '">' +
+          "<td><strong>" + (i.customerName || "-") + "</strong><br><small>" + (i.naverHandle || "") + " · " + (i.phoneLast4 || "") + "</small></td>" +
+          "<td>" + (i.prizeName || "-") + "</td>" +
+          "<td>" + (i.giftTeam || "-") + "<br><small>" + fmtTime(i.giftAt) + "</small></td>" +
+          '<td class="ff-usage-act"><button type="button" class="small-action ff-usage-use" data-id="' + i.id + '">사용처리</button></td>' +
+          "</tr>";
+      }).join("") + "</tbody></table></div>";
+
+    // 검색 필터
+    var search = document.getElementById("ff-usage-search");
+    if (search) {
+      search.addEventListener("input", function () {
+        var q = search.value.trim().toLowerCase();
+        document.querySelectorAll("#ff-pending-table tbody tr").forEach(function (tr) {
+          tr.style.display = !q || (tr.getAttribute("data-ff-search") || "").indexOf(q) !== -1 ? "" : "none";
+        });
+      });
+    }
+    // 즉석 사용처리 (미니폼 인라인)
+    root.querySelectorAll(".ff-usage-use").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var cell = b.closest(".ff-usage-act");
+        if (cell.querySelector(".ff-use-form")) return;
+        var teams = ["코디팀", "어시팀", "피부팀", "간호팀"];
+        var def = localStorage.getItem("ff_gift_team") || "코디팀";
+        var f = document.createElement("div");
+        f.className = "ff-use-form";
+        f.innerHTML = '<select class="ff-use-team">' +
+          teams.map(function (t) { return '<option' + (t === def ? " selected" : "") + ">" + t + "</option>"; }).join("") +
+          '</select><input class="ff-use-staff" type="text" placeholder="처리 담당자" />' +
+          '<button type="button" class="small-action ff-use-ok">확인</button>' +
+          '<button type="button" class="small-action ff-use-cancel">취소</button>';
+        cell.appendChild(f);
+        f.querySelector(".ff-use-cancel").addEventListener("click", function () { f.remove(); });
+        f.querySelector(".ff-use-ok").addEventListener("click", async function () {
+          var staff = f.querySelector(".ff-use-staff").value.trim();
+          if (!staff) { f.querySelector(".ff-use-staff").focus(); return; }
+          try {
+            var r = await window.FaceFilterSupabase.markGiftUsed({
+              participantId: b.getAttribute("data-id"),
+              staffName: staff,
+              team: f.querySelector(".ff-use-team").value
+            });
+            if (r && (r.ok || r.code === "already_used")) loadUsage();
+            else alert("사용처리 실패: " + ((r && r.code) || "unknown"));
+          } catch (err) { alert("사용처리 실패: " + (err && err.message)); }
+        });
+      });
+    });
   }
 
   // 트리거: 탭 클릭 / 새로고침 버튼 / 표 갱신
@@ -921,4 +976,115 @@
       else if (tableEl.querySelector("tr")) loadUsage(); // 최초 데이터 로드 시 1회
     }).observe(tableEl, { childList: true, subtree: true });
   }
+})();
+
+// =====================================================================
+// PASS 11 — 상품 수명주기 배지 + 미사용 고객 빠른 처리
+// 상태 언어: 증정완료(즉시형 종결) / 사용대기(내원형, 골드) / 사용완료(종결)
+// =====================================================================
+(function () {
+  function isInstant(name) { return (name || "").indexOf("마스크팩") !== -1; }
+  function cache() {
+    // PASS 10의 usageCache 접근 (전역 로더가 관리)
+    return window.__ffUsageCache || null;
+  }
+
+  // ---------- 1) 리뷰 칸 배지 치환 ----------
+  function applyLifecycleBadges() {
+    var uc = cache();
+    var table = document.getElementById("participant-table");
+    if (!table) return;
+    table.querySelectorAll("tr[data-participant-row]").forEach(function (row) {
+      var pid = row.getAttribute("data-participant-row");
+      var hint = row.querySelector(".progress-hint");
+      if (!hint) return;
+      var label = hint.querySelector("span:last-child");
+      if (!label) return;
+      var current = (label.textContent || "").trim();
+      // "지급완료" 상태만 수명주기 배지로 치환 (그 외 진행 단계는 app.js 원문 유지)
+      var isGiftDone = current === "지급완료" || hint.hasAttribute("data-ff-lifecycle");
+      if (!isGiftDone) return;
+      var cells = row.querySelectorAll("td");
+      var prize = cells.length >= 4 ? (cells[3].textContent || "").trim() : "";
+      var item = uc ? uc.get(pid) : null;
+      var next;
+      if (isInstant(prize)) next = "증정완료";
+      else if (item && item.usedAt) next = "사용완료";
+      else next = "사용대기";
+      if (current !== next) label.textContent = next;
+      hint.setAttribute("data-ff-lifecycle", next);
+      row.setAttribute("data-ff-lifecycle", next);
+    });
+  }
+
+  // ---------- 2) 미사용 시술권만 보기 토글 ----------
+  var filterOn = false;
+  function pendingCount() {
+    var uc = cache();
+    if (!uc) return null;
+    var n = 0;
+    uc.forEach(function (it) { if (!it.usedAt && !isInstant(it.prizeName)) n++; });
+    return n;
+  }
+  function applyRowFilter() {
+    var table = document.getElementById("participant-table");
+    if (!table) return;
+    table.querySelectorAll("tr[data-participant-row]").forEach(function (row) {
+      var show = !filterOn || row.getAttribute("data-ff-lifecycle") === "사용대기";
+      row.style.display = show ? "" : "none";
+    });
+  }
+  function injectFilterToggle() {
+    var wrap = document.querySelector(".participant-table-wrap");
+    if (!wrap || document.getElementById("ff-pending-filter")) return;
+    var bar = document.createElement("div");
+    bar.className = "ff-pending-bar";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "ff-pending-filter";
+    btn.className = "ff-pending-toggle";
+    btn.innerHTML = "◷ 미사용 시술권만 보기";
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      filterOn = !filterOn;
+      btn.classList.toggle("is-on", filterOn);
+      var n = pendingCount();
+      btn.innerHTML = filterOn
+        ? "◷ 미사용 시술권만 보는 중" + (n != null ? " · " + n + "명" : "") + " — 전체 보기"
+        : "◷ 미사용 시술권만 보기" + (n != null ? " (" + n + "명)" : "");
+      applyRowFilter();
+    });
+    bar.appendChild(btn);
+    wrap.parentElement.insertBefore(bar, wrap);
+  }
+
+  // ---------- 3) 차트 기입 리마인드 (내원형 지급 안내) ----------
+  function injectChartReminder() {
+    var block = document.querySelector(".staff-record-block");
+    if (!block || block.querySelector(".ff-chart-reminder")) return;
+    var p = document.createElement("p");
+    p.className = "ff-chart-reminder";
+    p.textContent = "시술권 지급 시 고객 차트에 기입해 주세요. 사용 처리는 재내원 시 이 화면에서 합니다.";
+    block.appendChild(p);
+  }
+
+  // ---------- 훅: 표 변화·usage 로드 후 일괄 적용 ----------
+  function applyAll() {
+    applyLifecycleBadges();
+    injectFilterToggle();
+    injectChartReminder();
+    if (filterOn) applyRowFilter();
+    var btn = document.getElementById("ff-pending-filter");
+    if (btn && !filterOn) {
+      var n = pendingCount();
+      if (n != null) btn.innerHTML = "◷ 미사용 시술권만 보기 (" + n + "명)";
+    }
+  }
+  window.__ffApplyLifecycle = applyAll;
+
+  var table = document.getElementById("participant-table");
+  if (table) new MutationObserver(applyAll).observe(table, { childList: true, subtree: true });
+  new MutationObserver(function () { injectChartReminder(); })
+    .observe(document.body, { childList: true, subtree: true });
+  applyAll();
 })();
