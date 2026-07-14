@@ -5283,15 +5283,16 @@ input.ff-slot-input {
 }
 #admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #b39a63; }
 
-/* 사용대기 행의 사용처리 버튼: 골드 강조 승격 */
+/* 사용대기 행의 사용처리 버튼: 프라이머리 유지, 순수 블랙 → 웜 차콜
+   (골드 패밀리 #8a7442 계열에서 파생한 잉크. 화면 유일의 솔리드 = 최종 액션) */
 #admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used) {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f0e9da;
+  background: #3b352a;
+  border-color: #3b352a;
+  color: #f3ecdd;
   font-weight: 700;
 }
 #admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used):hover {
-  background: #2e2c28;
+  background: #2e2921;
 }
 
 /* 미사용 필터 토글 */
@@ -5309,11 +5310,15 @@ input.ff-slot-input {
   transition: background-color 0.15s ease, transform 0.12s ease;
 }
 .ff-pending-toggle:active { transform: scale(0.97); }
+/* on 상태: 솔리드 해제 → 딥 골드 틴트 (프라이머리 아님, '상태 표시'로 강등.
+   솔리드는 사용처리 버튼 하나만 남겨 위계 분리) */
 .ff-pending-toggle.is-on {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #f0e9da;
+  background: #f2e8d0;
+  border-color: #c9b487;
+  color: #6b5831;
+  box-shadow: inset 0 1px 2px rgba(138, 116, 66, 0.12);
 }
+.ff-pending-toggle.is-on:hover { background: #ede1c3; }
 
 /* 차트 기입 리마인드 */
 .ff-chart-reminder {
