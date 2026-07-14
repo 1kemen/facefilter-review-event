@@ -638,10 +638,35 @@
 
     function ffGetTeam() {
       var sel = document.getElementById("ff-gift-team");
-      return (sel && sel.value) || ffDetectTeam() || localStorage.getItem("ff_gift_team") || "코디팀";
+      // 잠금(기록완료) 상태의 select는 '그 레코드의 저장팀'이므로 처리자 팀으로 쓰지 않음
+      return (sel && !sel.disabled && sel.value) || ffDetectTeam() || localStorage.getItem("ff_gift_team") || "코디팀";
     }
 
-    // 담당자명 입력 옆 팀 드롭다운 (계정별 마지막 선택 기억)
+    // 현재 상세패널에 떠 있는 참여자 id (선택 행 → 앱 상태 순으로 조회)
+    function ffSelectedPid() {
+      var row = document.querySelector("tr[data-participant-row].is-selected");
+      if (row) return row.getAttribute("data-participant-row");
+      try {
+        var st = JSON.parse(localStorage.getItem("skinReviewEventMvp.v8") || "{}");
+        return (st && st.selectedParticipantId) || null;
+      } catch (e) { return null; }
+    }
+
+    // 레코드에 저장된 담당 팀 (usageCache의 giftTeam). 캐시 없으면 로드 트리거.
+    function ffSavedTeamFor(pid) {
+      if (!pid) return null;
+      var cache = window.__ffUsageCache;
+      if (!cache) {
+        if (window.__ffLoadUsage) window.__ffLoadUsage(); // 로드 완료 시 옵저버가 재동기화
+        return null;
+      }
+      var item = cache.get(pid);
+      return (item && item.giftTeam) || null;
+    }
+
+    // 담당자명 입력 옆 팀 드롭다운
+    // - 지급 기록 완료(잠금) 레코드: **저장된 팀**을 표시 (뷰어 계정과 무관)
+    // - 신규 입력: 계정 자동 감지 → 기기 마지막 선택 → 코디팀
     function injectTeamSelect() {
       var staffInput = document.getElementById("staff-name");
       if (staffInput && !document.getElementById("ff-gift-team")) {
@@ -649,21 +674,31 @@
         sel.id = "ff-gift-team";
         sel.className = "ff-team-select";
         sel.setAttribute("aria-label", "담당 팀");
-        var auto = ffDetectTeam();
-        var saved = auto || localStorage.getItem("ff_gift_team") || "코디팀";
+        var isLocked = Boolean(staffInput.disabled);
+        var recordTeam = isLocked ? ffSavedTeamFor(ffSelectedPid()) : null;
+        var auto = isLocked ? null : ffDetectTeam();
+        var initial = recordTeam || auto ||
+          (isLocked ? null : localStorage.getItem("ff_gift_team")) || "코디팀";
         FF_TEAMS.forEach(function (t) {
           var o = document.createElement("option");
           o.value = t; o.textContent = t + (auto === t ? " (자동)" : "");
-          if (t === saved) o.selected = true;
+          if (t === initial) o.selected = true;
           sel.appendChild(o);
         });
+        // 저장된 팀이 표준 목록 밖이어도 그대로 표시
+        if (recordTeam && FF_TEAMS.indexOf(recordTeam) === -1) {
+          var extra = document.createElement("option");
+          extra.value = recordTeam; extra.textContent = recordTeam;
+          extra.selected = true;
+          sel.appendChild(extra);
+        }
         if (auto) {
           localStorage.setItem("ff_gift_team", auto);
           sel.classList.add("is-auto");
           sel.title = "계정(" + auto + ") 기준 자동 선택됨 — 필요 시 변경 가능";
         }
         sel.addEventListener("change", function () {
-          localStorage.setItem("ff_gift_team", sel.value);
+          if (!sel.disabled) localStorage.setItem("ff_gift_team", sel.value);
         });
         staffInput.insertAdjacentElement("afterend", sel);
       }
@@ -677,31 +712,83 @@
         team.disabled = locked;
         team.title = locked ? "지급 기록 후에는 팀을 수정할 수 없습니다" : "";
       }
+      // 잠금 레코드는 저장된 팀으로 상시 재동기화
+      // (usageCache 지연 로드·재렌더 후에도 뷰어 값이 아닌 기록값 유지)
+      if (team && locked) {
+        var savedTeam = ffSavedTeamFor(ffSelectedPid());
+        if (savedTeam && team.value !== savedTeam) {
+          if (!Array.prototype.some.call(team.options, function (o) { return o.value === savedTeam; })) {
+            var op = document.createElement("option");
+            op.value = savedTeam; op.textContent = savedTeam;
+            team.appendChild(op);
+          }
+          team.value = savedTeam;
+          team.classList.remove("is-auto");
+          team.title = "지급 당시 기록된 팀: " + savedTeam;
+        }
+      }
       if (chart && locked && !chart.disabled) {
         chart.disabled = true;
         chart.title = "지급 기록 후에는 차트번호를 수정할 수 없습니다";
       }
     }
     injectTeamSelect();
+    window.__ffSyncTeamSelect = injectTeamSelect; // usageCache 로드 후 재동기화 훅
     var bodyObserver = new MutationObserver(function () { injectTeamSelect(); });
     bodyObserver.observe(document.body, { childList: true, subtree: true });
 
     // 지급 완료 래퍼: 성공 시 팀 기록 (마스크팩은 서버에서 자동 사용 처리)
+    // 담당자 저장으로 이미 팀이 기록된 건(select 잠금 상태)은 덮어쓰지 않는다.
     if (window.FaceFilterSupabase && window.FaceFilterSupabase.completeGift && !window.FaceFilterSupabase.__ffGiftWrapped) {
       var origCompleteGift = window.FaceFilterSupabase.completeGift.bind(window.FaceFilterSupabase);
       window.FaceFilterSupabase.completeGift = async function (args) {
+        var sel = document.getElementById("ff-gift-team");
+        var unlockedTeam = (sel && !sel.disabled) ? sel.value : null; // 미저장 상태에서 바로 지급하는 경우
         var result = await origCompleteGift(args);
         try {
-          await window.FaceFilterSupabase.setGiftTeam({
-            participantId: args.participantId,
-            team: ffGetTeam()
-          });
+          if (unlockedTeam) {
+            await window.FaceFilterSupabase.setGiftTeam({
+              participantId: args.participantId,
+              team: unlockedTeam
+            });
+          } else if (!ffSavedTeamFor(args.participantId)) {
+            // 레거시 보정: 저장팀 기록이 전혀 없는 옛 레코드만 뷰어 기준으로 채움
+            await window.FaceFilterSupabase.setGiftTeam({
+              participantId: args.participantId,
+              team: ffDetectTeam() || localStorage.getItem("ff_gift_team") || "코디팀"
+            });
+          }
         } catch (e) {
           console.warn("[ff] 지급 팀 기록 실패:", e && e.message);
         }
         return result;
       };
       window.FaceFilterSupabase.__ffGiftWrapped = true;
+    }
+
+    // 담당자 저장 래퍼: 최초 저장 성공 시 그 순간 선택돼 있던 팀을 함께 기록
+    // (기존엔 지급완료 시점에만 팀이 기록돼, 저장자≠지급자일 때 팀이 어긋났음)
+    if (window.FaceFilterSupabase && window.FaceFilterSupabase.updateParticipantStaffFields && !window.FaceFilterSupabase.__ffStaffWrapped) {
+      var origUpdateStaff = window.FaceFilterSupabase.updateParticipantStaffFields.bind(window.FaceFilterSupabase);
+      window.FaceFilterSupabase.updateParticipantStaffFields = async function (args) {
+        var sel = document.getElementById("ff-gift-team");
+        var wasUnlocked = Boolean(sel && !sel.disabled); // 최초 저장(팀 선택 가능 상태)일 때만
+        var chosenTeam = wasUnlocked ? sel.value : null;
+        var result = await origUpdateStaff(args);
+        if (result && result.ok && chosenTeam && args && args.staffName) {
+          try {
+            await window.FaceFilterSupabase.setGiftTeam({
+              participantId: args.participantId,
+              team: chosenTeam
+            });
+            if (window.__ffLoadUsage) window.__ffLoadUsage(); // 캐시 갱신 → 표시 동기화
+          } catch (e) {
+            console.warn("[ff] 담당자 저장 팀 기록 실패:", e && e.message);
+          }
+        }
+        return result;
+      };
+      window.FaceFilterSupabase.__ffStaffWrapped = true;
     }
 
     // 관리자 행: 내원형 상품 [사용처리] 버튼
@@ -863,6 +950,7 @@
         annotateRows();
         renderUsagePage();
         if (window.__ffApplyLifecycle) window.__ffApplyLifecycle();
+        if (window.__ffSyncTeamSelect) window.__ffSyncTeamSelect(); // 잠금 레코드 팀 표시 재동기화
       }
     } catch (e) {
       console.warn("[ff] 지급/사용 조회 실패:", e && e.message);

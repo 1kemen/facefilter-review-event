@@ -5410,3 +5410,283 @@ input.ff-slot-input {
   background: #fdf3f1;
   color: #9b4a42;
 }
+
+/* =====================================================================
+   UI v3 · PASS 12 — 수원점 톤앤매너 이식 (관리자 계열 완전 모노크롬)
+   웜 크림·골드 → 쿨 뉴트럴. 상태 문법 재정의:
+   · 진행중(사용대기) = 화이트 바탕 + 다크 아웃라인 (열린 상태)
+   · 종결(사용완료/증정완료) = 라이트 그레이 필 + 뮤트 텍스트 (닫힌 상태)
+   · 경고(D+N 지연) = 다크 솔리드 칩
+   유채색 예외 2개만 유지: 삭제(레드 = 파괴 동작), 네이버 그린(브랜드)
+   스코프: 관리자/감사/상품/현황 탭. 고객 화면은 기존 유지.
+   ===================================================================== */
+
+/* ---------- 토큰: 쿨 뉴트럴 재고정 ---------- */
+#admin-panel,
+#audit-panel,
+#prizes-panel,
+.tab-panel[data-panel="usage"] {
+  --ff-ink: #18181b;
+  --ff-muted: #6f7076;
+  --ff-faint: #a0a1a8;
+  --ff-silver: #cfcfd4;
+  --ff-line: #e7e7ea;
+  --ff-soft: #f4f4f5;
+  --ff-base: #fcfcfd;
+  --ff-gold: #6f7076; /* 킥커 등 골드 참조를 그레이 라벨로 전환 */
+}
+body:has(.tab-panel[data-panel="admin"]:not([hidden])),
+body:has(.tab-panel[data-panel="audit"]:not([hidden])),
+body:has(.tab-panel[data-panel="prizes"]:not([hidden])),
+body:has(.tab-panel[data-panel="usage"]:not([hidden])),
+body:has(.tab-panel[data-panel="usage"].is-active) {
+  --bg: #fafafa; --line: #e7e7ea; --panel: #ffffff; --panel-soft: #f4f4f5;
+  --muted: #6f7076; --silver: #cfcfd4; --gold: #6f7076;
+  --ff-ink: #18181b; --ff-muted: #6f7076; --ff-faint: #a0a1a8;
+  --ff-line: #e7e7ea; --ff-soft: #f4f4f5; --ff-base: #fcfcfd; --ff-gold: #6f7076;
+  background: #fafafa;
+}
+
+/* ---------- 서피스: 크림 카드 → 화이트 + 헤어라인 ---------- */
+#admin-panel .panel,
+#audit-panel .panel,
+#prizes-panel .panel {
+  background: #ffffff;
+  border-color: var(--ff-line);
+}
+
+/* ---------- 상태 배지: 골드 → 아웃라인/필 문법 ---------- */
+/* 진행중: 사용대기 (화이트 + 다크 아웃라인) */
+#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] {
+  background: #ffffff;
+  border: 1px solid #3f3f46;
+  color: #27272a;
+}
+#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #52525b; }
+
+/* D+N 경과 태그: 텍스트 그레이, 지연은 다크 솔리드 */
+.ff-dplus {
+  border-color: var(--ff-line);
+  background: #ffffff;
+  color: var(--ff-muted);
+}
+.ff-dplus.is-stale {
+  border-color: #18181b;
+  background: #18181b;
+  color: #fafafa;
+}
+
+/* ---------- 미사용 필터 토글: 골드 틴트 → 뉴트럴 ---------- */
+.ff-pending-toggle {
+  background: #ffffff;
+  border-color: var(--ff-line);
+  color: var(--ff-muted);
+}
+.ff-pending-toggle.is-on {
+  background: var(--ff-soft);
+  border-color: #18181b;
+  color: #18181b;
+  box-shadow: none;
+}
+.ff-pending-toggle.is-on:hover { background: #ececee; }
+
+/* ---------- 사용처리: 순수 블랙 복귀 (화면 유일의 솔리드) ---------- */
+#admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used) {
+  background: #111113;
+  border-color: #111113;
+  color: #ffffff;
+}
+#admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used):hover {
+  background: #000000;
+}
+
+/* ---------- 골드 참조 잔여물 정리 ---------- */
+.ff-chart-reminder { color: var(--ff-muted); }
+#admin-panel .ff-team-select.is-auto {
+  border-color: var(--ff-line);
+  background-image: linear-gradient(0deg, var(--ff-soft), var(--ff-soft));
+}
+.ff-usage-chip.is-pending { border-color: #3f3f46; background: #ffffff; }
+.ff-usage-chip.is-pending b { color: #18181b; }
+.ff-usage-search:focus,
+.ff-quick-search:focus {
+  border-color: #18181b;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
+}
+
+/* ---------- 구조 언어: 헤어라인 디바이더 + 타이포 라벨 ---------- */
+#admin-panel .participant-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ff-faint);
+  border-bottom: 1px solid var(--ff-line);
+  background: transparent;
+}
+#admin-panel .participant-table tbody tr {
+  border-bottom: 1px solid #efeff1;
+}
+#admin-panel .section-kicker,
+#audit-panel .section-kicker,
+#prizes-panel .section-kicker {
+  color: var(--ff-faint);
+}
+
+/* ---------- PASS 12.1 — 유채색 배지 모노크롬 정리 (관리자 스코프) ----------
+   열린 상태(대기·진행) = 화이트 + 아웃라인 / 닫힌 상태(완료·종결) = 그레이 필
+   레드(위험·반려)만 유지. */
+#admin-panel .status-pill.pending,
+#admin-panel .status-pill.status-staff-wait,
+#admin-panel .status-pill.status-kakao-benefit {
+  background: #ffffff;
+  border: 1px solid #d4d4d8;
+  color: #3f3f46;
+}
+#admin-panel .status-pill.done,
+#admin-panel .status-pill.status-review-complete,
+#admin-panel .status-pill.status-draw-ready-plus,
+#admin-panel .status-pill.muted {
+  background: var(--ff-soft);
+  border-color: transparent;
+  color: var(--ff-muted);
+}
+#admin-panel .progress-hint.pending {
+  background: #ffffff;
+  border-color: #d4d4d8;
+  color: #3f3f46;
+}
+#admin-panel .progress-hint.done {
+  background: var(--ff-soft);
+  border-color: transparent;
+  color: var(--ff-muted);
+}
+/* 위험·반려 계열은 레드 유지 (status-pill.danger / progress-hint.danger 무수정) */
+
+/* =====================================================================
+   UI v3 · PASS 12.2 — 수원점 실측 토큰 정합
+   수원점 소스(/lucky) 확인 후 PASS 12 추정치를 실제 값으로 교체:
+   · 팔레트: #111 / #7e8287 / #c9c9c9 / #e9e9e9 / #f7f7f7 / error #8f3d36
+   · 라운드 2px (수원점 정체성 — 각진 모서리)
+   · 배경: 화이트→그레이 그라디언트 fixed
+   · 헤딩 경량화(200) + 킥커 자간 .24em
+   · 상태 문법 수원점 원본 복원: 활성 필터·종결 태그 = 블랙 솔리드
+   스코프: 관리자 계열 한정. 고객 화면 무수정.
+   ===================================================================== */
+
+/* ---------- 토큰: 실측값 재고정 ---------- */
+#admin-panel,
+#audit-panel,
+#prizes-panel,
+.tab-panel[data-panel="usage"] {
+  --ff-ink: #111111;
+  --ff-muted: #7e8287;
+  --ff-faint: #c9c9c9;
+  --ff-silver: #c9c9c9;
+  --ff-line: #e9e9e9;
+  --ff-soft: #f7f7f7;
+  --ff-base: #ffffff;
+  --ff-gold: #7e8287;
+  --ff-radius: 2px;
+  --ff-radius-lg: 2px;
+  --ff-r-outer: 2px;
+  --ff-r-card: 2px;
+  --ff-r-ctrl: 2px;
+}
+body:has(.tab-panel[data-panel="admin"]:not([hidden])),
+body:has(.tab-panel[data-panel="audit"]:not([hidden])),
+body:has(.tab-panel[data-panel="prizes"]:not([hidden])),
+body:has(.tab-panel[data-panel="usage"]:not([hidden])),
+body:has(.tab-panel[data-panel="usage"].is-active) {
+  --bg: #f7f7f7; --line: #e9e9e9; --panel: #ffffff; --panel-soft: #f7f7f7;
+  --muted: #7e8287; --silver: #c9c9c9; --gold: #7e8287;
+  --ff-ink: #111111; --ff-muted: #7e8287; --ff-faint: #c9c9c9;
+  --ff-line: #e9e9e9; --ff-soft: #f7f7f7; --ff-base: #ffffff; --ff-gold: #7e8287;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+  background-attachment: fixed;
+}
+
+/* ---------- 라운드 2px: 하드코딩 라운드 컴포넌트 정리 ---------- */
+#admin-panel .participant-table .small-action,
+#admin-panel .ff-team-select,
+#admin-panel .ff-use-form,
+#admin-panel .ff-use-form .ff-use-team,
+#admin-panel .ff-use-form .ff-use-staff,
+.ff-usage-search,
+#admin-panel .detail-block {
+  border-radius: 2px;
+}
+/* 칩·필·태그류는 수원점도 99px 필 유지 (chip, tag) */
+
+/* ---------- 타이포: 경량 헤딩 + 자간 킥커 ---------- */
+#admin-panel .panel-heading h2,
+#audit-panel .panel-heading h2,
+#prizes-panel .panel-heading h2 {
+  font-weight: 200;
+  letter-spacing: -0.005em;
+}
+#admin-panel .section-kicker,
+#audit-panel .section-kicker,
+#prizes-panel .section-kicker {
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: #7e8287;
+}
+
+/* ---------- 상태 문법: 수원점 원본 복원 ---------- */
+/* 활성 필터 = 블랙 솔리드 (수원점 chip.on 문법) */
+.ff-pending-toggle.is-on {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+  box-shadow: none;
+}
+.ff-pending-toggle.is-on:hover { background: #222222; }
+
+/* 사용처리 = 순수 블랙 (수원점 CTA --black) */
+#admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used) {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+#admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used):hover {
+  background: #222222;
+}
+
+/* 열린 상태(사용대기·대기 계열) = 화이트 + 아웃라인, 실측 그레이로 */
+#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] {
+  border-color: #c9c9c9;
+  color: #111111;
+}
+#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #7e8287; }
+#admin-panel .status-pill.pending,
+#admin-panel .status-pill.status-staff-wait,
+#admin-panel .status-pill.status-kakao-benefit,
+#admin-panel .progress-hint.pending {
+  border-color: #c9c9c9;
+  color: #111111;
+}
+
+/* D+N 지연 = 블랙 솔리드 (수원점 used-tag 문법) */
+.ff-dplus { border-color: #c9c9c9; color: #7e8287; }
+.ff-dplus.is-stale { border-color: #000; background: #000; color: #fff; }
+
+/* 위험·반려 레드: 실측 에러 컬러 정합 */
+#admin-panel .status-pill.danger,
+#admin-panel .progress-hint.danger,
+#admin-panel .participant-table .small-action.danger-action {
+  color: #8f3d36;
+}
+
+/* 표 헤더: 수원점 테이블 문법 (gray-5 배경 + gray-50 라벨) */
+#admin-panel .participant-table thead th {
+  background: #f7f7f7;
+  color: #7e8287;
+  letter-spacing: 0.06em;
+}
+
+/* 포커스 링: 실측 잉크 */
+.ff-usage-search:focus,
+.ff-quick-search:focus {
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+}
