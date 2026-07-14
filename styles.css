@@ -5348,3 +5348,60 @@ input.ff-slot-input {
   border-color: #d9cba9;
   background-image: linear-gradient(0deg, #fdfaf3, #fdfaf3);
 }
+
+/* =====================================================================
+   UI v3 · PASS 11.2 — 미사용 작업대 (문구·즉석검색·정렬·D+N)
+   ===================================================================== */
+.ff-pending-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.ff-quick-search {
+  flex: 1 1 220px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--ff-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-family: inherit;
+}
+.ff-quick-search:focus {
+  outline: none;
+  border-color: var(--ff-ink);
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+}
+.ff-sort-select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--ff-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ff-ink);
+}
+
+/* 지급 경과일 태그 */
+.ff-dplus {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 1px 6px;
+  margin-left: 6px;
+  border-radius: 999px;
+  border: 1px solid #e4d5b5;
+  background: #fff;
+  color: #8a7442;
+  font-variant-numeric: tabular-nums;
+}
+.ff-dplus.is-stale {
+  border-color: #eccfc8;
+  background: #fdf3f1;
+  color: #9b4a42;
+}
