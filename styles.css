@@ -5728,3 +5728,39 @@ body[data-app-mode="staff"] #export-csv { display: none; }
 #admin-panel .progress-hint span {
   white-space: nowrap;
 }
+
+/* =====================================================================
+   UI v3 · PASS 14 — 진행단계 라벨 비노출(직원) & 현장 기록 재배치
+   · reviewStatus 수집은 유지, 직원 화면 표에서 단계 라벨만 숨김
+   · 현장 기록: 담당자 | 담당 팀 나란히 → 차트번호 전체 폭 → 메모
+   ===================================================================== */
+
+/* 직원 화면: 리뷰 컬럼의 단계 라벨(리뷰 진행 확인/직원 승인 등) 숨김.
+   배지가 셀의 1계층이 되도록 간격 리셋 */
+body[data-app-mode="staff"] #admin-panel .progress-cell > strong { display: none; }
+body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content: center; }
+
+/* 현장 기록: 팀 셀렉트 독립 필드 (담당자 옆 칸) */
+.staff-record-grid .ff-team-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.staff-record-grid .ff-team-label .ff-team-select {
+  width: 100%;
+  margin: 0;
+}
+/* 차트번호는 전체 폭으로 내려서 좌우 높이 비대칭 제거 */
+.staff-record-grid label:has(#customer-chart-no) {
+  grid-column: 1 / -1;
+}
+/* 모든 필드 컨트롤 높이 통일 (차트번호 입력이 세로로 늘어나던 문제) */
+.staff-record-grid input,
+.staff-record-grid .ff-team-select {
+  height: 42px;
+  box-sizing: border-box;
+}
+.staff-record-grid { align-items: start; }

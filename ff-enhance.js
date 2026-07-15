@@ -700,7 +700,14 @@
         sel.addEventListener("change", function () {
           if (!sel.disabled) localStorage.setItem("ff_gift_team", sel.value);
         });
-        staffInput.insertAdjacentElement("afterend", sel);
+        // 담당자 라벨 안이 아니라 독립 필드로 배치 (담당자 | 담당 팀 나란히)
+        var staffLabel = staffInput.closest("label");
+        var teamLabel = document.createElement("label");
+        teamLabel.className = "ff-team-label" + (staffLabel && staffLabel.classList.contains("is-locked") ? " is-locked" : "");
+        teamLabel.appendChild(document.createTextNode("담당 팀"));
+        teamLabel.appendChild(sel);
+        if (staffLabel) staffLabel.insertAdjacentElement("afterend", teamLabel);
+        else staffInput.insertAdjacentElement("afterend", sel);
       }
       // 잠금 동기화: 담당자명이 저장돼 잠기면(disabled) 팀·차트번호도 함께 잠금.
       // 메모만 수정 가능 상태로 유지.
