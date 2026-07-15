@@ -5733,6 +5733,8 @@ body[data-app-mode="staff"] #export-csv { display: none; }
    UI v3 · PASS 14 — 진행단계 라벨 비노출(직원) & 현장 기록 재배치
    · reviewStatus 수집은 유지, 직원 화면 표에서 단계 라벨만 숨김
    · 현장 기록: 담당자 | 담당 팀 나란히 → 차트번호 전체 폭 → 메모
+   · 팀 라벨/셀렉트는 자체 타이포를 선언하지 않고 기본 폼 규칙을 그대로 상속
+     (base: label 0.88rem/850/gap 8px · control min-height 48px/radius 7px)
    ===================================================================== */
 
 /* 직원 화면: 리뷰 컬럼의 단계 라벨(리뷰 진행 확인/직원 승인 등) 숨김.
@@ -5740,27 +5742,37 @@ body[data-app-mode="staff"] #export-csv { display: none; }
 body[data-app-mode="staff"] #admin-panel .progress-cell > strong { display: none; }
 body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content: center; }
 
-/* 현장 기록: 팀 셀렉트 독립 필드 (담당자 옆 칸) */
-.staff-record-grid .ff-team-label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 0;
-  font-size: inherit;
-  color: inherit;
-}
-.staff-record-grid .ff-team-label .ff-team-select {
-  width: 100%;
+/* 현장 기록: 팀 셀렉트를 독립 필드로.
+   .ff-team-label은 스타일 선언 없이 기본 label 규칙(display:grid/0.88rem/850/gap:8px)을
+   그대로 받는다. margin-bottom만 그리드에 맞춰 0으로. */
+.staff-record-grid .ff-team-label { margin-bottom: 0; }
+
+/* 팀 셀렉트: 담당자 input과 동일 규격.
+   #admin-panel .ff-team-select (ID 특이도 1,1,0)가 height/margin/radius/font-size를
+   강제하고 있어 클래스 셀렉터로는 이길 수 없음 → 동일 ID 스코프로 재정의.
+   기준값: input { min-height:48px; border-radius:7px; border:1px solid #d7d8d3 } */
+#admin-panel .staff-record-grid .ff-team-label .ff-team-select {
+  height: auto;
+  min-height: 48px;
   margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #d7d8d3;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #363a37;
+  background-color: #fff;
 }
-/* 차트번호는 전체 폭으로 내려서 좌우 높이 비대칭 제거 */
+/* 잠금 상태: 담당자 input의 잠금 배경과 동일하게 */
+#admin-panel .staff-record-grid .ff-team-label.is-locked .ff-team-select,
+#admin-panel .staff-record-grid .ff-team-select:disabled {
+  background-color: #f2f3ef;
+  color: #5f625e;
+  opacity: 1;
+}
+
+/* 차트번호는 전체 폭으로 내려서 좌우 비대칭 제거 */
 .staff-record-grid label:has(#customer-chart-no) {
   grid-column: 1 / -1;
-}
-/* 모든 필드 컨트롤 높이 통일 (차트번호 입력이 세로로 늘어나던 문제) */
-.staff-record-grid input,
-.staff-record-grid .ff-team-select {
-  height: 42px;
-  box-sizing: border-box;
 }
 .staff-record-grid { align-items: start; }
