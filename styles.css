@@ -5704,3 +5704,27 @@ body[data-app-mode="staff"] #export-csv { display: none; }
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
 }
+
+/* ---------- PASS 13.1 — 배지 줄바꿈 금지 & 아이콘/텍스트 계층 고정 ----------
+   좁은 컬럼에서 "직원/확인/대기" 세로 꺾임 방지. 라벨은 항상 한 줄,
+   아이콘은 13px 고정으로 텍스트보다 한 계층 아래로. */
+#admin-panel .status-pill,
+#admin-panel .progress-hint {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+#admin-panel .status-pill svg,
+#admin-panel .progress-hint svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+#admin-panel .status-pill span,
+#admin-panel .progress-hint span {
+  white-space: nowrap;
+}

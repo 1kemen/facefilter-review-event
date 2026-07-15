@@ -3003,7 +3003,7 @@ function getParticipantStatus(participant) {
     return { label: "증정 완료", tone: "done", key: "gifted", icon: "check" };
   }
   if (participant.draw) {
-    return { label: "직원 확인 대기", tone: "pending", key: "staff-wait", icon: "userCheck" };
+    return { label: "확인 대기", tone: "pending", key: "staff-wait", icon: "userCheck" };
   }
   if (isReviewComplete(participant) && participant.kakaoVerified) {
     return { label: "뽑기 가능 + 카톡 채널", tone: "", key: "draw-ready-plus", icon: "chat" };
@@ -3041,7 +3041,7 @@ function getParticipantStopInsight(participant) {
 
   if (participant.draw) {
     return {
-      label: "직원 확인 대기",
+      label: "확인 대기",
       action: "결과 화면과 네이버 리뷰 화면 확인 후 지급완료 처리",
       tone: "pending",
       key: "staff-wait",
