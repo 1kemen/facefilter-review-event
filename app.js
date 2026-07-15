@@ -2377,6 +2377,10 @@ function renderChannelSettings() {
 }
 
 function renderStats() {
+  if (APP_MODE === "staff") {
+    renderStaffBoard();
+    return;
+  }
   const stats = [
     ["전체 참여", state.participants.length],
     ["리뷰 링크 열림", state.participants.filter((p) => p.reviewOpenedAt).length],
@@ -2391,6 +2395,52 @@ function renderStats() {
       <strong>${value}</strong>
     </article>
   `).join("");
+}
+
+/* 직원 화면 전용: 리뷰 인센티브 전광판 (엔딩크레딧 스크롤)
+   증정완료 건을 담당 직원별로 집계, 건당 5,000원 환산 순위 표시 */
+const STAFF_REVIEW_INCENTIVE = 5000;
+function renderStaffBoard() {
+  if (!dom.statsGrid) return;
+  const counts = new Map();
+  state.participants.forEach((p) => {
+    if (p.giftStatus !== "done") return;
+    const name = cleanText(p.giftStaffName || p.promoterName || p.staffName || "");
+    if (!name) return;
+    counts.set(name, (counts.get(name) || 0) + 1);
+  });
+  const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"));
+
+  // 데이터가 같으면 재렌더하지 않음 (스크롤 애니메이션 리셋 방지)
+  const sig = JSON.stringify(ranked);
+  if (dom.statsGrid.dataset.sbSig === sig) return;
+  dom.statsGrid.dataset.sbSig = sig;
+
+  if (!ranked.length) {
+    dom.statsGrid.innerHTML = `
+      <div class="staff-board is-static">
+        <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
+        <p class="staff-board-empty">아직 집계된 증정완료 건이 없습니다</p>
+      </div>`;
+    return;
+  }
+
+  const row = ([name, c], i) => `
+    <li class="staff-board-row${i === 0 ? " is-top" : ""}">
+      <span class="sb-rank">${i + 1}</span>
+      <b class="sb-name">${escapeHtml(name)}</b>
+      <span class="sb-count">리뷰 ${c}건</span>
+      <strong class="sb-amount">${(c * STAFF_REVIEW_INCENTIVE).toLocaleString("ko-KR")}원</strong>
+    </li>`;
+  const rows = ranked.map(row).join("");
+  const scrolling = ranked.length > 3; // 3명 이하는 스크롤 없이 고정
+  dom.statsGrid.innerHTML = `
+    <div class="staff-board${scrolling ? "" : " is-static"}" role="status" aria-label="리뷰 인센티브 순위">
+      <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
+      <div class="staff-board-viewport">
+        <ul class="staff-board-reel" style="--sb-items:${ranked.length}">${rows}${scrolling ? rows : ""}</ul>
+      </div>
+    </div>`;
 }
 
 function renderMaintenance() {
@@ -2544,7 +2594,6 @@ function renderParticipantTable() {
         <td>${prizeText}</td>
         <td>
           <div class="row-actions">
-            <button class="small-action" type="button" data-action="select" data-id="${participant.id}">선택</button>
             ${canDraw(participant).ok ? `<button class="small-action" type="button" data-action="draw" data-id="${participant.id}">뽑기</button>` : ""}
             ${canStaffOverrideDraw(participant).ok ? `<button class="small-action warning-action" type="button" data-action="force-draw" data-id="${participant.id}">대신뽑기</button>` : ""}
             ${participant.draw && participant.giftStatus !== "done" ? `<button class="small-action" type="button" data-action="gift" data-id="${participant.id}">지급완료</button>` : ""}
