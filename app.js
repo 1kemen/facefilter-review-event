@@ -2402,25 +2402,32 @@ function renderStats() {
 const STAFF_REVIEW_INCENTIVE = 5000;
 function renderStaffBoard() {
   if (!dom.statsGrid) return;
+  // 당월(1일 00:00 ~ 익월 1일 00:00, 로컬 시간) 지급완료 건만 집계
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const counts = new Map();
   state.participants.forEach((p) => {
     if (p.giftStatus !== "done") return;
+    const doneAt = new Date(p.giftCompletedAt || p.createdAt || 0); // 레거시 건은 참여일로 폴백
+    if (Number.isNaN(doneAt.getTime()) || doneAt < monthStart || doneAt >= monthEnd) return;
     const name = cleanText(p.giftStaffName || p.promoterName || p.staffName || "");
     if (!name) return;
     counts.set(name, (counts.get(name) || 0) + 1);
   });
+  const monthLabel = `${now.getMonth() + 1}월 집계`;
   const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"));
 
   // 데이터가 같으면 재렌더하지 않음 (스크롤 애니메이션 리셋 방지)
-  const sig = JSON.stringify(ranked);
+  const sig = monthLabel + JSON.stringify(ranked);
   if (dom.statsGrid.dataset.sbSig === sig) return;
   dom.statsGrid.dataset.sbSig = sig;
 
   if (!ranked.length) {
     dom.statsGrid.innerHTML = `
       <div class="staff-board is-static">
-        <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
-        <p class="staff-board-empty">아직 집계된 증정완료 건이 없습니다</p>
+        <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>${monthLabel} · 건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
+        <p class="staff-board-empty">이번 달 집계된 증정완료 건이 없습니다</p>
       </div>`;
     return;
   }
@@ -2436,7 +2443,7 @@ function renderStaffBoard() {
   const scrolling = ranked.length > 3; // 3명 이하는 스크롤 없이 고정
   dom.statsGrid.innerHTML = `
     <div class="staff-board${scrolling ? "" : " is-static"}" role="status" aria-label="리뷰 인센티브 순위">
-      <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
+      <div class="staff-board-head"><span>REVIEW INCENTIVE</span><small>${monthLabel} · 건당 ${STAFF_REVIEW_INCENTIVE.toLocaleString("ko-KR")}원</small></div>
       <div class="staff-board-viewport">
         <ul class="staff-board-reel" style="--sb-items:${ranked.length}">${rows}${scrolling ? rows : ""}</ul>
       </div>
