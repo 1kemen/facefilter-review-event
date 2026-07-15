@@ -701,6 +701,7 @@
           if (!sel.disabled) localStorage.setItem("ff_gift_team", sel.value);
         });
         // 담당자 라벨 안이 아니라 독립 필드로 배치 (담당자 | 담당 팀 나란히)
+        // label > 텍스트 + control 구조를 그대로 따라 기본 폼 타이포를 상속받게 함
         var staffLabel = staffInput.closest("label");
         var teamLabel = document.createElement("label");
         teamLabel.className = "ff-team-label" + (staffLabel && staffLabel.classList.contains("is-locked") ? " is-locked" : "");
@@ -718,6 +719,8 @@
       if (team && team.disabled !== locked) {
         team.disabled = locked;
         team.title = locked ? "지급 기록 후에는 팀을 수정할 수 없습니다" : "";
+        var tLabel = team.closest(".ff-team-label"); // 라벨 잠금 스타일도 동기화
+        if (tLabel) tLabel.classList.toggle("is-locked", locked);
       }
       // 잠금 레코드는 저장된 팀으로 상시 재동기화
       // (usageCache 지연 로드·재렌더 후에도 뷰어 값이 아닌 기록값 유지)
