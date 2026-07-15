@@ -5747,20 +5747,26 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
    그대로 받는다. margin-bottom만 그리드에 맞춰 0으로. */
 .staff-record-grid .ff-team-label { margin-bottom: 0; }
 
-/* 팀 셀렉트: 자체 pill 스타일을 해제하고 담당자 input과 동일 규격으로 */
-.staff-record-grid .ff-team-label .ff-team-select {
-  margin-left: 0;
+/* 팀 셀렉트: 담당자 input과 동일 규격.
+   #admin-panel .ff-team-select (ID 특이도 1,1,0)가 height/margin/radius/font-size를
+   강제하고 있어 클래스 셀렉터로는 이길 수 없음 → 동일 ID 스코프로 재정의.
+   기준값: input { min-height:48px; border-radius:7px; border:1px solid #d7d8d3 } */
+#admin-panel .staff-record-grid .ff-team-label .ff-team-select {
+  height: auto;
+  min-height: 48px;
+  margin: 0;
   padding: 12px 14px;
   border: 1px solid #d7d8d3;
   border-radius: 7px;
   font-size: 1rem;
   font-weight: 400;
   color: #363a37;
+  background-color: #fff;
 }
 /* 잠금 상태: 담당자 input의 잠금 배경과 동일하게 */
-.staff-record-grid .ff-team-label.is-locked .ff-team-select,
-.staff-record-grid .ff-team-select:disabled {
-  background: #f2f3ef;
+#admin-panel .staff-record-grid .ff-team-label.is-locked .ff-team-select,
+#admin-panel .staff-record-grid .ff-team-select:disabled {
+  background-color: #f2f3ef;
   color: #5f625e;
   opacity: 1;
 }
