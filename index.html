@@ -54,6 +54,28 @@
           <section class="wizard-page is-active" data-wizard-step="register">
             <div class="workflow-step">
               <div class="step-number">1</div>
+
+              <!-- 기존 참여자 복귀: 리뷰 작성 후 돌아온 고객이 처음부터 다시
+                   입력하지 않도록, 뒤 4자리만으로 원래 단계로 이어간다. -->
+              <div class="resume-entry" id="resume-entry">
+                <button class="resume-toggle" type="button" id="resume-toggle" aria-expanded="false" aria-controls="resume-form">
+                  <span class="resume-toggle-main">이미 참여하셨나요?</span>
+                  <span class="resume-toggle-sub">리뷰 작성 후 돌아오셨다면 여기를 눌러주세요</span>
+                </button>
+                <form class="resume-form" id="resume-form" autocomplete="off" hidden>
+                  <label>
+                    휴대폰 뒤 4자리
+                    <input id="resume-phone" name="resumePhone" type="tel" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="1234" autocomplete="off">
+                  </label>
+                  <label class="resume-name-field" id="resume-name-field" hidden>
+                    이름
+                    <input id="resume-name" name="resumeName" type="text" placeholder="예: 김민지" autocomplete="off">
+                  </label>
+                  <button class="primary-action" type="submit">이어서 진행하기</button>
+                  <p class="form-message" id="resume-message" role="status"></p>
+                </form>
+              </div>
+
               <form id="registration-form" autocomplete="off">
                 <div class="wizard-copy">
                   <h3>참여 정보</h3>
