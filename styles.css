@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  --bg: #f6f7f5;
-  --ink: #202120;
-  --muted: #747873;
-  --line: #dedfdb;
+  --bg: #f7f7f7;
+  --ink: #111111;
+  --muted: #7e8287;
+  --line: #e9e9e9;
   --panel: #ffffff;
-  --panel-soft: #f4f5f2;
-  --accent: #252525;
-  --accent-soft: #ececea;
-  --silver: #a5a7a2;
-  --sage: #79837d;
-  --gold: #9a8357;
-  --blue: #657984;
-  --danger: #9b4a42;
+  --panel-soft: #f7f7f7;
+  --accent: #111111;
+  --accent-soft: #efefef;
+  --silver: #c9c9c9;
+  --sage: #7e8287;
+  --gold: #7e8287;
+  --blue: #7e8287;
+  --danger: #8f3d36;
   --shadow: 0 26px 80px rgba(28, 29, 27, 0.075);
   --shadow-soft: 0 12px 34px rgba(28, 29, 27, 0.055);
 }
@@ -539,7 +539,7 @@ textarea {
 .secondary-action.is-confirmed:disabled {
   border-color: #cdd8d4;
   background: #eef3f1;
-  color: #2f5950;
+  color: #111111;
   opacity: 1;
 }
 
@@ -882,7 +882,7 @@ textarea {
 }
 
 .session-complete strong {
-  color: #2f5950;
+  color: #111111;
   font-size: 1.05rem;
 }
 
@@ -1136,7 +1136,7 @@ textarea {
 
 .status-pill.status-kakao-benefit {
   background: #fff1bd;
-  color: #685421;
+  color: #7e8287;
 }
 
 .step-list {
@@ -1664,12 +1664,12 @@ textarea {
 }
 
 .kakao-banner.is-confirmed .kakao-bubble {
-  background: #46665d;
+  background: #7e8287;
   color: #fff;
 }
 
 .kakao-banner.is-confirmed .kakao-bubble::after {
-  border-top-color: #46665d;
+  border-top-color: #7e8287;
 }
 
 .benefit-action {
@@ -2218,9 +2218,9 @@ tbody tr:hover td {
 }
 
 .progress-hint.pending {
-  background: #f5ecd9;
+  background: #f7f7f7;
   border-color: rgba(138, 103, 49, 0.14);
-  color: #8a6731;
+  color: #7e8287;
 }
 
 .progress-hint.danger {
@@ -2241,7 +2241,7 @@ tbody tr:hover td {
 
 .progress-hint.progress-staff-wait,
 .progress-hint.progress-draw-ready {
-  background: #f5ecd9;
+  background: #f7f7f7;
 }
 
 .detail-progress-line {
@@ -2398,7 +2398,7 @@ body[data-app-mode="staff"] .detail-panel {
 }
 
 .override-note {
-  color: #8a6731;
+  color: #7e8287;
 }
 
 .evidence-preview {
@@ -4024,7 +4024,7 @@ input.ff-slot-input {
   font-weight: 700;
   letter-spacing: 0.03em;
   color: var(--ff-gold);
-  border: 1px solid #e4d9c2;
+  border: 1px solid #e9e9e9;
   border-radius: 999px;
   padding: 4px 10px;
   background: #fbf8f1;
@@ -4301,7 +4301,7 @@ input.ff-slot-input {
      4) 골드 #e0cfa5 — 라이트보다 한 톤 밝게 (다크 대비 확보)
    범위: 고객 화면 검증 완료. 관리자 화면은 토큰만 상속(백로그).
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
     /* 원본 토큰 */
@@ -4448,7 +4448,7 @@ input.ff-slot-input {
    규칙: 골드는 ①헤어라인 ②소형 텍스트 액센트에만. 글로우·발광 전면 금지.
    면(fill)은 아이보리/차콜 무채색으로 — 골드 면적이 넓을수록 싸 보인다.
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   /* 진행바: 발광 골드 → 무광 아이보리 필 + 완주선만 골드 헤어라인 */
   .wizard-progress-track { background: #262119; height: 3px; }
   .wizard-progress-track span {
@@ -4496,7 +4496,7 @@ input.ff-slot-input {
    토큰을 안 쓰고 하드코딩된 라이트 표면들이 다크에서 탈색돼 보이던 문제.
    대상: 도움말 버튼 / 도움말·혜택 다이얼로그 / 증정완료 박스
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   /* 진행이 안 되나요? — 신고된 버그 */
   .customer-help-button {
     background: transparent;
@@ -4537,7 +4537,7 @@ input.ff-slot-input {
    신고: STEP01 요약행/동의박스(흰 배경+아이보리 글자), 네이버 리뷰 버튼
    (아이보리+흰 글자), 직원확인 칩(저대비), 리뷰 안내 모달(라이트 카드)
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   /* ---------- STEP01 요약 행 (ff-chip) ---------- */
   .ff-chip {
     background: #241f18;
@@ -4615,7 +4615,7 @@ input.ff-slot-input {
    1) 원본 hover(background:#000)가 다크 아이보리 CTA를 검게 덮던 문제
    2) 공개 순간 상품명 팝인 + 페필이 바운스 (도파민 마무리 한 스푼)
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   /* 호버: 검정 → 한 톤 깊은 아이보리 (밝은 버튼은 밝게 유지) */
   #customer-panel .primary-action:hover:not(:disabled),
   #customer-panel .draw-button:not(:disabled):hover,
@@ -4703,7 +4703,7 @@ input.ff-slot-input {
   font-weight: 700;
 }
 
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   .ff-ticket-foot { border-top-color: #35302a; }
   #final-summary.ff-tier-high .final-result-card { border-top-color: #b5a377; }
   #customer-panel .result-card dd.ff-dd-done { color: #d9c9a3; }
@@ -4771,7 +4771,7 @@ input.ff-slot-input {
   border-color: transparent;
   background: transparent;
 }
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   .ff-team-select,
   .ff-use-form .ff-use-team,
   .ff-use-form .ff-use-staff {
@@ -4788,7 +4788,7 @@ input.ff-slot-input {
    항상 라이트 렌더. (하드코딩 라이트 표면이 많아 반다크 혼재가 발생했음)
    토큰을 패널 스코프에서 라이트 값으로 재고정 → var 기반 스타일 전부 복원.
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   #admin-panel,
   .tab-panel[data-panel="audit"],
   .tab-panel[data-panel="prizes"],
@@ -5136,7 +5136,7 @@ input.ff-slot-input {
    sage(킥커) · ff-deep(보조 라인/힌트) · danger(경고) · blue(정보)가
    라이트용 중간톤 그대로 다크에 남아 침침하게 보이던 문제.
    ===================================================================== */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   :root {
     --sage: #9caa9e;      /* 킥커·섹션 라벨 — 침침한 #79837d 상향 */
     --ff-deep: #94a1a5;   /* 보조 딥 톤 */
@@ -5154,7 +5154,7 @@ input.ff-slot-input {
 }
 
 /* PASS 5.6 보강: 다이얼로그 상단 라벨(REVIEW 등) 다크 가독 */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   .benefit-dialog-copy > span { color: var(--ff-muted); }
 }
 
@@ -5222,7 +5222,7 @@ input.ff-slot-input {
 .ff-usage-chip b { color: var(--ff-faint); font-weight: 600; }
 .ff-usage-chip.is-total { background: var(--ff-ink); color: #fff; border-color: var(--ff-ink); }
 .ff-usage-chip.is-total b { color: rgba(255,255,255,0.65); }
-.ff-usage-chip.is-pending { border-color: #e4d9c2; background: #fbf8f1; }
+.ff-usage-chip.is-pending { border-color: #e9e9e9; background: #fbf8f1; }
 .ff-usage-chip.is-pending b { color: var(--ff-gold); }
 
 .ff-usage-h {
@@ -5262,7 +5262,7 @@ input.ff-slot-input {
   margin-left: 4px;
 }
 /* 관리자 라이트 고정에 usage 패널 포함 */
-@media (prefers-color-scheme: dark) {
+@media ff-dark and (prefers-color-scheme: dark) {
   .tab-panel[data-panel="usage"] {
     color-scheme: light;
     color: #1a1a1a;
@@ -5277,17 +5277,17 @@ input.ff-slot-input {
    ===================================================================== */
 /* 사용대기: 골드 대기톤 (초록=종결, 골드=진행중 문법) */
 #admin-panel .progress-hint[data-ff-lifecycle="사용대기"] {
-  background: #fbf6ea;
-  border: 1px solid #e4d5b5;
-  color: #8a7442;
+  background: #f7f7f7;
+  border: 1px solid #e9e9e9;
+  color: #7e8287;
 }
 #admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #b39a63; }
 
 /* 사용대기 행의 사용처리 버튼: 프라이머리 유지, 순수 블랙 → 웜 차콜
-   (골드 패밀리 #8a7442 계열에서 파생한 잉크. 화면 유일의 솔리드 = 최종 액션) */
+   (골드 패밀리 #7e8287 계열에서 파생한 잉크. 화면 유일의 솔리드 = 최종 액션) */
 #admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used) {
-  background: #3b352a;
-  border-color: #3b352a;
+  background: #111111;
+  border-color: #111111;
   color: #f3ecdd;
   font-weight: 700;
 }
@@ -5299,10 +5299,10 @@ input.ff-slot-input {
 .ff-pending-bar { margin: 4px 0 10px; }
 .ff-pending-toggle {
   padding: 9px 14px;
-  border: 1px solid #e4d5b5;
+  border: 1px solid #e9e9e9;
   border-radius: 999px;
-  background: #fbf6ea;
-  color: #8a7442;
+  background: #f7f7f7;
+  color: #7e8287;
   font-size: 13px;
   font-weight: 700;
   font-family: inherit;
@@ -5400,9 +5400,9 @@ input.ff-slot-input {
   padding: 1px 6px;
   margin-left: 6px;
   border-radius: 999px;
-  border: 1px solid #e4d5b5;
+  border: 1px solid #e9e9e9;
   background: #fff;
-  color: #8a7442;
+  color: #7e8287;
   font-variant-numeric: tabular-nums;
 }
 .ff-dplus.is-stale {
@@ -5828,3 +5828,121 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 }
 .resume-form label { margin-bottom: 0; }
 .resume-form .primary-action { margin-top: 4px; }
+
+/* =====================================================================
+   UI v3 · PASS 15 — 고객 화면 브랜드 톤 이식 (제모 비교표 계열)
+   · 라이트 고정: 다크 블록은 삭제하지 않고 매칭 불가 미디어타입으로 비활성
+     (되돌리려면 "@media ff-dark and" -> "@media" 로 치환)
+   · 무채색(#111 / #7e8287 / #e9e9e9 / #f7f7f7) + 2px 직각
+   · 숫자·코드는 Montserrat, 본문은 Pretendard
+   · 유지: 네이버 그린(#03c75a), 카카오 옐로(#fee500), 위험 레드
+   ===================================================================== */
+
+/* 라디우스: 필(pill) 요소를 제외하고 2px 직각으로 통일 */
+#customer-panel .panel,
+#customer-panel .wizard-shell,
+#customer-panel .workflow-step,
+#customer-panel .detail-block,
+#customer-panel input,
+#customer-panel select,
+#customer-panel textarea,
+#customer-panel .primary-action,
+#customer-panel .secondary-action,
+#customer-panel .route-card,
+#customer-panel .drop-choice,
+#customer-panel .upload,
+#customer-panel .resume-toggle,
+#customer-panel .resume-form {
+  border-radius: 2px;
+}
+
+/* 숫자·코드: Montserrat (제모 비교표와 동일 규칙) */
+#customer-panel .wizard-progress-labels,
+#customer-panel .step-number,
+#customer-panel .final-summary,
+#customer-panel .final-summary-grid {
+  font-family: "Montserrat", "Pretendard", sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* 진행바: 발광 제거, 잉크 필 + 헤어라인 트랙 */
+#customer-panel .wizard-progress-track {
+  background: var(--line);
+  height: 2px;
+  border-radius: 0;
+}
+#customer-panel .wizard-progress-track span {
+  background: var(--ink);
+  box-shadow: none;
+  border-radius: 0;
+}
+#customer-panel .wizard-progress-labels span {
+  font-size: 11px;
+  color: var(--silver);
+  letter-spacing: 0.02em;
+}
+#customer-panel .wizard-progress-labels span.is-current {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* 킥커: 수원점 eyebrow 자간 */
+#customer-panel .section-kicker {
+  font-family: "Montserrat", "Pretendard", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: var(--muted);
+}
+
+/* 카드/스텝: 그라데이션·그림자 제거 → 헤어라인 구획 */
+#customer-panel .workflow-step,
+#customer-panel .route-card,
+#customer-panel .drop-choice {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+#customer-panel .route-card:hover,
+#customer-panel .drop-choice:hover {
+  border-color: var(--ink);
+}
+#customer-panel .drop-choice.is-selected {
+  border: 1.5px solid var(--ink);
+  box-shadow: none;
+}
+
+/* 주 CTA: 솔리드 잉크 (화면 유일의 솔리드) */
+#customer-panel .primary-action {
+  background: var(--ink);
+  color: #ffffff;
+  border: 1px solid var(--ink);
+  box-shadow: none;
+  font-weight: 500;
+}
+#customer-panel .primary-action:hover:not(:disabled) { background: #000000; }
+#customer-panel .primary-action:disabled {
+  background: var(--silver);
+  border-color: var(--silver);
+  color: #ffffff;
+}
+
+/* 보조 버튼: 아웃라인 */
+#customer-panel .secondary-action {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: none;
+}
+#customer-panel .secondary-action:hover { border-color: var(--ink); }
+
+/* 결과 확인 블록: 직원이 스캔하듯 읽도록 숫자 강조 */
+#customer-panel .final-summary,
+#customer-panel .final-summary-grid {
+  font-variant-numeric: tabular-nums;
+}
+#customer-panel .final-summary strong {
+  font-weight: 500;
+  color: var(--ink);
+}
