@@ -91,6 +91,12 @@ function bindDom() {
   dom.panels = [...document.querySelectorAll(".tab-panel")];
   dom.registrationForm = document.querySelector("#registration-form");
   dom.registrationMessage = document.querySelector("#registration-message");
+  dom.resumeToggle = document.querySelector("#resume-toggle");
+  dom.resumeForm = document.querySelector("#resume-form");
+  dom.resumePhone = document.querySelector("#resume-phone");
+  dom.resumeName = document.querySelector("#resume-name");
+  dom.resumeNameField = document.querySelector("#resume-name-field");
+  dom.resumeMessage = document.querySelector("#resume-message");
   dom.phoneLast4 = document.querySelector("#phone-last4");
   dom.adminAuthCard = document.querySelector("#admin-auth-card");
   dom.adminLoginForm = document.querySelector("#admin-login-form");
@@ -235,6 +241,8 @@ function bindEvents() {
   });
 
   dom.registrationForm.addEventListener("submit", handleRegistration);
+  dom.resumeToggle?.addEventListener("click", toggleResumeForm);
+  dom.resumeForm?.addEventListener("submit", handleResumeByPhone);
   dom.phoneLast4.addEventListener("input", enforcePhoneLast4Digits);
   dom.adminLoginForm?.addEventListener("submit", handleAdminLogin);
   dom.refreshAdminData?.addEventListener("click", refreshAdminState);
@@ -1132,6 +1140,66 @@ async function handleRegistration(event) {
   setDefaultVisitDate();
   renderAll();
   setMessage(dom.registrationMessage, "참여가 시작되었습니다.", "success");
+}
+
+/* 기존 참여자 복귀
+   리뷰 작성 후 돌아온 고객이 처음부터 다시 입력하지 않도록,
+   휴대폰 뒤 4자리만으로 원래 진행 단계로 이어간다.
+   뒷자리가 겹치면(ambiguous) 이름을 한 번 더 받는다. */
+function toggleResumeForm() {
+  if (!dom.resumeForm || !dom.resumeToggle) return;
+  const willOpen = dom.resumeForm.hidden;
+  dom.resumeForm.hidden = !willOpen;
+  dom.resumeToggle.setAttribute("aria-expanded", String(willOpen));
+  if (willOpen) dom.resumePhone?.focus();
+}
+
+async function handleResumeByPhone(event) {
+  event.preventDefault();
+  if (!dom.resumeForm) return;
+
+  const phoneLast4 = cleanText(dom.resumePhone?.value || "").replace(/\D/g, "");
+  const customerName = cleanText(dom.resumeName?.value || "");
+
+  if (phoneLast4.length !== 4) {
+    setMessage(dom.resumeMessage, "휴대폰 뒤 4자리를 입력해 주세요.", "pending");
+    return;
+  }
+
+  const submitButton = dom.resumeForm.querySelector("button[type='submit']");
+  if (submitButton) submitButton.disabled = true;
+  setMessage(dom.resumeMessage, "참여 내역을 확인하고 있습니다.", "");
+
+  try {
+    const result = await window.FaceFilterSupabase.resumeByPhone({
+      sessionId: sessionState.supabaseSessionId,
+      phoneLast4,
+      customerName: customerName || null
+    });
+
+    if (result?.ok && result.payload) {
+      const participant = applyRemoteResult(result);
+      saveState();
+      renderAll();
+      if (participant) {
+        setMessage(dom.resumeMessage, "", "");
+        toast("기존 참여 내역으로 이어갑니다.");
+        return;
+      }
+    }
+
+    // 뒷자리가 겹치는 경우: 이름 입력란을 열어 한 번 더 확인
+    if (result?.code === "ambiguous") {
+      if (dom.resumeNameField) dom.resumeNameField.hidden = false;
+      dom.resumeName?.focus();
+    }
+    setMessage(dom.resumeMessage, result?.message || "참여 내역을 찾지 못했습니다.", "pending");
+  } catch (error) {
+    console.error(error);
+    setMessage(dom.resumeMessage, "연결 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", "danger");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
 }
 
 function isMismatchedDuplicatePayload(result, input) {

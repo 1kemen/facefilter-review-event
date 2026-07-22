@@ -5776,3 +5776,55 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
   grid-column: 1 / -1;
 }
 .staff-record-grid { align-items: start; }
+
+/* =====================================================================
+   기존 참여자 복귀 진입점
+   리뷰 작성 후 돌아온 고객이 첫 등록 화면을 보고 "초기화됐나?" 하고
+   멈추지 않도록, 등록 폼 위에 명시적인 복귀 경로를 둔다.
+   ===================================================================== */
+.resume-entry {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.resume-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-soft, #f7f7f5);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.resume-toggle:hover { border-color: var(--ink, #111); }
+.resume-toggle[aria-expanded="true"] {
+  border-color: var(--ink, #111);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.resume-toggle-main {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink, #111);
+}
+.resume-toggle-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #747873);
+  line-height: 1.5;
+}
+
+.resume-form {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--ink, #111);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+}
+.resume-form label { margin-bottom: 0; }
+.resume-form .primary-action { margin-top: 4px; }

@@ -153,6 +153,11 @@
       p_visit_date: visitDate,
       p_device_key: deviceKey
     }),
+    resumeByPhone: ({ sessionId, phoneLast4, customerName = null }) => rpc("ff_resume_by_phone", {
+      p_session_id: sessionId,
+      p_phone_last4: phoneLast4,
+      p_customer_name: customerName
+    }),
     markReviewOpened: ({ sessionId, participantId }) => rpc("ff_mark_review_opened", {
       p_session_id: sessionId,
       p_participant_id: participantId
@@ -179,6 +184,7 @@
       p_staff_name: staffName,
       p_team: team
     }),
+    getGiftUsage: () => rpc("ff_get_gift_usage"),
     runDraw: ({ sessionId, participantId, dropChoice = null, drawType = "primary" }) => rpc("ff_run_draw", {
       p_session_id: sessionId,
       p_participant_id: participantId,
