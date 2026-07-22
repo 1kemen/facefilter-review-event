@@ -11,8 +11,8 @@
   --silver: #c9c9c9;
   --sage: #7e8287;
   --gold: #7e8287;
-  --blue: #7e8287;
-  --danger: #8f3d36;
+  --blue: #657984;
+  --danger: #9b4a42;
   --shadow: 0 26px 80px rgba(28, 29, 27, 0.075);
   --shadow-soft: 0 12px 34px rgba(28, 29, 27, 0.055);
 }
@@ -962,9 +962,9 @@ textarea {
   margin-top: 12px;
   min-height: 54px;
   padding: 12px 16px;
-  border-color: #ded3a4;
+  border-color: #e9e9e9;
   background:
-    linear-gradient(180deg, #fffdf0, #f8f3d6);
+    linear-gradient(180deg, #fffdf0, #f7f7f7);
   color: #2e2b23;
   line-height: 1.35;
   white-space: normal;
@@ -972,7 +972,7 @@ textarea {
 }
 
 .final-benefit-action:hover {
-  border-color: #c8b96f;
+  border-color: #c9c9c9;
   box-shadow: 0 14px 28px rgba(88, 78, 32, 0.1);
 }
 
@@ -1135,7 +1135,7 @@ textarea {
 }
 
 .status-pill.status-kakao-benefit {
-  background: #fff1bd;
+  background: #f7f7f7;
   color: #7e8287;
 }
 
@@ -2387,14 +2387,14 @@ body[data-app-mode="staff"] .detail-panel {
 }
 
 .warning-action {
-  border-color: #d8c7a2;
+  border-color: #e9e9e9;
   background: #fbf4e8;
-  color: #795f2e;
+  color: #111111;
 }
 
 .warning-action:hover {
-  border-color: #c8ad78;
-  background: #f7ecd7;
+  border-color: #7e8287;
+  background: #f7f7f7;
 }
 
 .override-note {
@@ -2423,7 +2423,7 @@ body[data-app-mode="staff"] .detail-panel {
   padding: 8px 10px;
   border-radius: 7px;
   background: #f4edde;
-  color: #7a6435;
+  color: #7e8287;
   font-size: 0.86rem;
 }
 
@@ -2728,7 +2728,7 @@ body[data-app-mode="staff"] .detail-panel {
   --ff-base: #fbfcfa;
   --ff-water: #cdd6d9;
   --ff-deep: #7c8b90;
-  --ff-gold: #9a8357;
+  --ff-gold: #7e8287;
   --ff-radius: 14px;
   --ff-radius-lg: 22px;
   --ff-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -3463,7 +3463,7 @@ input.ff-slot-input {
 /* 상급: 골드 글로우 배경 + 카드 강조 + 상품명 크게 */
 .ff-tier-high .final-result-card {
   background: radial-gradient(circle at 50% 0%, #faf6ec, #ffffff 70%);
-  border-color: var(--ff-goldlt, #c9b896);
+  border-color: var(--ff-goldlt, #c9c9c9);
   box-shadow: 0 10px 30px rgba(154, 131, 87, 0.16);
 }
 .ff-tier-high .final-result-card > strong {
@@ -4298,7 +4298,7 @@ input.ff-slot-input {
      1) 토큰 재정의가 기본, 하드코딩 표면만 개별 오버라이드
      2) 페필이 메달리온·타일은 다크에서도 밝게 유지 (검은 몸 원천 차단)
      3) 주 CTA는 아이보리 그라데이션 반전 (다크 위 밝은 버튼)
-     4) 골드 #e0cfa5 — 라이트보다 한 톤 밝게 (다크 대비 확보)
+     4) 골드 #7e8287 — 라이트보다 한 톤 밝게 (다크 대비 확보)
    범위: 고객 화면 검증 완료. 관리자 화면은 토큰만 상속(백로그).
    ===================================================================== */
 @media ff-dark and (prefers-color-scheme: dark) {
@@ -4314,7 +4314,7 @@ input.ff-slot-input {
     --accent: #f0ebe0;
     --accent-soft: #2a251e;
     --silver: #6b665e;
-    --gold: #e0cfa5;
+    --gold: #7e8287;
     --shadow: 0 26px 80px rgba(0, 0, 0, 0.55);
     --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.4);
     /* ff 토큰 */
@@ -4325,7 +4325,7 @@ input.ff-slot-input {
     --ff-line: #35302a;
     --ff-soft: #221e18;
     --ff-base: #1a1712;
-    --ff-gold: #e0cfa5;
+    --ff-gold: #7e8287;
     --ff-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 12px 32px rgba(0, 0, 0, 0.38);
     --ff-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.5), 0 16px 36px rgba(0, 0, 0, 0.55);
     /* 페필이 타일은 다크에서도 밝게 고정 */
@@ -4400,7 +4400,7 @@ input.ff-slot-input {
   /* ---------- 진행바: 골드 ---------- */
   .wizard-progress-track { background: #2a251e; }
   .wizard-progress-track span {
-    background: linear-gradient(90deg, #c9b284 0%, #e0cfa5 100%);
+    background: linear-gradient(90deg, #c9b284 0%, #7e8287 100%);
     box-shadow: 0 0 10px rgba(224, 207, 165, 0.35);
   }
   .wizard-progress-labels span.is-current { color: var(--ff-gold); }
@@ -4466,7 +4466,7 @@ input.ff-slot-input {
 
   /* 선택된 페필이: 골드 글로우 링 → 1.5px 샴페인 헤어라인 */
   #customer-panel .drop-choice.is-selected {
-    border: 1.5px solid #cbb98f;
+    border: 1.5px solid #c9c9c9;
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
   }
 
@@ -4553,7 +4553,7 @@ input.ff-slot-input {
     border-color: var(--ff-line);
     color: var(--ff-ink);
   }
-  .ff-consent.is-on { border-color: #cbb98f; }
+  .ff-consent.is-on { border-color: #c9c9c9; }
   .ff-consent-box {
     background: #16120d;
     border-color: #4a4238;
@@ -4680,7 +4680,7 @@ input.ff-slot-input {
 
 /* 상 등급 전용: 티켓 상단 샴페인 헤어라인 */
 #final-summary.ff-tier-high .final-result-card {
-  border-top: 2px solid #cbb98f;
+  border-top: 2px solid #c9c9c9;
 }
 
 /* 캡처 안내 */
@@ -4804,7 +4804,7 @@ input.ff-slot-input {
     --accent: #1f201d;
     --accent-soft: #eceee9;
     --silver: #b9bcb4;
-    --gold: #9a8357;
+    --gold: #7e8287;
     --shadow: 0 26px 80px rgba(31, 32, 29, 0.12);
     --shadow-soft: 0 12px 34px rgba(31, 32, 29, 0.09);
     /* ff 토큰 재고정 */
@@ -4815,7 +4815,7 @@ input.ff-slot-input {
     --ff-line: #e7e8e4;
     --ff-soft: #f5f6f3;
     --ff-base: #fbfcfa;
-    --ff-gold: #9a8357;
+    --ff-gold: #7e8287;
     --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
     --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
     /* body에서 상속되는 다크 계산색 차단 — 여기서 상속 재시작 */
@@ -4830,11 +4830,11 @@ input.ff-slot-input {
     color-scheme: light;
     --bg: #f4f4f1; --ink: #1a1a1a; --muted: #8a8d88; --line: #e7e8e4;
     --panel: #fbfcfa; --panel-soft: #f5f6f3; --accent: #1f201d; --accent-soft: #eceee9;
-    --silver: #b9bcb4; --gold: #9a8357;
+    --silver: #b9bcb4; --gold: #7e8287;
     --shadow: 0 26px 80px rgba(31, 32, 29, 0.12);
     --shadow-soft: 0 12px 34px rgba(31, 32, 29, 0.09);
     --ff-ink: #1a1a1a; --ff-muted: #676b66; --ff-faint: #9a9d97; --ff-silver: #c8cac3;
-    --ff-line: #e7e8e4; --ff-soft: #f5f6f3; --ff-base: #fbfcfa; --ff-gold: #9a8357;
+    --ff-line: #e7e8e4; --ff-soft: #f5f6f3; --ff-base: #fbfcfa; --ff-gold: #7e8287;
     --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
     --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
     background: #f4f4f1;
@@ -5138,7 +5138,7 @@ input.ff-slot-input {
    ===================================================================== */
 @media ff-dark and (prefers-color-scheme: dark) {
   :root {
-    --sage: #9caa9e;      /* 킥커·섹션 라벨 — 침침한 #79837d 상향 */
+    --sage: #9caa9e;      /* 킥커·섹션 라벨 — 침침한 #7e8287 상향 */
     --ff-deep: #94a1a5;   /* 보조 딥 톤 */
     --danger: #d98b80;    /* 경고 — 다크 가독 버전 */
     --blue: #8fa3ae;      /* 정보 */
@@ -5281,7 +5281,7 @@ input.ff-slot-input {
   border: 1px solid #e9e9e9;
   color: #7e8287;
 }
-#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #b39a63; }
+#admin-panel .progress-hint[data-ff-lifecycle="사용대기"] svg { color: #7e8287; }
 
 /* 사용대기 행의 사용처리 버튼: 프라이머리 유지, 순수 블랙 → 웜 차콜
    (골드 패밀리 #7e8287 계열에서 파생한 잉크. 화면 유일의 솔리드 = 최종 액션) */
@@ -5313,12 +5313,12 @@ input.ff-slot-input {
 /* on 상태: 솔리드 해제 → 딥 골드 틴트 (프라이머리 아님, '상태 표시'로 강등.
    솔리드는 사용처리 버튼 하나만 남겨 위계 분리) */
 .ff-pending-toggle.is-on {
-  background: #f2e8d0;
-  border-color: #c9b487;
-  color: #6b5831;
+  background: #f7f7f7;
+  border-color: #c9c9c9;
+  color: #111111;
   box-shadow: inset 0 1px 2px rgba(138, 116, 66, 0.12);
 }
-.ff-pending-toggle.is-on:hover { background: #ede1c3; }
+.ff-pending-toggle.is-on:hover { background: #f7f7f7; }
 
 /* 차트 기입 리마인드 */
 .ff-chart-reminder {
@@ -5350,7 +5350,7 @@ input.ff-slot-input {
 
 /* PASS 11.1 — 팀 자동 감지 표시 */
 #admin-panel .ff-team-select.is-auto {
-  border-color: #d9cba9;
+  border-color: #e9e9e9;
   background-image: linear-gradient(0deg, #fdfaf3, #fdfaf3);
 }
 
@@ -5831,118 +5831,86 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 
 /* =====================================================================
    UI v3 · PASS 15 — 고객 화면 브랜드 톤 이식 (제모 비교표 계열)
-   · 라이트 고정: 다크 블록은 삭제하지 않고 매칭 불가 미디어타입으로 비활성
-     (되돌리려면 "@media ff-dark and" -> "@media" 로 치환)
-   · 무채색(#111 / #7e8287 / #e9e9e9 / #f7f7f7) + 2px 직각
-   · 숫자·코드는 Montserrat, 본문은 Pretendard
-   · 유지: 네이버 그린(#03c75a), 카카오 옐로(#fee500), 위험 레드
+   시안 적용: 무채색 + 2px 직각 + Montserrat 숫자 + 헤어라인 구획
+   · 라이트 고정(다크 블록은 ff-dark 미디어타입으로 비활성, 되돌리기 가능)
+   · 골드·세이지 53곳은 앞서 무채색으로 치환 완료
+   · 보존: 네이버 그린(#03c75a), 카카오 옐로(#fee500), 위험 레드
    ===================================================================== */
 
-/* 라디우스: 필(pill) 요소를 제외하고 2px 직각으로 통일 */
-#customer-panel .panel,
-#customer-panel .wizard-shell,
-#customer-panel .workflow-step,
-#customer-panel .detail-block,
-#customer-panel input,
-#customer-panel select,
-#customer-panel textarea,
-#customer-panel .primary-action,
-#customer-panel .secondary-action,
-#customer-panel .route-card,
-#customer-panel .drop-choice,
-#customer-panel .upload,
-#customer-panel .resume-toggle,
-#customer-panel .resume-form {
-  border-radius: 2px;
+/* 라디우스: 시안의 2px 직각으로 통일 (변수 하나로 하위 전체 적용) */
+#customer-panel {
+  --ff-radius: 2px;
+  --ff-radius-lg: 2px;
+  --ff-r-card: 2px;
 }
 
-/* 숫자·코드: Montserrat (제모 비교표와 동일 규칙) */
-#customer-panel .wizard-progress-labels,
-#customer-panel .step-number,
-#customer-panel .final-summary,
-#customer-panel .final-summary-grid {
-  font-family: "Montserrat", "Pretendard", sans-serif;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-}
-
-/* 진행바: 발광 제거, 잉크 필 + 헤어라인 트랙 */
-#customer-panel .wizard-progress-track {
-  background: var(--line);
-  height: 2px;
-  border-radius: 0;
-}
-#customer-panel .wizard-progress-track span {
-  background: var(--ink);
+/* 그림자 제거 → 헤어라인 구획 (시안의 플랫 톤) */
+#customer-panel .flow-panel.wizard-shell {
   box-shadow: none;
-  border-radius: 0;
+  border: 1px solid var(--ff-line);
+  background: #ffffff;
 }
-#customer-panel .wizard-progress-labels span {
-  font-size: 11px;
-  color: var(--silver);
-  letter-spacing: 0.02em;
-}
-#customer-panel .wizard-progress-labels span.is-current {
-  color: var(--ink);
-  font-weight: 500;
+#customer-panel .workflow-step,
+#customer-panel .review-focus-card,
+#customer-panel .draw-focus-card,
+#customer-panel .result-card,
+#customer-panel .odds-panel {
+  box-shadow: none;
 }
 
-/* 킥커: 수원점 eyebrow 자간 */
+/* 킥커(STEP 02 등): Montserrat + 시안 자간 */
+#customer-panel .step-number,
 #customer-panel .section-kicker {
   font-family: "Montserrat", "Pretendard", sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.24em;
-  color: var(--muted);
+  color: var(--ff-muted);
 }
 
-/* 카드/스텝: 그라데이션·그림자 제거 → 헤어라인 구획 */
-#customer-panel .workflow-step,
-#customer-panel .route-card,
-#customer-panel .drop-choice {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  box-shadow: none;
+/* 숫자·코드: tabular-nums 정렬 */
+#customer-panel .final-summary,
+#customer-panel .final-summary-grid,
+#customer-panel .result-card,
+#customer-panel .odds-panel {
+  font-variant-numeric: tabular-nums;
 }
-#customer-panel .route-card:hover,
-#customer-panel .drop-choice:hover {
-  border-color: var(--ink);
+
+/* 진행바: 발광 제거, 잉크 필 + 헤어라인 트랙 */
+#customer-panel .wizard-progress-track {
+  background: var(--ff-line);
+  height: 2px;
+  border-radius: 0;
 }
-#customer-panel .drop-choice.is-selected {
-  border: 1.5px solid var(--ink);
+#customer-panel .wizard-progress-track span {
+  background: var(--ff-ink);
   box-shadow: none;
+  border-radius: 0;
+}
+#customer-panel .wizard-progress-labels span { color: var(--ff-silver); }
+#customer-panel .wizard-progress-labels span.is-current {
+  color: var(--ff-ink);
+  font-weight: 500;
 }
 
 /* 주 CTA: 솔리드 잉크 (화면 유일의 솔리드) */
 #customer-panel .primary-action {
-  background: var(--ink);
+  background: var(--ff-ink);
+  border: 1px solid var(--ff-ink);
   color: #ffffff;
-  border: 1px solid var(--ink);
   box-shadow: none;
-  font-weight: 500;
 }
 #customer-panel .primary-action:hover:not(:disabled) { background: #000000; }
 #customer-panel .primary-action:disabled {
-  background: var(--silver);
-  border-color: var(--silver);
-  color: #ffffff;
+  background: var(--ff-silver);
+  border-color: var(--ff-silver);
 }
 
 /* 보조 버튼: 아웃라인 */
 #customer-panel .secondary-action {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--ff-line);
+  color: var(--ff-ink);
   box-shadow: none;
 }
-#customer-panel .secondary-action:hover { border-color: var(--ink); }
-
-/* 결과 확인 블록: 직원이 스캔하듯 읽도록 숫자 강조 */
-#customer-panel .final-summary,
-#customer-panel .final-summary-grid {
-  font-variant-numeric: tabular-nums;
-}
-#customer-panel .final-summary strong {
-  font-weight: 500;
-  color: var(--ink);
-}
+#customer-panel .secondary-action:hover { border-color: var(--ff-ink); }
