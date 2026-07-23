@@ -6057,3 +6057,55 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 /* 복귀 모드일 때 신규 등록 영역 숨김 */
 .wizard-page[data-wizard-step="register"].is-resuming #registration-form,
 .wizard-page[data-wizard-step="register"].is-resuming .step-number { display: none; }
+
+/* =====================================================================
+   UI v3 · PASS 16 — 수원점 타이포 톤 이식
+   색·라디우스만으로는 수원점 인상이 안 났던 이유가 '굵기'였음.
+   수원점: h1 200(ExtraLight) / eyebrow 500·0.24em / 본문 400 / 버튼 54px·500
+   Pretendard Variable 로드 상태라 200 웨이트가 실제로 렌더됨.
+   ===================================================================== */
+
+/* 제목: ExtraLight + 좁은 자간 */
+#customer-panel .wizard-copy h3,
+#customer-panel .wizard-shell .workflow-step h3,
+#customer-panel .review-focus-card h3,
+.benefit-dialog-copy h3 {
+  font-weight: 200;
+  letter-spacing: -0.005em;
+  line-height: 1.44;
+}
+
+/* 킥커(STEP 0X · REVIEW 등): 수원점 eyebrow 규격 */
+#customer-panel .step-number,
+#customer-panel .section-kicker,
+.benefit-dialog-copy span {
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  font-size: 11px;
+}
+
+/* 본문·보조문구: 400 + 넉넉한 행간 */
+#customer-panel .wizard-subcopy,
+#customer-panel .field-help,
+#customer-panel .review-brand-row span:not(.review-naver-badge),
+.review-exit-dialog .exit-focus-item > div > span {
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* 라벨: 800 → 500 (입력 위계를 제목보다 낮게) */
+#customer-panel label { font-weight: 500; }
+
+/* 버튼: 수원점 높이·굵기 */
+#customer-panel .primary-action,
+#customer-panel .secondary-action {
+  min-height: 54px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* 배경: 화이트 → gray-5 하강 그라데이션 */
+body {
+  background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+  background-attachment: fixed;
+}
