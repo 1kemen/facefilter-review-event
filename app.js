@@ -97,6 +97,8 @@ function bindDom() {
   dom.resumeName = document.querySelector("#resume-name");
   dom.resumeNameField = document.querySelector("#resume-name-field");
   dom.resumeMessage = document.querySelector("#resume-message");
+  dom.resumeEntry = document.querySelector("#resume-entry");
+  dom.resumeBack = document.querySelector("#resume-back");
   dom.phoneLast4 = document.querySelector("#phone-last4");
   dom.adminAuthCard = document.querySelector("#admin-auth-card");
   dom.adminLoginForm = document.querySelector("#admin-login-form");
@@ -243,6 +245,7 @@ function bindEvents() {
   dom.registrationForm.addEventListener("submit", handleRegistration);
   dom.resumeToggle?.addEventListener("click", toggleResumeForm);
   dom.resumeForm?.addEventListener("submit", handleResumeByPhone);
+  dom.resumeBack?.addEventListener("click", () => setResumeMode(false));
   dom.phoneLast4.addEventListener("input", enforcePhoneLast4Digits);
   dom.adminLoginForm?.addEventListener("submit", handleAdminLogin);
   dom.refreshAdminData?.addEventListener("click", refreshAdminState);
@@ -1146,12 +1149,26 @@ async function handleRegistration(event) {
    리뷰 작성 후 돌아온 고객이 처음부터 다시 입력하지 않도록,
    휴대폰 뒤 4자리만으로 원래 진행 단계로 이어간다.
    뒷자리가 겹치면(ambiguous) 이름을 한 번 더 받는다. */
-function toggleResumeForm() {
+function setResumeMode(open) {
   if (!dom.resumeForm || !dom.resumeToggle) return;
-  const willOpen = dom.resumeForm.hidden;
-  dom.resumeForm.hidden = !willOpen;
-  dom.resumeToggle.setAttribute("aria-expanded", String(willOpen));
-  if (willOpen) dom.resumePhone?.focus();
+  dom.resumeForm.hidden = !open;
+  dom.resumeToggle.setAttribute("aria-expanded", String(open));
+  // 복귀 모드에서는 신규 등록 영역을 숨겨 화면을 하나의 목적으로 좁힌다
+  dom.resumeEntry?.classList.toggle("is-open", open);
+  document.querySelector('.wizard-page[data-wizard-step="register"]')
+    ?.classList.toggle("is-resuming", open);
+  if (open) {
+    dom.resumePhone?.focus();
+  } else {
+    if (dom.resumeNameField) dom.resumeNameField.hidden = true;
+    if (dom.resumePhone) dom.resumePhone.value = "";
+    if (dom.resumeName) dom.resumeName.value = "";
+    setMessage(dom.resumeMessage, "", "");
+  }
+}
+
+function toggleResumeForm() {
+  setResumeMode(Boolean(dom.resumeForm?.hidden));
 }
 
 async function handleResumeByPhone(event) {
@@ -1182,7 +1199,7 @@ async function handleResumeByPhone(event) {
       saveState();
       renderAll();
       if (participant) {
-        setMessage(dom.resumeMessage, "", "");
+        setResumeMode(false); // 복귀 성공 시 모드 해제 (등록 폼 숨김 상태 유지 방지)
         toast("기존 참여 내역으로 이어갑니다.");
         return;
       }
@@ -2278,6 +2295,7 @@ function renderFinalSummary(participant) {
         <span><b>1</b>네이버 포토리뷰</span>
         <span><b>2</b>이벤트 결과</span>
       </div>
+      <p class="staff-check-note">리뷰 화면을 캡처해 두셨다면 그 이미지를 보여주셔도 됩니다.</p>
     </div>
     <div class="result-card final-result-card">
       <div class="final-prize-head">
