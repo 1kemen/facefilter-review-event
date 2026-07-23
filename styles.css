@@ -7,7 +7,7 @@
   --panel: #ffffff;
   --panel-soft: #f7f7f7;
   --accent: #111111;
-  --accent-soft: #efefef;
+  --accent-soft: #f7f7f7;
   --silver: #c9c9c9;
   --sage: #7e8287;
   --gold: #7e8287;
@@ -28,16 +28,14 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 247, 245, 0.98) 44%, #f1f2ef),
-    repeating-linear-gradient(0deg, rgba(70, 72, 68, 0.022) 0 1px, transparent 1px 18px);
+  background: #ffffff;
   color: var(--ink);
   font-family: "Pretendard", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   letter-spacing: 0;
 }
 
 body::before {
-  content: "";
+  content: none;
   position: fixed;
   inset: 64px 0 auto;
   z-index: -1;
@@ -127,7 +125,7 @@ main {
   gap: 3px;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
@@ -135,7 +133,7 @@ main {
 .tab {
   min-height: 37px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 8px 16px;
   background: transparent;
   color: var(--muted);
@@ -160,7 +158,7 @@ main {
   padding: 14px 16px;
   margin-bottom: 18px;
   border: 1px solid #d8d8d3;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f3f3f0;
   color: #444;
   line-height: 1.45;
@@ -177,7 +175,7 @@ main {
   padding: clamp(24px, 5vw, 54px);
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 248, 246, 0.94)),
     linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(230, 230, 226, 0.42));
@@ -347,7 +345,7 @@ main {
 .panel,
 .stat-card {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
 }
@@ -379,7 +377,7 @@ textarea {
   width: 100%;
   min-height: 48px;
   border: 1px solid #d7d8d3;
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 12px 13px;
   background: #fff;
   color: var(--ink);
@@ -486,7 +484,7 @@ textarea {
   margin-bottom: 0;
   padding: 12px 14px;
   border: 1px solid #d9d9d4;
-  border-radius: 7px;
+  border-radius: 2px;
   background: #f8f9f6;
 }
 
@@ -504,7 +502,7 @@ textarea {
 .danger-action {
   min-height: 44px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 10px 15px;
   font-weight: 900;
   transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
@@ -538,7 +536,7 @@ textarea {
 
 .secondary-action.is-confirmed:disabled {
   border-color: #cdd8d4;
-  background: #eef3f1;
+  background: #f7f7f7;
   color: #111111;
   opacity: 1;
 }
@@ -581,7 +579,7 @@ textarea {
   padding: 14px;
   margin-bottom: 16px;
   border: 1px dashed #c8c8c3;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f7f8f5;
   color: #444;
   line-height: 1.45;
@@ -726,7 +724,7 @@ textarea {
   justify-content: center;
   min-height: 28px;
   padding: 6px 10px;
-  border: 1px solid #e0e1dc;
+  border: 1px solid #e9e9e9;
   border-radius: 999px;
   background: linear-gradient(180deg, #fff, #f6f7f4);
   color: #555a55;
@@ -782,7 +780,7 @@ textarea {
   margin-bottom: 14px;
   padding: 15px;
   border: 1px solid #d8d8d3;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 249, 246, 0.96));
   box-shadow: 0 14px 32px rgba(34, 35, 32, 0.05);
@@ -849,8 +847,8 @@ textarea {
   gap: 7px;
   min-height: 38px;
   padding: 8px 10px;
-  border: 1px solid #e0e1dc;
-  border-radius: 8px;
+  border: 1px solid #e9e9e9;
+  border-radius: 2px;
   background: #fff;
   color: #333632;
   font-size: 0.84rem;
@@ -877,8 +875,8 @@ textarea {
   margin-bottom: 14px;
   padding: 14px;
   border: 1px solid #cdd8d4;
-  border-radius: 8px;
-  background: #eef3f1;
+  border-radius: 2px;
+  background: #f7f7f7;
 }
 
 .session-complete strong {
@@ -902,7 +900,7 @@ textarea {
 .final-summary-grid div {
   padding: 12px;
   border: 1px solid #ddddd6;
-  border-radius: 7px;
+  border-radius: 2px;
   background: #f7f8f5;
 }
 
@@ -922,7 +920,7 @@ textarea {
   gap: 11px;
   padding: 16px;
   border: 1px solid #dedfda;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, #fff, #f7f8f5);
   box-shadow: var(--shadow-soft);
@@ -945,7 +943,7 @@ textarea {
   min-height: 30px;
   border-radius: 999px;
   padding: 5px 10px;
-  background: #f2f3ef;
+  background: #f7f7f7;
   color: #30312e;
   font-size: 0.78rem;
   font-weight: 900;
@@ -982,7 +980,7 @@ textarea {
   margin: 16px 0 0;
   padding: 9px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(247, 248, 245, 0.74);
 }
 
@@ -1150,7 +1148,7 @@ textarea {
   gap: 12px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.82);
 }
 
@@ -1192,7 +1190,7 @@ textarea {
   -webkit-appearance: none;
   appearance: none;
   border: 2px solid #2b2c2a;
-  border-radius: 6px;
+  border-radius: 2px;
   background: #fff !important;
   box-shadow:
     inset 0 1px 2px rgba(28, 29, 27, 0.08),
@@ -1257,7 +1255,7 @@ textarea {
   gap: 14px;
   padding: 17px 16px 16px;
   border: 1px solid #dedfd9;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 250, 247, 0.96)),
     radial-gradient(circle at 14% 0%, rgba(3, 199, 90, 0.08), transparent 38%);
@@ -1317,7 +1315,7 @@ textarea {
   width: 100%;
   min-height: 48px;
   margin-top: 0;
-  border-radius: 7px;
+  border-radius: 2px;
   box-shadow: 0 12px 24px rgba(32, 33, 32, 0.12);
 }
 
@@ -1365,7 +1363,7 @@ textarea {
   width: min(380px, 100%);
   padding: 26px 22px 22px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #fff;
   box-shadow: 0 34px 90px rgba(20, 20, 18, 0.25);
 }
@@ -1400,7 +1398,7 @@ textarea {
   gap: 7px;
   padding: 13px 9px;
   border: 1px solid #e2e1db;
-  border-radius: 8px;
+  border-radius: 2px;
   background: linear-gradient(180deg, #ffffff, #f7f8f5);
   text-align: left;
 }
@@ -1412,7 +1410,7 @@ textarea {
   place-items: center;
   border: 1px solid #dcded8;
   border-radius: 999px;
-  background: #f4f5f2;
+  background: #f7f7f7;
   color: #30312e;
 }
 
@@ -1459,7 +1457,7 @@ textarea {
   gap: 2px;
   padding: 11px 12px;
   border: 1px solid #e6c8c1;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #fbefec;
   text-align: center;
 }
@@ -1491,7 +1489,7 @@ textarea {
   align-items: start;
   padding: 13px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, #fff, #f7f8f5);
 }
@@ -1530,7 +1528,7 @@ textarea {
 .help-footnote {
   padding: 11px 12px;
   border: 1px solid #dedfda;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f7f8f5;
   color: #5d625c;
   font-size: 0.84rem;
@@ -1583,7 +1581,7 @@ textarea {
   min-height: 108px;
   padding: 17px 16px;
   border: 1px solid #e0d36a;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(135deg, #fff064, #f5dc31);
   color: #231f20;
@@ -1642,7 +1640,7 @@ textarea {
   place-items: center;
   width: 58px;
   height: 46px;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #251f1f;
   color: #fee94c;
   font-size: 0.72rem;
@@ -1724,7 +1722,7 @@ textarea {
   gap: 14px;
   padding: 17px 16px 16px;
   border: 1px solid #dedfd9;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 250, 247, 0.98)),
     radial-gradient(circle at 50% -12%, rgba(120, 126, 119, 0.12), transparent 42%);
@@ -1770,7 +1768,7 @@ textarea {
   min-height: clamp(66px, 18vw, 90px);
   aspect-ratio: 1 / 1;
   border: 1px solid #d8d9d4;
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 244, 241, 0.92));
   color: #333;
@@ -1849,7 +1847,7 @@ textarea {
   gap: 12px;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f7f8f5;
 }
 
@@ -1868,9 +1866,9 @@ textarea {
   min-height: 54px;
   margin-top: 0;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 2px;
   border: 1px solid #dedfda;
-  background: linear-gradient(180deg, #fbfbfa, #f4f5f2);
+  background: linear-gradient(180deg, #fbfbfa, #f7f7f7);
   color: #3f3f3d;
   line-height: 1.45;
   box-shadow: var(--shadow-soft);
@@ -1918,7 +1916,7 @@ textarea {
 .result-card dl div {
   padding: 9px;
   border: 1px solid #ddddd6;
-  border-radius: 7px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.62);
 }
 
@@ -1977,7 +1975,7 @@ textarea {
   gap: 5px;
   padding: 13px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(247, 248, 245, 0.68);
 }
 
@@ -2053,7 +2051,7 @@ textarea {
 .table-wrap {
   width: 100%;
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 table {
@@ -2290,7 +2288,7 @@ body[data-app-mode="staff"] .detail-panel {
 .detail-block {
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background:
     linear-gradient(180deg, #fff, #f8f9f6);
 }
@@ -2329,7 +2327,7 @@ body[data-app-mode="staff"] .detail-panel {
 
 .staff-record-grid label.is-locked input,
 .staff-record-grid input:disabled {
-  background: #f2f3ef;
+  background: #f7f7f7;
   color: #5f625e;
   opacity: 1;
 }
@@ -2351,7 +2349,7 @@ body[data-app-mode="staff"] .detail-panel {
   margin: 12px 0;
   padding: 13px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f7f8f5;
 }
 
@@ -2406,7 +2404,7 @@ body[data-app-mode="staff"] .detail-panel {
   max-width: 100%;
   max-height: 260px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   object-fit: contain;
   background: #f8f8f6;
 }
@@ -2421,7 +2419,7 @@ body[data-app-mode="staff"] .detail-panel {
 
 .flag-list li {
   padding: 8px 10px;
-  border-radius: 7px;
+  border-radius: 2px;
   background: #f4edde;
   color: #7e8287;
   font-size: 0.86rem;
@@ -2433,7 +2431,7 @@ body[data-app-mode="staff"] .detail-panel {
   margin: 0 0 10px;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f8f8f6;
   color: #30302f;
   white-space: pre-wrap;
@@ -2449,7 +2447,7 @@ body[data-app-mode="staff"] .detail-panel {
 .guardrail {
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f8f9f6;
   box-shadow: var(--shadow-soft);
 }
@@ -2473,7 +2471,7 @@ body[data-app-mode="staff"] .detail-panel {
   margin: 18px 0;
   padding: 15px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: #f7f8f5;
 }
 
@@ -2514,7 +2512,7 @@ body[data-app-mode="staff"] .detail-panel {
   transform: translateX(-50%);
   max-width: min(560px, calc(100vw - 32px));
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 2px;
   background: #202120;
   color: #fff;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24);
@@ -2723,9 +2721,9 @@ body[data-app-mode="staff"] .detail-panel {
   --ff-ink: #1a1a1a;
   --ff-muted: #8a8d88;
   --ff-silver: #a9aba6;
-  --ff-line: #e7e8e4;
-  --ff-soft: #f5f6f3;
-  --ff-base: #fbfcfa;
+  --ff-line: #e9e9e9;
+  --ff-soft: #f7f7f7;
+  --ff-base: #ffffff;
   --ff-water: #cdd6d9;
   --ff-deep: #7c8b90;
   --ff-gold: #7e8287;
@@ -2737,7 +2735,7 @@ body[data-app-mode="staff"] .detail-panel {
 /* ---------- 고객 패널 전체 베이스 ---------- */
 #customer-panel .flow-panel.wizard-shell {
   border: 0.5px solid var(--ff-line);
-  border-radius: var(--ff-radius-lg);
+  border-radius: 2px;
   background: var(--ff-base);
   box-shadow: 0 20px 54px rgba(20, 22, 20, 0.07);
   padding: clamp(18px, 4vw, 26px);
@@ -2833,7 +2831,7 @@ body[data-app-mode="staff"] .detail-panel {
 #customer-panel input[type="search"] {
   min-height: 46px;
   border: 1.5px solid var(--ff-line);
-  border-radius: 11px;
+  border-radius: 2px;
   background: #fff;
   font-size: 0.95rem;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
@@ -2854,7 +2852,7 @@ body[data-app-mode="staff"] .detail-panel {
 .flow-chips span {
   background: var(--ff-soft);
   border: 0;
-  border-radius: 10px;
+  border-radius: 2px;
   color: var(--ff-muted);
   font-size: 0.72rem;
   font-weight: 700;
@@ -2870,7 +2868,7 @@ body[data-app-mode="staff"] .detail-panel {
 #customer-panel .primary-action,
 #customer-panel .draw-button {
   min-height: 50px;
-  border-radius: 13px;
+  border-radius: 2px;
   background: var(--ff-ink);
   color: #fff;
   font-weight: 700;
@@ -2885,7 +2883,7 @@ body[data-app-mode="staff"] .detail-panel {
 #customer-panel .secondary-action {
   min-height: 46px;
   border: 1.5px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
   font-weight: 600;
 }
@@ -2893,14 +2891,14 @@ body[data-app-mode="staff"] .detail-panel {
 /* ---------- STEP 02 포토리뷰 ---------- */
 .review-focus-card {
   border: 0.5px solid var(--ff-line);
-  border-radius: var(--ff-radius);
+  border-radius: 2px;
   background: var(--ff-soft);
   padding: 16px;
 }
 .review-naver-badge {
   background: #03c75a;
   color: #fff;
-  border-radius: 11px;
+  border-radius: 2px;
   font-weight: 800;
 }
 .review-focus-card #open-review:not(:disabled) {
@@ -2921,7 +2919,7 @@ body[data-app-mode="staff"] .detail-panel {
   gap: 12px;
   padding: 16px 10px;
   border: 1px dashed var(--ff-deep);
-  border-radius: 16px;
+  border-radius: 2px;
   background: linear-gradient(160deg, #fff, var(--ff-soft));
 }
 /* 5개를 3+2로: 4,5번째를 가운데 정렬 */
@@ -2930,7 +2928,7 @@ body[data-app-mode="staff"] .detail-panel {
 
 .drop-choice {
   border: 0.5px solid var(--ff-line);
-  border-radius: 16px;
+  border-radius: 2px;
   background: #fff;
   aspect-ratio: 1 / 1;
   gap: 0;
@@ -2992,14 +2990,14 @@ body[data-app-mode="staff"] .detail-panel {
 /* 확률 패널 접기 느낌 — 차분하게 */
 .draw-focus-card .compact-odds {
   background: var(--ff-soft);
-  border-radius: 11px;
+  border-radius: 2px;
 }
 
 /* ---------- 카카오 배너 (기존 유지하되 톤 정리) ---------- */
 .kakao-banner {
   background: #fee500;
   border: 0;
-  border-radius: 14px;
+  border-radius: 2px;
 }
 .kakao-bubble {
   background: #3c1e1e;
@@ -3008,7 +3006,7 @@ body[data-app-mode="staff"] .detail-panel {
 
 /* ---------- 모달 다이얼로그 ---------- */
 .benefit-dialog {
-  border-radius: var(--ff-radius-lg);
+  border-radius: 2px;
   border: 0.5px solid var(--ff-line);
 }
 .benefit-dialog-copy span {
@@ -3028,7 +3026,7 @@ body[data-app-mode="staff"] .detail-panel {
    ===================================================================== */
 .stat-card {
   border: 0.5px solid var(--ff-line);
-  border-radius: var(--ff-radius);
+  border-radius: 2px;
   background: #fff;
 }
 .stat-card strong { font-weight: 700; }
@@ -3043,7 +3041,7 @@ body[data-app-mode="staff"] .detail-panel {
 }
 .admin-toolbar input,
 .admin-toolbar select {
-  border-radius: 9px;
+  border-radius: 2px;
   border: 0.5px solid var(--ff-line);
 }
 
@@ -3090,7 +3088,7 @@ body[data-app-mode="staff"] .detail-panel {
   flex: 1;
   text-align: center;
   background: var(--ff-soft);
-  border-radius: 10px;
+  border-radius: 2px;
   padding: 10px 4px;
 }
 .ff-intro-step b {
@@ -3107,7 +3105,7 @@ body[data-app-mode="staff"] .detail-panel {
 .ff-intro-start {
   width: 100%;
   min-height: 52px;
-  border-radius: 13px;
+  border-radius: 2px;
   background: var(--ff-ink);
   color: #fff;
   font-size: 0.98rem;
@@ -3147,7 +3145,7 @@ body[data-app-mode="staff"] .detail-panel {
   gap: 8px;
   padding: 11px 14px;
   border: 0.5px solid var(--ff-line);
-  border-radius: 11px;
+  border-radius: 2px;
   background: #fff;
   cursor: pointer;
   width: 100%;
@@ -3174,7 +3172,7 @@ body[data-app-mode="staff"] .detail-panel {
 }
 .ff-slot-card {
   background: var(--ff-soft);
-  border-radius: var(--ff-radius);
+  border-radius: 2px;
   padding: 16px;
 }
 .ff-slot-q {
@@ -3188,7 +3186,7 @@ input.ff-slot-input {
   width: 100%;
   min-height: 46px;
   border: 1.5px solid var(--ff-ink);
-  border-radius: 11px;
+  border-radius: 2px;
   background: #fff;
   padding: 0 14px;
   font-size: 0.95rem;
@@ -3210,7 +3208,7 @@ input.ff-slot-input {
   width: 100%;
   min-height: 48px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 2px;
   background: var(--ff-ink);
   color: #fff;
   font-size: 0.9rem;
@@ -3230,7 +3228,7 @@ input.ff-slot-input {
   gap: 10px;
   padding: 14px;
   border: 1.5px solid var(--ff-ink);
-  border-radius: 11px;
+  border-radius: 2px;
   background: #fff;
   width: 100%;
   cursor: pointer;
@@ -3242,7 +3240,7 @@ input.ff-slot-input {
   width: 20px;
   height: 20px;
   border: 1.5px solid var(--ff-line);
-  border-radius: 6px;
+  border-radius: 2px;
   background: #fff;
   flex: 0 0 auto;
   position: relative;
@@ -3273,7 +3271,7 @@ input.ff-slot-input {
 .review-focus-card #photo-review-done {
   width: 100%;
   min-height: 50px;
-  border-radius: 13px;
+  border-radius: 2px;
   background: var(--ff-ink);
   color: #fff;
   font-weight: 700;
@@ -3375,7 +3373,7 @@ input.ff-slot-input {
 .ff-slot-message {
   margin-top: 12px;
   padding: 11px 13px;
-  border-radius: 10px;
+  border-radius: 2px;
   font-size: 0.78rem;
   line-height: 1.5;
   background: var(--ff-soft);
@@ -3428,7 +3426,7 @@ input.ff-slot-input {
   font-size: 0.76rem;
   line-height: 1.2;
   white-space: nowrap;
-  border-radius: 8px;
+  border-radius: 2px;
   box-sizing: border-box;
 }
 .participant-table .warning-action,
@@ -3826,7 +3824,7 @@ input.ff-slot-input {
 
 /* ---------- 패널 외곽: 표면 1계층 ---------- */
 #customer-panel .flow-panel.wizard-shell {
-  border-radius: var(--ff-r-outer);
+  border-radius: 2px;
   border: 1px solid var(--ff-line);
   box-shadow: var(--ff-shadow-card);
   padding: clamp(20px, 5vw, 28px) clamp(18px, 4.5vw, 26px) clamp(22px, 5vw, 28px);
@@ -3860,7 +3858,7 @@ input.ff-slot-input {
 #customer-panel .staff-checklist,
 #customer-panel .result-card {
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: var(--ff-soft);
   box-shadow: none;
 }
@@ -3872,14 +3870,14 @@ input.ff-slot-input {
 /* ---------- STEP 03: 뽑기 그리드 현대화 ---------- */
 #customer-panel .mini-game {
   border: 1px solid var(--ff-line);       /* 점선 제거 */
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: var(--ff-soft);              /* 그라데이션 → 순수 표면 */
   padding: 18px 14px;
   gap: 12px;
 }
 #customer-panel .drop-choice {
   border: 1px solid var(--ff-line);
-  border-radius: 14px;
+  border-radius: 2px;
   background: #fff;
   box-shadow: 0 1px 2px rgba(20, 22, 20, 0.03);
 }
@@ -3893,19 +3891,19 @@ input.ff-slot-input {
 #customer-panel .draw-button,
 .ff-intro-start, .ff-slot-next {
   min-height: 54px;
-  border-radius: var(--ff-r-ctrl);
+  border-radius: 2px;
   box-shadow: var(--ff-shadow-pop);
 }
 #customer-panel .secondary-action {
   min-height: 50px;
-  border-radius: var(--ff-r-ctrl);
+  border-radius: 2px;
   border: 1px solid var(--ff-line);
   box-shadow: none;
 }
 #customer-panel input[type="text"],
 #customer-panel input[type="tel"],
 .ff-slot-input {
-  border-radius: var(--ff-r-ctrl);
+  border-radius: 2px;
   min-height: 52px;
 }
 
@@ -3922,7 +3920,7 @@ input.ff-slot-input {
 /* ---------- 확률 안내·도움말: 보조 요소는 더 조용하게 ---------- */
 #customer-panel .odds-panel.compact-odds {
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-ctrl);
+  border-radius: 2px;
   background: transparent;
   box-shadow: none;
 }
@@ -3936,7 +3934,7 @@ input.ff-slot-input {
 .ff-intro-steps { gap: 10px; margin: 20px 0 24px; }
 .ff-intro-step {
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: var(--ff-soft);
 }
 
@@ -3964,7 +3962,7 @@ input.ff-slot-input {
   gap: 3px;
   padding: 12px 14px;
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
   min-width: 0;
 }
@@ -3989,7 +3987,7 @@ input.ff-slot-input {
 #customer-panel .final-result-card {
   position: relative;
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: #fff;
   padding: 22px 20px 20px;
   box-shadow: var(--ff-shadow-card);
@@ -4157,14 +4155,14 @@ input.ff-slot-input {
 #customer-panel .staff-checklist {
   background: #fff;
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   box-shadow: var(--ff-shadow-card);
   padding: 18px 20px;
 }
 
 /* 스택 내 풀너비 버튼: 카드와 같은 라운드로 (컨트롤 기본 14px의 예외) */
 #customer-panel .final-benefit-action {
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: #fff;
   box-shadow: var(--ff-shadow-card);
 }
@@ -4173,7 +4171,7 @@ input.ff-slot-input {
 #customer-panel .staff-check-chips span {
   background: var(--ff-soft);
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
 }
 
 /* =====================================================================
@@ -4718,7 +4716,7 @@ input.ff-slot-input {
   width: 15px;
   height: 15px;
   margin-right: 4px;
-  border-radius: 4px;
+  border-radius: 2px;
   background: #03c75a;
   color: #fff;
   font-size: 10px;
@@ -4739,7 +4737,7 @@ input.ff-slot-input {
   margin-left: 8px;
   padding: 8px 10px;
   border: 1px solid var(--ff-line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: #fff;
   color: var(--ff-ink);
   font-size: 13px;
@@ -4753,14 +4751,14 @@ input.ff-slot-input {
   margin-top: 6px;
   padding: 8px;
   border: 1px solid var(--ff-line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--ff-soft);
 }
 .ff-use-form .ff-use-team,
 .ff-use-form .ff-use-staff {
   padding: 6px 8px;
   border: 1px solid var(--ff-line);
-  border-radius: 8px;
+  border-radius: 2px;
   font-size: 12.5px;
   font-family: inherit;
   background: #fff;
@@ -4812,9 +4810,9 @@ input.ff-slot-input {
     --ff-muted: #676b66;
     --ff-faint: #9a9d97;
     --ff-silver: #c8cac3;
-    --ff-line: #e7e8e4;
-    --ff-soft: #f5f6f3;
-    --ff-base: #fbfcfa;
+    --ff-line: #e9e9e9;
+    --ff-soft: #f7f7f7;
+    --ff-base: #ffffff;
     --ff-gold: #7e8287;
     --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
     --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
@@ -4834,7 +4832,7 @@ input.ff-slot-input {
     --shadow: 0 26px 80px rgba(31, 32, 29, 0.12);
     --shadow-soft: 0 12px 34px rgba(31, 32, 29, 0.09);
     --ff-ink: #1a1a1a; --ff-muted: #676b66; --ff-faint: #9a9d97; --ff-silver: #c8cac3;
-    --ff-line: #e7e8e4; --ff-soft: #f5f6f3; --ff-base: #fbfcfa; --ff-gold: #7e8287;
+    --ff-line: #e9e9e9; --ff-soft: #f7f7f7; --ff-base: #ffffff; --ff-gold: #7e8287;
     --ff-shadow-card: 0 1px 2px rgba(20, 22, 20, 0.04), 0 12px 32px rgba(20, 22, 20, 0.05);
     --ff-shadow-pop: 0 2px 6px rgba(20, 22, 20, 0.08), 0 16px 36px rgba(20, 22, 20, 0.14);
     background: #f4f4f1;
@@ -4868,7 +4866,7 @@ input.ff-slot-input {
 #audit-panel .panel,
 #prizes-panel .panel {
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: #fbfcfa;
   box-shadow: var(--ff-shadow-card);
 }
@@ -4898,7 +4896,7 @@ input.ff-slot-input {
 }
 #admin-panel .stat-card {
   border: 1px solid var(--ff-line);
-  border-radius: var(--ff-r-card);
+  border-radius: 2px;
   background: #fff;
   box-shadow: none;
   padding: 14px 16px;
@@ -4931,7 +4929,7 @@ input.ff-slot-input {
   gap: 4px;
   padding: 14px 16px;
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
 }
 #admin-panel .maintenance-item span {
@@ -4984,7 +4982,7 @@ input.ff-slot-input {
   height: 46px;
   padding: 0 14px;
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
   color: var(--ff-ink);
   font-size: 14px;
@@ -5043,7 +5041,7 @@ input.ff-slot-input {
 #admin-panel .participant-table .small-action {
   padding: 8px 10px;
   border: 1px solid var(--ff-line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: #fff;
   font-size: 12.5px;
   font-weight: 600;
@@ -5066,7 +5064,7 @@ input.ff-slot-input {
 }
 #admin-panel .detail-block {
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
   padding: 14px 16px;
 }
@@ -5117,7 +5115,7 @@ input.ff-slot-input {
 #admin-panel .detail-panel::-webkit-scrollbar { width: 8px; }
 #admin-panel .detail-panel::-webkit-scrollbar-thumb {
   background: #d8d9d3;
-  border-radius: 8px;
+  border-radius: 2px;
 }
 #admin-panel .detail-panel::-webkit-scrollbar-track { background: transparent; }
 
@@ -5126,7 +5124,7 @@ input.ff-slot-input {
   height: 46px;
   width: 100%;
   margin: 6px 0 0;
-  border-radius: 12px;
+  border-radius: 2px;
   font-size: 14px;
 }
 
@@ -5257,7 +5255,7 @@ input.ff-slot-input {
   font-weight: 700;
   color: var(--ff-faint);
   border: 1px solid var(--ff-line);
-  border-radius: 6px;
+  border-radius: 2px;
   padding: 1px 5px;
   margin-left: 4px;
 }
@@ -5335,7 +5333,7 @@ input.ff-slot-input {
   margin: 8px 0 2px;
   padding: 0 14px;
   border: 1px solid var(--ff-line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fff;
   font-size: 14px;
   font-family: inherit;
@@ -5501,7 +5499,7 @@ body:has(.tab-panel[data-panel="usage"].is-active) {
   color: #111111;
   box-shadow: none;
 }
-.ff-pending-toggle.is-on:hover { background: #efefef; }
+.ff-pending-toggle.is-on:hover { background: #f7f7f7; }
 
 /* ---------- 사용처리: 순수 블랙 (화면 유일의 대형 솔리드) ---------- */
 #admin-panel tr[data-ff-lifecycle="사용대기"] .ff-use-gift:not(.is-used) {
@@ -5552,7 +5550,7 @@ body:has(.tab-panel[data-panel="usage"].is-active) {
   background: var(--ff-soft);
 }
 #admin-panel .participant-table tbody tr {
-  border-bottom: 1px solid #efefef;
+  border-bottom: 1px solid #f7f7f7;
 }
 #admin-panel .section-kicker,
 #audit-panel .section-kicker,
@@ -5750,14 +5748,14 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 /* 팀 셀렉트: 담당자 input과 동일 규격.
    #admin-panel .ff-team-select (ID 특이도 1,1,0)가 height/margin/radius/font-size를
    강제하고 있어 클래스 셀렉터로는 이길 수 없음 → 동일 ID 스코프로 재정의.
-   기준값: input { min-height:48px; border-radius:7px; border:1px solid #d7d8d3 } */
+   기준값: input { min-height:48px; border-radius: 2px; border:1px solid #d7d8d3 } */
 #admin-panel .staff-record-grid .ff-team-label .ff-team-select {
   height: auto;
   min-height: 48px;
   margin: 0;
   padding: 12px 14px;
   border: 1px solid #d7d8d3;
-  border-radius: 7px;
+  border-radius: 2px;
   font-size: 1rem;
   font-weight: 400;
   color: #363a37;
@@ -5766,7 +5764,7 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 /* 잠금 상태: 담당자 input의 잠금 배경과 동일하게 */
 #admin-panel .staff-record-grid .ff-team-label.is-locked .ff-team-select,
 #admin-panel .staff-record-grid .ff-team-select:disabled {
-  background-color: #f2f3ef;
+  background-color: #f7f7f7;
   color: #5f625e;
   opacity: 1;
 }
@@ -5777,57 +5775,7 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 }
 .staff-record-grid { align-items: start; }
 
-/* =====================================================================
-   기존 참여자 복귀 진입점
-   리뷰 작성 후 돌아온 고객이 첫 등록 화면을 보고 "초기화됐나?" 하고
-   멈추지 않도록, 등록 폼 위에 명시적인 복귀 경로를 둔다.
-   ===================================================================== */
-.resume-entry {
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
-}
 
-.resume-toggle {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel-soft, #f7f7f5);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease;
-}
-.resume-toggle:hover { border-color: var(--ink, #111); }
-.resume-toggle[aria-expanded="true"] {
-  border-color: var(--ink, #111);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.resume-toggle-main {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--ink, #111);
-}
-.resume-toggle-sub {
-  font-size: 0.82rem;
-  color: var(--muted, #747873);
-  line-height: 1.5;
-}
-
-.resume-form {
-  display: grid;
-  gap: 10px;
-  padding: 16px;
-  border: 1px solid var(--ink, #111);
-  border-top: 0;
-  border-radius: 0 0 12px 12px;
-}
-.resume-form label { margin-bottom: 0; }
-.resume-form .primary-action { margin-top: 4px; }
 
 /* =====================================================================
    UI v3 · PASS 15 — 고객 화면 브랜드 톤 이식 (제모 비교표 계열)
@@ -5914,3 +5862,198 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
   box-shadow: none;
 }
 #customer-panel .secondary-action:hover { border-color: var(--ff-ink); }
+
+/* ---------- PASS 15.1 — 배경 정리 · 라디우스 통일 · 도움말 ----------
+   · body 웜그린 그라데이션 + 줄무늬/점 오버레이 제거 → 화이트
+   · 하드코딩 라디우스 102곳을 2px로 통일 (필 999px·원형 50%는 보존)
+   · 도움말: 복귀 흐름 기준으로 내용 재작성 */
+
+/* 도움말 넘버링: 원형 잉크 배지 유지하되 숫자는 Montserrat */
+#customer-help-modal .help-list article > span {
+  font-family: "Montserrat", "Pretendard", sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+/* 본문 내 강조는 굵기로만 (색 강조 금지) */
+#customer-help-modal .help-list p b {
+  font-weight: 600;
+  color: var(--ff-ink);
+}
+#customer-help-modal .help-list article {
+  background: var(--ff-soft);
+  border: 1px solid var(--ff-line);
+}
+#customer-help-modal .help-footnote {
+  background: var(--ff-soft);
+  border: 1px solid var(--ff-line);
+  color: var(--ff-muted);
+}
+
+/* 입력 필드: 두꺼운 검정 테두리 → 헤어라인, 포커스만 잉크 */
+#customer-panel input[type="text"],
+#customer-panel input[type="tel"],
+#customer-panel input[type="search"] {
+  border: 1px solid var(--ff-line);
+  background: #ffffff;
+}
+#customer-panel input[type="text"]:focus,
+#customer-panel input[type="tel"]:focus,
+#customer-panel input[type="search"]:focus {
+  border-color: var(--ff-ink);
+  outline: none;
+  box-shadow: none;
+}
+
+/* ---------- PASS 15.2 — 리뷰 이탈 팝업: 핵심 2가지로 압축 ----------
+   이탈 직전 0.5초 안에 읽히도록 경로맵(3단계)+보조안내를 제거하고
+   복구 불가능한 '리뷰 화면 캡처'를 1순위로 올린다. */
+.review-exit-dialog .exit-focus {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 18px;
+}
+.review-exit-dialog .exit-focus-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 16px;
+  border: 1px solid var(--ff-line);
+  border-radius: 2px;
+  background: #ffffff;
+}
+/* 1순위는 잉크 반전으로 시선 고정 */
+.review-exit-dialog .exit-focus-item.is-primary {
+  background: var(--ff-ink);
+  border-color: var(--ff-ink);
+}
+.review-exit-dialog .exit-focus-num {
+  font-family: "Montserrat", "Pretendard", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ff-silver);
+  padding-top: 2px;
+}
+.review-exit-dialog .exit-focus-item.is-primary .exit-focus-num {
+  color: rgba(255, 255, 255, 0.55);
+}
+.review-exit-dialog .exit-focus-item b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ff-ink);
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
+}
+.review-exit-dialog .exit-focus-item > div > span {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ff-muted);
+}
+.review-exit-dialog .exit-focus-item.is-primary b { color: #ffffff; }
+.review-exit-dialog .exit-focus-item.is-primary > div > span { color: rgba(255, 255, 255, 0.72); }
+.review-exit-dialog .exit-focus-item > div > span b {
+  display: inline;
+  font-size: inherit;
+  color: inherit;
+  font-weight: 600;
+}
+
+/* 결과 화면: 캡처 이미지로 대체 가능하다는 보조 안내 */
+#customer-panel .staff-check-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ff-muted);
+}
+
+/* =====================================================================
+   PASS 15.3 — 복귀 진입점 축소 & 펼침 시 전용 화면
+   · 접힘: 작은 텍스트 링크 (신규 참여 흐름을 가리지 않음)
+   · 펼침: 복귀 폼만 남기고 신규 등록 영역은 숨김
+   ===================================================================== */
+
+/* 접힌 상태: 카드가 아닌 한 줄 링크 */
+.resume-entry {
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  text-align: center;
+}
+.resume-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  width: auto;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.resume-toggle .resume-toggle-main {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ff-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.resume-toggle .resume-toggle-sub {
+  font-size: 12px;
+  color: var(--ff-muted);
+}
+@media (max-width: 380px) {
+  .resume-toggle { flex-direction: column; align-items: center; gap: 2px; }
+}
+
+/* 펼친 상태: 복귀 전용 화면 */
+.resume-entry.is-open {
+  text-align: left;
+  border: 1px solid var(--ff-line);
+  border-radius: 2px;
+  padding: 18px 16px 16px;
+  margin-bottom: 0;
+}
+.resume-entry.is-open .resume-toggle { display: none; }
+
+.resume-form {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+}
+.resume-form-head { margin-bottom: 2px; }
+.resume-form-head b {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ff-ink);
+  letter-spacing: -0.01em;
+}
+.resume-form-head span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ff-muted);
+}
+.resume-form label { margin-bottom: 0; }
+.resume-form .primary-action { margin-top: 2px; }
+
+/* 신규 참여로 돌아가기 */
+.resume-back {
+  justify-self: center;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  color: var(--ff-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* 복귀 모드일 때 신규 등록 영역 숨김 */
+.wizard-page[data-wizard-step="register"].is-resuming #registration-form,
+.wizard-page[data-wizard-step="register"].is-resuming .step-number { display: none; }

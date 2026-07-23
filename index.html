@@ -67,6 +67,10 @@
                   <span class="resume-toggle-sub">리뷰 작성 후 돌아오셨다면 여기를 눌러주세요</span>
                 </button>
                 <form class="resume-form" id="resume-form" autocomplete="off" hidden>
+                  <div class="resume-form-head">
+                    <b>이어서 진행하기</b>
+                    <span>참여하실 때 입력한 휴대폰 뒤 4자리를 넣어주세요.</span>
+                  </div>
                   <label>
                     휴대폰 뒤 4자리
                     <input id="resume-phone" name="resumePhone" type="tel" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="1234" autocomplete="off">
@@ -77,6 +81,7 @@
                   </label>
                   <button class="primary-action" type="submit">이어서 진행하기</button>
                   <p class="form-message" id="resume-message" role="status"></p>
+                  <button class="resume-back" id="resume-back" type="button">처음 참여하시나요?</button>
                 </form>
               </div>
 
@@ -178,18 +183,18 @@
           <div class="help-list">
             <article>
               <span aria-hidden="true">01</span>
-              <strong>이벤트 화면을 못 찾겠어요</strong>
-              <p>QR을 다시 찍고 같은 정보를 입력하면 기존 진행 화면으로 이어집니다.</p>
+              <strong>리뷰 쓰고 돌아왔어요</strong>
+              <p>첫 화면의 <b>이미 참여하셨나요?</b>를 누르고 휴대폰 뒤 4자리만 입력하면 이어서 진행됩니다.</p>
             </article>
             <article>
               <span aria-hidden="true">02</span>
-              <strong>상품뽑기가 안 보여요</strong>
-              <p>네이버 리뷰 작성 후 이벤트 화면으로 돌아와 작성 완료를 눌러주세요.</p>
+              <strong>이벤트 화면을 못 찾겠어요</strong>
+              <p>QR을 다시 찍은 뒤 <b>이미 참여하셨나요?</b>로 들어오시면 됩니다. 처음부터 다시 하지 않아도 돼요.</p>
             </article>
             <article>
               <span aria-hidden="true">03</span>
-              <strong>이미 참여했다고 나와요</strong>
-              <p>이름, 휴대폰 뒤 4자리, 리뷰 닉네임을 처음과 똑같이 입력해 주세요.</p>
+              <strong>상품뽑기가 안 보여요</strong>
+              <p>네이버 리뷰를 먼저 작성한 뒤 <b>작성 완료</b>를 눌러야 뽑기 화면이 열립니다.</p>
             </article>
           </div>
           <div class="help-footnote">계속 안 되면 직원에게 화면을 보여주세요.</div>
@@ -202,45 +207,23 @@
           <button class="modal-close" id="close-review-exit" type="button" aria-label="닫기">×</button>
           <div class="benefit-dialog-copy">
             <span>REVIEW</span>
-            <h3 id="review-exit-title">리뷰 작성 후<br>이벤트 화면으로 돌아오기</h3>
+            <h3 id="review-exit-title">리뷰 화면은<br>꼭 캡처해 주세요</h3>
           </div>
-          <div class="review-route-map" aria-label="리뷰 작성 진행 순서">
-            <article class="route-card">
-              <span class="route-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"></path>
-                  <path d="M9 18h6"></path>
-                  <path d="M9 6h6"></path>
-                  <path d="M9 10h6"></path>
-                </svg>
-              </span>
-              <b>이벤트 화면</b>
-              <span>닫지 말고 유지</span>
+          <div class="exit-focus" aria-label="리뷰 작성 시 꼭 기억할 것">
+            <article class="exit-focus-item is-primary">
+              <span class="exit-focus-num" aria-hidden="true">01</span>
+              <div>
+                <b>리뷰 작성 화면을 캡처해 주세요</b>
+                <span>직원 확인 때 필요해요. 나중에 다시 찾기 어렵습니다.</span>
+              </div>
             </article>
-            <i class="route-arrow" aria-hidden="true">→</i>
-            <article class="route-card">
-              <span class="route-icon naver-icon" aria-hidden="true">N</span>
-              <b>네이버 리뷰</b>
-              <span>포토리뷰 작성</span>
+            <article class="exit-focus-item">
+              <span class="exit-focus-num" aria-hidden="true">02</span>
+              <div>
+                <b>작성 후 이 화면으로 돌아오기</b>
+                <span>못 찾으면 QR을 다시 찍고 <b>이미 참여하셨나요?</b>를 누르세요.</span>
+              </div>
             </article>
-            <i class="route-arrow" aria-hidden="true">→</i>
-            <article class="route-card">
-              <span class="route-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M20 12v8H4v-8"></path>
-                  <path d="M2 7h20v5H2Z"></path>
-                  <path d="M12 22V7"></path>
-                  <path d="M12 7H7.5A2.5 2.5 0 1 1 10 4.5c0 1.7-2 2.5-2 2.5"></path>
-                  <path d="M12 7h4.5A2.5 2.5 0 1 0 14 4.5c0 1.7 2 2.5 2 2.5"></path>
-                </svg>
-              </span>
-              <b>상품뽑기</b>
-              <span>이벤트 화면에서 진행</span>
-            </article>
-          </div>
-          <div class="review-safe-note">
-            <strong>화면을 못 찾으면?</strong>
-            <span>QR을 다시 찍고 같은 정보를 입력하면 이어서 진행됩니다.</span>
           </div>
           <button class="primary-action benefit-action" id="confirm-review-exit" type="button">네이버 리뷰 작성하기</button>
         </div>
