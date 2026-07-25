@@ -1188,8 +1188,11 @@ async function handleResumeByPhone(event) {
   setMessage(dom.resumeMessage, "참여 내역을 확인하고 있습니다.", "");
 
   try {
+    // QR 재진입 직후엔 localStorage에 남은 낡은 세션 ID가 있을 수 있어
+    // (서버에서 이미 닫힌 세션 → invalid_session). 유효한 세션을 먼저 확보한다.
+    const sessionId = await ensureRemoteSession();
     const result = await window.FaceFilterSupabase.resumeByPhone({
-      sessionId: sessionState.supabaseSessionId,
+      sessionId,
       phoneLast4,
       customerName: customerName || null
     });
