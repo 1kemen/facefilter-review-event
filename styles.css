@@ -5775,6 +5775,19 @@ body[data-app-mode="staff"] #admin-panel .progress-cell { gap: 0; align-content:
 }
 .staff-record-grid { align-items: start; }
 
+/* Android browsers can force-darken CSS while leaving the baked white PNG
+   background untouched. Use a transparent mascot cutout only in dark mode so
+   the intro artwork sits naturally on the browser-selected page background. */
+@media (prefers-color-scheme: dark) {
+  .ff-intro-pep {
+    background-color: transparent;
+    background-image: url("pepili-dark.png");
+    background-size: 86%;
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: none;
+  }
+}
+
 
 
 /* =====================================================================
