@@ -1189,8 +1189,9 @@ async function handleResumeByPhone(event) {
 
   try {
     // QR 재진입 직후엔 localStorage에 남은 낡은 세션 ID가 있을 수 있어
-    // (서버에서 이미 닫힌 세션 → invalid_session). 유효한 세션을 먼저 확보한다.
-    const sessionId = await ensureRemoteSession();
+    // (서버에서 이미 닫힌 세션 → invalid_session). forceNew로 새 세션을 만든다.
+    // 낡은 참여자 상태도 함께 비워지지만, 아래 payload로 다시 채택되므로 안전.
+    const sessionId = await ensureRemoteSession({ forceNew: true });
     const result = await window.FaceFilterSupabase.resumeByPhone({
       sessionId,
       phoneLast4,
