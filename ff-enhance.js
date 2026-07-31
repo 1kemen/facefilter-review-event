@@ -589,24 +589,6 @@
     // ── 지급/사용 팀 추적 ──────────────────────────────────────────────
     var FF_TEAMS = ["코디팀", "어시팀", "피부팀", "간호팀"];
 
-    // 문서 레벨 캡처 가드: "사용처리 폼이 열려 있는 행"에서 폼 바깥을
-    // 클릭(여백·빗맞은 탭 포함)해도 행 select → 탭 전환이 발동하지 않게 차단.
-    // 폼 내부 타깃은 통과시켜 자체 핸들러(확인/취소/입력)가 정상 작동한다.
-    ["click", "mousedown", "pointerdown", "touchstart"].forEach(function (ev) {
-      document.addEventListener(ev, function (e) {
-        var t = e.target;
-        if (!t || !t.closest) return;
-        if (t.closest(".ff-use-form")) return;                 // 폼 내부: 통과
-        var row = t.closest("tr[data-participant-row]");
-        if (row && row.querySelector(".ff-use-form")) {
-          e.stopPropagation();                                  // 폼 열린 행의 외부 조작 차단
-        }
-      }, true);
-    });
-
-    // 재렌더 생존: 열려 있던 사용처리 폼 상태를 기억했다가 복원
-    var ffOpenUseState = null; // { pid, team, staff }
-
     // 계정 기반 팀 자동 감지: 프로필 표시명 → 로그인 이메일 → 저장값 순
     function ffDetectTeam() {
       var KW = [
@@ -641,6 +623,7 @@
       // 잠금(기록완료) 상태의 select는 '그 레코드의 저장팀'이므로 처리자 팀으로 쓰지 않음
       return (sel && !sel.disabled && sel.value) || ffDetectTeam() || localStorage.getItem("ff_gift_team") || "코디팀";
     }
+    window.ffGetTeam = ffGetTeam; // 다른 스코프(즉석 사용처리)에서도 팀 자동감지 사용
 
     // 현재 상세패널에 떠 있는 참여자 id (선택 행 → 앱 상태 순으로 조회)
     function ffSelectedPid() {
@@ -822,74 +805,38 @@
         btn.textContent = "사용처리";
         btn.addEventListener("click", function (e) {
           e.stopPropagation();
-          openUseForm(actions, btn, pid, prize);
+          markUsedImmediate(btn, pid);
         });
         actions.appendChild(btn);
-        // 재렌더 복원: 이 행의 폼이 열려 있던 상태였다면 값 포함 재생성
-        if (ffOpenUseState && ffOpenUseState.pid === pid) {
-          openUseForm(actions, btn, pid, prize, ffOpenUseState);
-        }
       });
     }
 
-    function openUseForm(actions, btn, pid, prize, restore) {
-      if (actions.querySelector(".ff-use-form")) return;
-      var form = document.createElement("div");
-      form.className = "ff-use-form";
-      // 폼 내부의 모든 상호작용(셀렉트·입력 포함)이 행 클릭(참여자 선택)으로
-      // 전파돼 재렌더 → 폼이 닫히는 문제 방지: 컨테이너 레벨에서 전면 차단
-      ["click", "mousedown", "pointerdown", "touchstart", "change", "focusin"].forEach(function (ev) {
-        form.addEventListener(ev, function (e) { e.stopPropagation(); });
-      });
-      var initTeam = (restore && restore.team) || ffGetTeam();
-      var opts = FF_TEAMS.map(function (t) {
-        return '<option value="' + t + '"' + (t === initTeam ? " selected" : "") + ">" + t + "</option>";
-      }).join("");
-      form.innerHTML =
-        '<select class="ff-use-team">' + opts + "</select>" +
-        '<input class="ff-use-staff" type="text" placeholder="처리 담당자" />' +
-        '<button type="button" class="small-action ff-use-ok">확인</button>' +
-        '<button type="button" class="small-action ff-use-cancel">취소</button>';
-      actions.appendChild(form);
-      if (restore && restore.staff) form.querySelector(".ff-use-staff").value = restore.staff;
-      ffOpenUseState = { pid: pid, team: initTeam, staff: (restore && restore.staff) || "" };
-      form.querySelector(".ff-use-team").addEventListener("change", function () {
-        if (ffOpenUseState) ffOpenUseState.team = this.value;
-      });
-      form.querySelector(".ff-use-staff").addEventListener("input", function () {
-        if (ffOpenUseState) ffOpenUseState.staff = this.value;
-      });
-      form.querySelector(".ff-use-cancel").addEventListener("click", function (e) {
-        e.stopPropagation(); ffOpenUseState = null; form.remove();
-      });
-      form.querySelector(".ff-use-ok").addEventListener("click", async function (e) {
-        e.stopPropagation();
-        var team = form.querySelector(".ff-use-team").value;
-        var staff = (form.querySelector(".ff-use-staff").value || "").trim();
-        if (!staff) { form.querySelector(".ff-use-staff").focus(); return; }
-        try {
-          var res = await window.FaceFilterSupabase.markGiftUsed({ participantId: pid, staffName: staff, team: team });
-          if (res && res.ok) {
-            ffOpenUseState = null;
-            form.remove();
-            btn.textContent = "사용완료 ✓";
-            btn.disabled = true;
-            btn.classList.add("is-used");
-            if (window.__ffLoadUsage) window.__ffLoadUsage();
-          } else if (res && res.code === "already_used") {
-            ffOpenUseState = null;
-            form.remove();
-            btn.textContent = "이미 사용처리됨";
-            btn.disabled = true;
-            btn.classList.add("is-used");
-          } else {
-            alert("사용처리 실패: " + ((res && res.code) || "unknown"));
-          }
-        } catch (err) {
-          alert("사용처리 실패: " + (err && err.message));
+    // 팀명을 처리자로 기록하며 즉시 사용처리 (팀·이름 입력 폼 없음)
+    // 팀은 계정에서 자동 감지(ffGetTeam), 처리자명 = 팀명.
+    async function markUsedImmediate(btn, pid) {
+      if (btn.disabled) return;
+      var team = ffGetTeam();
+      btn.disabled = true;
+      var prev = btn.textContent;
+      btn.textContent = "처리 중…";
+      try {
+        var res = await window.FaceFilterSupabase.markGiftUsed({
+          participantId: pid, staffName: team, team: team
+        });
+        if (res && (res.ok || res.code === "already_used")) {
+          btn.textContent = res.code === "already_used" ? "이미 사용처리됨" : "사용완료 ✓";
+          btn.classList.add("is-used");
+          if (window.__ffLoadUsage) window.__ffLoadUsage();
+        } else {
+          btn.textContent = prev; btn.disabled = false;
+          alert("사용처리 실패: " + ((res && res.code) || "unknown"));
         }
-      });
+      } catch (err) {
+        btn.textContent = prev; btn.disabled = false;
+        alert("사용처리 실패: " + (err && err.message));
+      }
     }
+
 
     if (adminTable) {
       enhanceUsageButtons();
@@ -1061,35 +1008,31 @@
         });
       });
     }
-    // 즉석 사용처리 (미니폼 인라인)
+    // 즉석 사용처리 — 폼 없이 팀명(계정 자동 감지)으로 즉시 처리
     root.querySelectorAll(".ff-usage-use").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var cell = b.closest(".ff-usage-act");
-        if (cell.querySelector(".ff-use-form")) return;
-        var teams = ["코디팀", "어시팀", "피부팀", "간호팀"];
-        var def = localStorage.getItem("ff_gift_team") || "코디팀";
-        var f = document.createElement("div");
-        f.className = "ff-use-form";
-        f.innerHTML = '<select class="ff-use-team">' +
-          teams.map(function (t) { return '<option' + (t === def ? " selected" : "") + ">" + t + "</option>"; }).join("") +
-          '</select><input class="ff-use-staff" type="text" placeholder="처리 담당자" />' +
-          '<button type="button" class="small-action ff-use-ok">확인</button>' +
-          '<button type="button" class="small-action ff-use-cancel">취소</button>';
-        cell.appendChild(f);
-        f.querySelector(".ff-use-cancel").addEventListener("click", function () { f.remove(); });
-        f.querySelector(".ff-use-ok").addEventListener("click", async function () {
-          var staff = f.querySelector(".ff-use-staff").value.trim();
-          if (!staff) { f.querySelector(".ff-use-staff").focus(); return; }
-          try {
-            var r = await window.FaceFilterSupabase.markGiftUsed({
-              participantId: b.getAttribute("data-id"),
-              staffName: staff,
-              team: f.querySelector(".ff-use-team").value
-            });
-            if (r && (r.ok || r.code === "already_used")) loadUsage();
-            else alert("사용처리 실패: " + ((r && r.code) || "unknown"));
-          } catch (err) { alert("사용처리 실패: " + (err && err.message)); }
-        });
+      b.addEventListener("click", async function () {
+        if (b.disabled) return;
+        var team = (window.ffGetTeam ? window.ffGetTeam() : null)
+          || localStorage.getItem("ff_gift_team") || "코디팀";
+        b.disabled = true;
+        var prev = b.textContent;
+        b.textContent = "처리 중…";
+        try {
+          var r = await window.FaceFilterSupabase.markGiftUsed({
+            participantId: b.getAttribute("data-id"),
+            staffName: team,
+            team: team
+          });
+          if (r && (r.ok || r.code === "already_used")) {
+            loadUsage();
+          } else {
+            b.textContent = prev; b.disabled = false;
+            alert("사용처리 실패: " + ((r && r.code) || "unknown"));
+          }
+        } catch (err) {
+          b.textContent = prev; b.disabled = false;
+          alert("사용처리 실패: " + (err && err.message));
+        }
       });
     });
   }
