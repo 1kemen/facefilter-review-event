@@ -4,9 +4,9 @@
 
 ## 프로젝트 위치
 
-```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd
-```
+저장소: <https://github.com/1kemen/facefilter-review-event>
+
+아래 경로는 모두 저장소 루트 기준입니다.
 
 운영 사이트:
 
@@ -17,10 +17,6 @@ https://project-q5ykg.vercel.app
 ## 디자인 작업 시 주로 볼 파일
 
 ### 1. styles.css
-
-```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\styles.css
-```
 
 디자인 작업의 대부분은 이 파일에서 처리합니다.
 
@@ -34,10 +30,6 @@ C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\styles.css
 
 ### 2. index.html
 
-```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\index.html
-```
-
 화면 구조나 문구 위치를 바꿔야 할 때만 수정합니다.
 
 - 입력칸 배치
@@ -49,10 +41,6 @@ C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\index.html
 ## 가능하면 건드리지 말 파일
 
 ### app.js
-
-```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\app.js
-```
 
 기능 로직이 들어있습니다. 디자인만 수정할 때는 건드리지 않는 것을 권장합니다.
 
@@ -67,10 +55,6 @@ C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\app.js
 - 중복 참여/세션 복구 로직
 
 ### supabase 폴더
-
-```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd\supabase
-```
 
 DB schema와 SQL patch가 들어있습니다. 디자인 작업에서는 수정하지 않습니다.
 
@@ -114,7 +98,9 @@ DB schema와 SQL patch가 들어있습니다. 디자인 작업에서는 수정�
 
 ## 배포 방식
 
-현재 GitHub 연동 배포가 아니라, 로컬 파일을 Vercel CLI로 직접 배포하는 방식입니다.
+이 저장소를 Vercel에 연결해 배포합니다. `main`에 머지하면 `vercel.json`의 `sh build.sh`가 돌면서 필요한 파일만 `public/`으로 복사합니다.
 
-기존 배포 명령은 `VERCEL_DEPLOY.md`를 참고하세요.
+이미지나 보조 스크립트를 새로 추가했다면 `build.sh`의 복사 목록에도 넣어야 합니다. 목록에 없으면 배포본에서 빠집니다.
+
+자세한 내용은 `VERCEL_DEPLOY.md`를 참고하세요.
 
