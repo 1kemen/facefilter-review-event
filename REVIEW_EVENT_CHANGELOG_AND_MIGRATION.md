@@ -26,7 +26,7 @@
 ## 2. 프로젝트 위치
 
 ```text
-C:\Users\페이스필터 천호08\Documents\Codex\2026-05-28\prd
+https://github.com/1kemen/facefilter-review-event
 ```
 
 운영 사이트:
