@@ -4,6 +4,10 @@ const ADMIN_AUTH_KEY = "skinReviewEventMvp.adminAuth.v1";
 const DRAW_COOLDOWN_MS = 1600;
 const REVIEW_DRAW_WAIT_MS = 10000;
 const NAVER_COOLDOWN_DAYS = 28;
+/* 리뷰이벤트 상품 유효기간: 발급일(뽑기 확정일) 기준 3개월.
+   고객 결과 화면, 관리자·직원 상세, 차트 메모, CSV, 지급/사용 페이지가 이 값 하나를 같이 본다. */
+const PRIZE_VALIDITY_MONTHS = 3;
+const PRIZE_VALIDITY_NOTICE = `리뷰이벤트 상품 유효기간은 발급일로부터 ${PRIZE_VALIDITY_MONTHS}개월입니다.`;
 const DRAW_CHOICES = 5;
 const CUSTOMER_SESSION_MAX_AGE_MS = 18 * 60 * 60 * 1000;
 const DATA_RETENTION_LIMITS = {
@@ -2285,6 +2289,7 @@ function renderFinalSummary(participant) {
   }
 
   const sessionClosed = isSessionClosed(participant);
+  const validity = getPrizeValidity(participant);
   dom.finalSummary.innerHTML = `
     ${sessionClosed ? `
       <div class="session-complete">
@@ -2301,7 +2306,7 @@ function renderFinalSummary(participant) {
       </div>
       <p class="staff-check-note">리뷰 화면을 캡처해 두셨다면 그 이미지를 보여주셔도 됩니다.</p>
     </div>
-    <div class="result-card final-result-card">
+    <div class="result-card final-result-card"${validity ? ` data-issued-at="${escapeHtml(participant.draw.drawnAt)}" data-expires-at="${escapeHtml(validity.expiresKey)}"` : ""}>
       <div class="final-prize-head">
         <p class="section-kicker">당첨 상품</p>
         <span>확인코드 ${escapeHtml(participant.draw.confirmCode)}</span>
@@ -2313,6 +2318,14 @@ function renderFinalSummary(participant) {
         <div><dt>리뷰</dt><dd>${escapeHtml(participant.naverId)}</dd></div>
         <div><dt>카톡채널</dt><dd>${participant.kakaoVerified ? "추가 완료" : "미추가"}</dd></div>
       </dl>
+      ${validity ? `
+        <div class="prize-validity" data-expired="${validity.expired}">
+          <strong>${validity.expired
+            ? `유효기간 만료 · ${escapeHtml(validity.expiresLabel)}`
+            : `유효기간 ${escapeHtml(validity.expiresLabel)}까지`}</strong>
+          <span>${escapeHtml(PRIZE_VALIDITY_NOTICE)} 기간이 지나면 사용하실 수 없습니다.</span>
+        </div>
+      ` : ""}
     </div>
     ${!sessionClosed && !participant.kakaoVerified ? `
       <button class="secondary-action final-benefit-action" type="button" data-final-action="kakao-benefit">
@@ -2670,7 +2683,7 @@ function renderParticipantTable() {
     const reviewText = getReviewLabel(participant.reviewStatus);
     const stopInsight = getParticipantStopInsight(participant);
     const prizeText = participant.draw
-      ? `${escapeHtml(participant.draw.prizeName)}<br><span class="muted-text">${escapeHtml(participant.draw.confirmCode)}</span>`
+      ? `${escapeHtml(participant.draw.prizeName)}<br><span class="muted-text">${escapeHtml(participant.draw.confirmCode)}</span>${renderValidityBadge(getPrizeValidity(participant))}`
       : "-";
     return `
       <tr class="${participant.id === selectedParticipantId ? "is-selected" : ""}" data-participant-row="${participant.id}">
@@ -2734,6 +2747,7 @@ function renderDetailPanel() {
   }
 
   const chartMemo = createChartMemo(participant);
+  const validity = getPrizeValidity(participant);
   const status = getParticipantStatus(participant);
   const savedStaffName = getParticipantStaffName(participant);
   const staffNameLocked = Boolean(savedStaffName);
@@ -2767,6 +2781,10 @@ function renderDetailPanel() {
         <span>카톡 채널 추가: ${participant.kakaoVerified ? "완료" : "미추가"}</span>
         <span>당첨상품: ${escapeHtml(participant.draw?.prizeName || "-")}</span>
         <span>결과 확인코드: ${escapeHtml(participant.draw?.confirmCode || "-")}</span>
+        ${validity ? `
+          <span class="detail-validity${validity.expired ? " is-expired" : ""}">상품 유효기간: ${escapeHtml(validity.expiresLabel)}까지 · ${escapeHtml(formatValidityTail(validity))}</span>
+          <span class="muted-text">${escapeHtml(PRIZE_VALIDITY_NOTICE)} (발급 ${escapeHtml(validity.issuedLabel)})</span>
+        ` : ""}
       </div>
     </div>
     <div class="detail-block staff-record-block">
@@ -3043,7 +3061,7 @@ function resetDemoData() {
 
 function exportCsv() {
   const rows = [
-    ["고객명", "확인코드", "고객 차트번호", "휴대폰뒤4자리", "리뷰닉네임/ID", "포토리뷰", "진행 위치", "카톡채널추가", "최종상품", "결과코드", "증정상태", "담당자", "지급메모", "플래그", "등록일시"],
+    ["고객명", "확인코드", "고객 차트번호", "휴대폰뒤4자리", "리뷰닉네임/ID", "포토리뷰", "진행 위치", "카톡채널추가", "최종상품", "결과코드", "상품 유효기간", "증정상태", "담당자", "지급메모", "플래그", "등록일시"],
     ...state.participants.map((participant) => [
       participant.customerName,
       participant.chartNo,
@@ -3055,6 +3073,7 @@ function exportCsv() {
       participant.kakaoVerified ? "완료" : "",
       participant.draw?.prizeName || "",
       participant.draw?.confirmCode || "",
+      getPrizeValidity(participant)?.expiresLabel || "",
       participant.giftStatus === "done" ? "증정완료" : participant.draw ? "직원확인대기" : "",
       getParticipantStaffName(participant),
       participant.staffMemo || "",
@@ -3184,6 +3203,7 @@ function isReviewComplete(participant) {
 }
 
 function createChartMemo(participant) {
+  const validity = getPrizeValidity(participant);
   const lines = [
     `${formatDate(new Date())} 리뷰이벤트 QR 참여`,
     `고객: ${participant.customerName} / 확인코드: ${participant.chartNo}`,
@@ -3194,6 +3214,7 @@ function createChartMemo(participant) {
     `카카오톡 채널 추가: ${participant.kakaoVerified ? "완료" : "미추가"}`,
     `당첨상품: ${participant.draw?.prizeName || "미진행"}`,
     `결과코드: ${participant.draw?.confirmCode || "-"}`,
+    `상품 유효기간: ${validity ? `${validity.expiresLabel}까지 (발급 ${validity.issuedLabel}, ${PRIZE_VALIDITY_MONTHS}개월)` : "-"}`,
     `담당자: ${getParticipantStaffName(participant) || "-"}`,
     `지급상태: ${participant.giftStatus === "done" ? "지급완료" : participant.draw ? "직원 확인 대기" : "미지급"}`
   ];
@@ -3392,6 +3413,68 @@ function addDays(date, days) {
   next.setDate(next.getDate() + days);
   return next;
 }
+
+function addMonths(date, months) {
+  const next = new Date(date);
+  const day = next.getDate();
+  next.setMonth(next.getMonth() + months);
+  // 말일 보정: 8.31 + 3개월이 12.1로 넘치지 않고 11.30으로 앉도록 되돌린다.
+  if (next.getDate() < day) next.setDate(0);
+  return next;
+}
+
+function formatDateDot(date) {
+  return formatDateKey(date).replaceAll("-", ".");
+}
+
+/* 발급 시각 하나로 유효기간을 계산한다. 만료일 당일까지 사용할 수 있다. */
+function describePrizeValidity(issuedValue) {
+  if (!issuedValue) return null;
+  const issuedAt = new Date(issuedValue);
+  if (Number.isNaN(issuedAt.getTime())) return null;
+
+  const expiresAt = addMonths(issuedAt, PRIZE_VALIDITY_MONTHS);
+  const expiresKey = formatDateKey(expiresAt);
+  const daysLeft = Math.round((parseDateKey(expiresKey) - parseDateKey(formatDateKey(new Date()))) / 86400000);
+
+  return {
+    issuedAt,
+    issuedLabel: formatDateDot(issuedAt),
+    expiresAt,
+    expiresKey,
+    expiresLabel: formatDateDot(expiresAt),
+    daysLeft,
+    expired: daysLeft < 0
+  };
+}
+
+function getPrizeValidity(participant) {
+  return describePrizeValidity(participant?.draw?.drawnAt);
+}
+
+/* 남은 기간 꼬리표. 표·상세 어디에 붙어도 같은 말을 쓴다. */
+function formatValidityTail(validity) {
+  if (!validity) return "";
+  if (validity.expired) return `만료 ${Math.abs(validity.daysLeft)}일 지남`;
+  if (validity.daysLeft === 0) return "오늘까지";
+  return `D-${validity.daysLeft}`;
+}
+
+/* 표에는 손이 필요한 것만 붙인다 — 만료됐거나 2주 안쪽. */
+function renderValidityBadge(validity) {
+  if (!validity) return "";
+  if (validity.expired) return `<span class="validity-badge is-expired">유효기간 만료</span>`;
+  if (validity.daysLeft <= 14) return `<span class="validity-badge is-soon">유효기간 ${escapeHtml(formatValidityTail(validity))}</span>`;
+  return "";
+}
+
+/* ff-enhance.js의 지급/사용 페이지도 같은 규칙을 쓰도록 열어 둔다. */
+window.ffPrizeValidity = {
+  months: PRIZE_VALIDITY_MONTHS,
+  notice: PRIZE_VALIDITY_NOTICE,
+  fromIssuedAt: (value) => describePrizeValidity(value),
+  forParticipant: (id) => getPrizeValidity(getParticipant(id))
+};
 
 function minutesBetween(isoA, isoB) {
   return Math.abs(new Date(isoB).getTime() - new Date(isoA).getTime()) / 60000;
