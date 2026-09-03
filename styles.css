@@ -6122,3 +6122,104 @@ body {
   background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
   background-attachment: fixed;
 }
+
+/* =====================================================================
+   UI v3 · PASS 17 — 상품 유효기간 (발급일 + 3개월)
+   같은 사실을 세 화면이 나눠 쓴다:
+   · 고객 결과 티켓 — 만료일과 안내문 (캡처에 같이 남는다)
+   · 관리자·직원 표/상세 — 만료·임박만 눈에 띄게
+   · 지급/사용 현황 — 미사용 시술권의 남은 기간
+   톤: PASS 15 무채색 + 2px 직각. 만료만 위험 레드를 쓴다.
+   ===================================================================== */
+
+/* ---------- 고객 결과 티켓 ---------- */
+.prize-validity {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--ff-line);
+  border-radius: 2px;
+  background: var(--ff-soft);
+}
+.prize-validity strong {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: var(--ff-ls-body);
+  color: var(--ff-ink);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.prize-validity span {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ff-faint);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.prize-validity[data-expired="true"] {
+  border-color: #eccfc8;
+  background: #fdf3f1;
+}
+.prize-validity[data-expired="true"] strong { color: var(--danger); }
+
+/* ---------- 관리자·직원 참여자 표 ---------- */
+.validity-badge {
+  display: block;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 1px 6px;
+  border: 1px solid #e9e9e9;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #7e8287;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.validity-badge.is-soon {
+  border-color: #dcdcdc;
+  background: #f7f7f7;
+  color: #4a4d49;
+}
+.validity-badge.is-expired {
+  border-color: #eccfc8;
+  background: #fdf3f1;
+  color: var(--danger);
+}
+
+/* ---------- 관리자·직원 상세 ---------- */
+.detail-validity {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.detail-validity.is-expired {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+/* ---------- 지급/사용 현황 ---------- */
+.ff-usage-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ff-faint);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.ff-usage-chip.is-expired {
+  border-color: #eccfc8;
+  background: #fdf3f1;
+}
+.ff-usage-chip.is-expired b { color: var(--danger); }
+.ff-usage-table td.ff-usage-soon,
+.ff-usage-table td.ff-usage-expired {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ff-usage-table td.ff-usage-soon { color: #4a4d49; }
+.ff-usage-table td.ff-usage-expired,
+.ff-usage-table td.ff-usage-expired small { color: var(--danger); }
+.ff-usage-table tr[data-ff-expired] { background: #fdf3f1; }

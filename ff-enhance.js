@@ -371,7 +371,9 @@
     if (!card.querySelector(".ff-ticket-foot")) {
       var foot = document.createElement("div");
       foot.className = "ff-ticket-foot";
-      var now = new Date();
+      var issuedRaw = card.getAttribute("data-issued-at");
+      var now = issuedRaw ? new Date(issuedRaw) : new Date();
+      if (isNaN(now.getTime())) now = new Date();
       var pad = function (n) { return (n < 10 ? "0" : "") + n; };
       foot.innerHTML =
         "<span>FACE FILTER 천호점</span>" +
@@ -887,6 +889,21 @@
 
   function isInstant(name) { return (name || "").indexOf("마스크팩") !== -1; }
 
+  // 유효기간은 app.js가 쥐고 있는 규칙(발급일 + 3개월)을 그대로 빌려 쓴다.
+  // 참여자 기록이 있으면 뽑기 확정일 기준, 없으면 지급 시각으로 대신 계산한다.
+  function validityOf(item) {
+    var api = window.ffPrizeValidity;
+    if (!api) return null;
+    return api.forParticipant(item.id) || api.fromIssuedAt(item.giftAt);
+  }
+
+  function validityCell(v) {
+    if (!v) return "<td>-</td>";
+    var cls = v.expired ? "ff-usage-expired" : (v.daysLeft <= 14 ? "ff-usage-soon" : "");
+    var tail = v.expired ? "만료 " + Math.abs(v.daysLeft) + "일 지남" : (v.daysLeft === 0 ? "오늘까지" : "D-" + v.daysLeft);
+    return '<td class="' + cls + '">' + v.expiresLabel + "<br><small>" + tail + "</small></td>";
+  }
+
   function fmtTime(iso) {
     if (!iso) return "-";
     var d = new Date(iso);
@@ -961,6 +978,13 @@
       return '<span class="ff-usage-chip"><b>' + t + "</b>" + teamCount[t] + "건</span>";
     }).join("");
 
+    var expiredCount = pending.filter(function (i) {
+      var v = validityOf(i);
+      return v && v.expired;
+    }).length;
+    var notice = (window.ffPrizeValidity && window.ffPrizeValidity.notice)
+      || "리뷰이벤트 상품 유효기간은 발급일로부터 3개월입니다.";
+
     function rowsHtml(list, showUsed) {
       return list.map(function (i) {
         return "<tr>" +
@@ -979,7 +1003,9 @@
         '<span class="ff-usage-chip is-total"><b>사용완료</b>' + used.length + "건</span>" +
         summary +
         '<span class="ff-usage-chip is-pending"><b>미사용 시술권</b>' + pending.length + "건</span>" +
+        (expiredCount ? '<span class="ff-usage-chip is-expired"><b>유효기간 만료</b>' + expiredCount + "건</span>" : "") +
       "</div>" +
+      '<p class="ff-usage-note">' + notice + " 만료일이 지난 시술권은 사용 처리 전에 확인해 주세요.</p>" +
       '<h3 class="ff-usage-h">사용완료 (' + used.length + ")</h3>" +
       '<div class="table-wrap"><table class="ff-usage-table"><thead><tr>' +
       "<th>고객</th><th>상품</th><th>지급</th><th>사용</th></tr></thead><tbody>" +
@@ -987,13 +1013,15 @@
       '<h3 class="ff-usage-h">미사용 시술권 — 내원 대기 (' + pending.length + ")</h3>" +
       '<input type="search" class="ff-usage-search" id="ff-usage-search" placeholder="고객명 · 휴대폰 뒤 4자리 · 닉네임으로 검색" />' +
       '<div class="table-wrap"><table class="ff-usage-table" id="ff-pending-table"><thead><tr>' +
-      "<th>고객</th><th>상품</th><th>지급</th><th></th></tr></thead><tbody>" +
+      "<th>고객</th><th>상품</th><th>지급</th><th>유효기간</th><th></th></tr></thead><tbody>" +
       pending.map(function (i) {
-        return '<tr data-ff-usage-row="' + i.id + '" data-ff-search="' +
+        var v = validityOf(i);
+        return '<tr data-ff-usage-row="' + i.id + '"' + (v && v.expired ? ' data-ff-expired="1"' : "") + ' data-ff-search="' +
           ((i.customerName || "") + " " + (i.phoneLast4 || "") + " " + (i.naverHandle || "")).toLowerCase() + '">' +
           "<td><strong>" + (i.customerName || "-") + "</strong><br><small>" + (i.naverHandle || "") + " · " + (i.phoneLast4 || "") + "</small></td>" +
           "<td>" + (i.prizeName || "-") + "</td>" +
           "<td>" + (i.giftTeam || "-") + "<br><small>" + fmtTime(i.giftAt) + "</small></td>" +
+          validityCell(v) +
           '<td class="ff-usage-act"><button type="button" class="small-action ff-usage-use" data-id="' + i.id + '">사용처리</button></td>' +
           "</tr>";
       }).join("") + "</tbody></table></div>";
