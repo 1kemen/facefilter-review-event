@@ -889,7 +889,7 @@
 
   function isInstant(name) { return (name || "").indexOf("마스크팩") !== -1; }
 
-  // 유효기간은 app.js가 쥐고 있는 규칙(발급일 + 3개월)을 그대로 빌려 쓴다.
+  // 유효기간은 app.js가 쥐고 있는 규칙(발급일 + 30일)을 그대로 빌려 쓴다.
   // 참여자 기록이 있으면 뽑기 확정일 기준, 없으면 지급 시각으로 대신 계산한다.
   function validityOf(item) {
     var api = window.ffPrizeValidity;
@@ -899,7 +899,8 @@
 
   function validityCell(v) {
     if (!v) return "<td>-</td>";
-    var cls = v.expired ? "ff-usage-expired" : (v.daysLeft <= 14 ? "ff-usage-soon" : "");
+    var soon = (window.ffPrizeValidity && window.ffPrizeValidity.soonDays) || 7;
+    var cls = v.expired ? "ff-usage-expired" : (v.daysLeft <= soon ? "ff-usage-soon" : "");
     var tail = v.expired ? "만료 " + Math.abs(v.daysLeft) + "일 지남" : (v.daysLeft === 0 ? "오늘까지" : "D-" + v.daysLeft);
     return '<td class="' + cls + '">' + v.expiresLabel + "<br><small>" + tail + "</small></td>";
   }
@@ -983,7 +984,7 @@
       return v && v.expired;
     }).length;
     var notice = (window.ffPrizeValidity && window.ffPrizeValidity.notice)
-      || "리뷰이벤트 상품 유효기간은 발급일로부터 3개월입니다.";
+      || "리뷰이벤트 상품 유효기간은 발급일로부터 30일입니다.";
 
     function rowsHtml(list, showUsed) {
       return list.map(function (i) {

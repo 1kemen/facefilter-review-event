@@ -4,10 +4,12 @@ const ADMIN_AUTH_KEY = "skinReviewEventMvp.adminAuth.v1";
 const DRAW_COOLDOWN_MS = 1600;
 const REVIEW_DRAW_WAIT_MS = 10000;
 const NAVER_COOLDOWN_DAYS = 28;
-/* 리뷰이벤트 상품 유효기간: 발급일(뽑기 확정일) 기준 3개월.
+/* 리뷰이벤트 상품 유효기간: 발급일(뽑기 확정일) 기준 30일.
    고객 결과 화면, 관리자·직원 상세, 차트 메모, CSV, 지급/사용 페이지가 이 값 하나를 같이 본다. */
-const PRIZE_VALIDITY_MONTHS = 3;
-const PRIZE_VALIDITY_NOTICE = `리뷰이벤트 상품 유효기간은 발급일로부터 ${PRIZE_VALIDITY_MONTHS}개월입니다.`;
+const PRIZE_VALIDITY_DAYS = 30;
+// 만료가 임박한 건만 표에 배지를 붙인다. 30일 창에서 2주는 절반이라 너무 잦다.
+const PRIZE_VALIDITY_SOON_DAYS = 7;
+const PRIZE_VALIDITY_NOTICE = `리뷰이벤트 상품 유효기간은 발급일로부터 ${PRIZE_VALIDITY_DAYS}일입니다.`;
 const DRAW_CHOICES = 5;
 const CUSTOMER_SESSION_MAX_AGE_MS = 18 * 60 * 60 * 1000;
 const DATA_RETENTION_LIMITS = {
@@ -3214,7 +3216,7 @@ function createChartMemo(participant) {
     `카카오톡 채널 추가: ${participant.kakaoVerified ? "완료" : "미추가"}`,
     `당첨상품: ${participant.draw?.prizeName || "미진행"}`,
     `결과코드: ${participant.draw?.confirmCode || "-"}`,
-    `상품 유효기간: ${validity ? `${validity.expiresLabel}까지 (발급 ${validity.issuedLabel}, ${PRIZE_VALIDITY_MONTHS}개월)` : "-"}`,
+    `상품 유효기간: ${validity ? `${validity.expiresLabel}까지 (발급 ${validity.issuedLabel}, ${PRIZE_VALIDITY_DAYS}일)` : "-"}`,
     `담당자: ${getParticipantStaffName(participant) || "-"}`,
     `지급상태: ${participant.giftStatus === "done" ? "지급완료" : participant.draw ? "직원 확인 대기" : "미지급"}`
   ];
@@ -3414,15 +3416,6 @@ function addDays(date, days) {
   return next;
 }
 
-function addMonths(date, months) {
-  const next = new Date(date);
-  const day = next.getDate();
-  next.setMonth(next.getMonth() + months);
-  // 말일 보정: 8.31 + 3개월이 12.1로 넘치지 않고 11.30으로 앉도록 되돌린다.
-  if (next.getDate() < day) next.setDate(0);
-  return next;
-}
-
 function formatDateDot(date) {
   return formatDateKey(date).replaceAll("-", ".");
 }
@@ -3433,7 +3426,7 @@ function describePrizeValidity(issuedValue) {
   const issuedAt = new Date(issuedValue);
   if (Number.isNaN(issuedAt.getTime())) return null;
 
-  const expiresAt = addMonths(issuedAt, PRIZE_VALIDITY_MONTHS);
+  const expiresAt = addDays(issuedAt, PRIZE_VALIDITY_DAYS);
   const expiresKey = formatDateKey(expiresAt);
   const daysLeft = Math.round((parseDateKey(expiresKey) - parseDateKey(formatDateKey(new Date()))) / 86400000);
 
@@ -3460,17 +3453,18 @@ function formatValidityTail(validity) {
   return `D-${validity.daysLeft}`;
 }
 
-/* 표에는 손이 필요한 것만 붙인다 — 만료됐거나 2주 안쪽. */
+/* 표에는 손이 필요한 것만 붙인다 — 만료됐거나 1주 안쪽. */
 function renderValidityBadge(validity) {
   if (!validity) return "";
   if (validity.expired) return `<span class="validity-badge is-expired">유효기간 만료</span>`;
-  if (validity.daysLeft <= 14) return `<span class="validity-badge is-soon">유효기간 ${escapeHtml(formatValidityTail(validity))}</span>`;
+  if (validity.daysLeft <= PRIZE_VALIDITY_SOON_DAYS) return `<span class="validity-badge is-soon">유효기간 ${escapeHtml(formatValidityTail(validity))}</span>`;
   return "";
 }
 
 /* ff-enhance.js의 지급/사용 페이지도 같은 규칙을 쓰도록 열어 둔다. */
 window.ffPrizeValidity = {
-  months: PRIZE_VALIDITY_MONTHS,
+  days: PRIZE_VALIDITY_DAYS,
+  soonDays: PRIZE_VALIDITY_SOON_DAYS,
   notice: PRIZE_VALIDITY_NOTICE,
   fromIssuedAt: (value) => describePrizeValidity(value),
   forParticipant: (id) => getPrizeValidity(getParticipant(id))
